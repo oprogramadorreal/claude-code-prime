@@ -29,14 +29,16 @@ Claude Code's built-in `/init` command creates basic documentation. This skill c
 
 ## What Gets Generated
 
-| File                                | Purpose                                                          |
-| ----------------------------------- | ---------------------------------------------------------------- |
-| `.claude/CLAUDE.md`                 | Project overview, commands, doc references                       |
-| `.claude/settings.json`             | Command permissions (allow build/test, require approval for git) |
-| `.claude/docs/coding-guidelines.md` | Code style and architecture guidelines                           |
-| `.claude/docs/testing.md`           | Testing conventions (if test framework detected)                 |
-| `.claude/docs/styling.md`           | UI/CSS guidelines (if frontend project)                          |
-| `.claude/docs/architecture.md`      | Project structure documentation                                  |
+| File                                | Purpose                                                          | Source       |
+| ----------------------------------- | ---------------------------------------------------------------- | ------------ |
+| `.claude/CLAUDE.md`                 | Project overview, commands, doc references                       | Generated    |
+| `.claude/settings.json`             | Command permissions (allow build/test, require approval for git) | Template     |
+| `.claude/docs/coding-guidelines.md` | Code style and architecture guidelines                           | Template     |
+| `.claude/docs/testing.md`           | Testing conventions (if test framework detected)                 | Generated    |
+| `.claude/docs/styling.md`           | UI/CSS guidelines (if frontend project)                          | Generated    |
+| `.claude/docs/architecture.md`      | Project structure documentation                                  | Generated    |
+
+*Template* = copied from `templates/` and customized. *Generated* = created by Claude following `SKILL.md` instructions.
 
 ## Permission Philosophy
 
@@ -49,14 +51,17 @@ See `templates/settings.json` to customize defaults.
 | File | Purpose |
 |------|---------|
 | `SKILL.md` | Skill definition with step-by-step generation instructions |
-| `templates/` | Base templates copied/customized for each project |
+| `templates/settings.json` | Base permission settings (customize allowed/denied commands) |
+| `templates/docs/coding-guidelines.md` | Coding guidelines template (customize style rules) |
 | `references/` | Best practices guide (based on HumanLayer research) |
 
 To understand or modify how the skill works, start with `SKILL.md`.
 
 ## Customization
 
-Edit files in `templates/` to change generated content. For deeper changes to the generation logic, edit `SKILL.md`.
+- **Permission rules**: Edit `templates/settings.json` to change allowed/denied commands
+- **Coding guidelines**: Edit `templates/docs/coding-guidelines.md` to customize style rules
+- **Generation logic**: Edit `SKILL.md` to change how Claude generates the other documentation files
 
 ## Credits
 
