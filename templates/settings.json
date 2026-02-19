@@ -1,17 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build*)",
-      "Bash(npm run lint*)",
-      "Bash(npm run test*)",
-      "Bash(npm run start*)",
-      "Bash(npm ls*)",
-      "Bash(npx ng build*)",
-      "Bash(npx ng serve*)",
-      "Bash(npx ng test*)",
-      "Bash(npx ng lint*)",
-      "Bash(npx ng generate*)",
-      "Bash(npx ng update*)"
     ],
     "deny": [
       "Bash(git commit*)",

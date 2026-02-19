@@ -33,6 +33,20 @@ Read `.claude/skills/claude-code-bootstrap/references/claude-md-best-practices.m
 
 **Extract**: Project name, tech stack, build system, available scripts.
 
+**Detect active package manager** (this determines command prefixes for CLAUDE.md and settings.json):
+
+| Type | Check (in priority order) | Result |
+|------|---------------------------|--------|
+| Node.js | `pnpm-lock.yaml` exists | pnpm |
+| Node.js | `yarn.lock` exists | yarn |
+| Node.js | `bun.lockb` exists | bun |
+| Node.js | default / `package-lock.json` | npm |
+| Python | `uv.lock` exists OR `[tool.uv]` in pyproject.toml | uv (prefix commands with `uv run`) |
+| Python | `poetry.lock` exists OR `[tool.poetry]` in pyproject.toml | poetry (prefix with `poetry run`) |
+| Python | default | pip (bare commands: `pytest`, `ruff`, etc.) |
+
+Use the detected package manager for all commands in CLAUDE.md and settings.json. For example, if the Node.js project uses pnpm, write `pnpm run build` not `npm run build`. If the Python project uses uv, write `uv run pytest` not just `pytest`.
+
 **Analyze structure** (stay shallow — existing docs are audited separately in Step 1b):
 - README.md for project purpose and features
 - Top-level directories for architecture pattern
@@ -62,9 +76,11 @@ Scan top-level directories for manifest files (from the manifest table above). S
 - **Dependencies**: `node_modules`, `vendor`, `.venv`, `venv`, `env`
 - **Build output**: `dist`, `build`, `out`, `target`, `bin`, `obj`
 - **Framework/cache**: `.next`, `.nuxt`, `__pycache__`, `.cache`, `.tox`
-- **Non-project**: `examples`, `demos`, `test-fixtures`, `e2e`, `__tests__`, `.storybook`
+- **Non-project**: `examples`, `demos`, `test-fixtures`, `e2e`, `__tests__`, `.storybook`, `samples`
 
-**Root-as-project check** (only when Step B found exactly 1 qualifying subdirectory):
+**Depth-2 check for container directories:** For any scanned top-level directory that has no manifest and is not in the skip list, check its immediate subdirectories for manifest files (applying the same skip rules). This catches nested subprojects inside container directories (e.g., `app/API/` and `app/client/` inside `app/`). Count each qualifying subdirectory as a separate project using its full relative path (e.g., `app/API`, `app/client`).
+
+**Root-as-project check** (only when the total number of qualifying projects found in Step B — including depth-2 results — equals exactly 1):
 The root itself may be an independent project. Count it as an additional project if the root has a manifest file AND at least one of:
 - A **framework-specific config** at root (`angular.json`, `next.config.*`, `nuxt.config.*`, `vue.config.*`, `svelte.config.*`, `astro.config.*`, `webpack.config.*`, `vite.config.*`, `tsconfig.app.json`)
 - A **root source directory** (`src/`, `app/`, or `lib/`) containing source files, where the subdirectory project also has its own source files — indicating two separate codebases
@@ -88,7 +104,7 @@ The root itself may be an independent project. Count it as an additional project
 
 **Enumerate subprojects:**
 - Step A detected: use workspace member list + any additional top-level dirs with manifests not in the config.
-- Step B only: use all qualifying top-level dirs. If the root-as-project check qualified the root, include it too.
+- Step B only: use all qualifying directories (including nested ones found via depth-2 check). If the root-as-project check qualified the root, include it too.
 - Root-as-project or root-as-workspace-member (e.g., `"."` in workspaces): include in subproject table but do NOT create a separate CLAUDE.md — root CLAUDE.md covers it. Its docs go in `.claude/docs/`.
 - For each subproject, detect its tech stack using the manifest table.
 
@@ -98,7 +114,8 @@ Before proceeding, confirm you have all of the following. If any are missing, re
 
 - **Project name** (from manifest or README)
 - **Tech stack(s)** (languages, frameworks, from manifest dependencies)
-- **Build/test/lint commands** (from manifest scripts or standard tooling)
+- **Package manager** (detected from lock files / config — e.g., npm, pnpm, yarn, uv, poetry, pip)
+- **Build/test/lint commands** (from manifest scripts, prefixed with the detected package manager)
 - **Monorepo status**: single project, confirmed monorepo, or ambiguous (awaiting user input)
 - If monorepo: **subproject list** with each subproject's path, purpose, and tech stack
 - If monorepo: **workspace tool** (if any)
@@ -159,33 +176,23 @@ mkdir -p .claude/docs
 
 ### Single project
 
-Create `.claude/CLAUDE.md` with living document header:
+Use template from `.claude/skills/claude-code-bootstrap/templates/single-project-claude.md`. Fill in all placeholders:
+- Replace `[PROJECT NAME]` with the actual project name
+- Replace `[One-line description]` with purpose from README or manifest
+- Replace `[TECH STACK]` with detected languages and frameworks
+- Replace command placeholders with real commands using the detected package manager
+- Replace directory placeholders with actual project directories
+- In the Documentation section, list only docs that were actually created using `.claude/docs/` prefix
 
-```markdown
-<!-- Keep this file and .claude/docs/ updated when project structure, conventions, or tooling changes -->
-
-# Project Name
-```
-
-**Structure content using WHAT/WHY/HOW:**
+**The template follows WHAT/WHY/HOW structure:**
 
 | Section | Content |
 |---------|---------|
 | **WHAT** | Project name, purpose (1 line), tech stack summary |
-| **WHY** | Essential commands: build, test, lint (from project manifest) |
+| **WHY** | Essential commands: build, test, lint (from project manifest, using detected package manager) |
 | **HOW** | Documentation references with task-oriented descriptions |
 
-**Documentation section format:**
-```markdown
-## Documentation
-Read the relevant doc before making changes:
-- `coding-guidelines.md` - For new features, refactoring, code structure
-- `testing.md` - For writing or modifying tests
-- `styling.md` - For UI components, CSS, visual changes
-- `architecture.md` - For understanding project structure, data flow
-```
-
-Only list docs that were actually created. Keep total file under 60 lines.
+Keep total file under 60 lines.
 
 ### No manifest detected
 
@@ -217,13 +224,18 @@ For each detected subproject (except root-as-project/root-as-member — the root
 
 **Audit-aware:** If Step 1b marked settings.json as Accurate, skip recreation. If Outdated (e.g., stale allow list), apply only the approved changes. If Missing or no audit was run, create normally.
 
-Use template from `.claude/skills/claude-code-bootstrap/templates/settings.json`. Customize allow list based on detected project type:
+Use template from `.claude/skills/claude-code-bootstrap/templates/settings.json` (which provides the deny list). **Replace the empty allow list entirely** with commands appropriate for the detected project type — only include commands for the tech stacks actually present in this project:
 
 | Type | Commands to Allow |
 |------|-------------------|
-| Node.js | `npm run`, `npx`, `yarn`, `pnpm` |
+| Node.js (npm) | `npm run`, `npx`, `npm ls` |
+| Node.js (pnpm) | `pnpm run`, `pnpm -r`, `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm lint`, `npx` |
+| Node.js (yarn) | `yarn run`, `yarn`, `npx` |
+| Node.js (bun) | `bun run`, `bunx` |
 | Rust | `cargo build`, `cargo test`, `cargo run`, `cargo clippy` |
-| Python | `pytest`, `pip`, `poetry`, `uv`, `ruff`, `mypy` |
+| Python (uv) | `uv run`, `uv sync`, `uv pip`, `ruff`, `mypy` |
+| Python (poetry) | `poetry run`, `poetry install`, `ruff`, `mypy` |
+| Python (pip) | `pytest`, `pip install`, `pip list`, `ruff`, `mypy`, `python -m pytest`, `python -m mypy` |
 | C#/.NET | `dotnet build`, `dotnet test`, `dotnet run`, `dotnet restore` |
 | Java/Maven | `mvn compile`, `mvn test`, `mvn package` |
 | Java/Gradle | `gradle build`, `gradle test`, `gradlew` |
@@ -260,7 +272,7 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 
 **Content checks** — for each file, verify it has real content (not just placeholders):
 - `.claude/CLAUDE.md`: Contains actual project name, at least one real command, and a Documentation section. Line count <= 60.
-- `.claude/settings.json`: `allow` list includes commands matching the detected tech stack from Step 1.
+- `.claude/settings.json`: `allow` list includes commands matching the detected tech stack from Step 1. The `allow` list must NOT contain commands for unrelated tech stacks (e.g., no `npm` commands in a Python project, no `npx ng` commands in a non-Angular project).
 - `.claude/docs/coding-guidelines.md`: `[PROJECT NAME]` placeholder replaced with actual project name.
 - Each `testing.md`: References the project's actual test framework and commands.
 - Each `styling.md`: References the project's actual CSS/UI tooling.
