@@ -4,7 +4,7 @@
  * so it works in both single projects and monorepos without workspaces.
  */
 const { readFileSync, existsSync } = require('fs');
-const { execFileSync } = require('child_process');
+const { execSync } = require('child_process');
 const path = require('path');
 
 const data = JSON.parse(readFileSync(0, 'utf8'));
@@ -17,7 +17,7 @@ if (!exts.some(ext => filePath.endsWith(ext))) process.exit(0);
 let dir = path.dirname(path.resolve(filePath));
 while (dir !== path.dirname(dir)) {
   if (existsSync(path.join(dir, 'node_modules', 'prettier'))) {
-    try { execFileSync('npx', ['prettier', '--write', '--log-level', 'silent', filePath], { cwd: dir, stdio: 'ignore' }); } catch {}
+    try { execSync(`npx prettier --write --log-level silent "${filePath}"`, { cwd: dir, stdio: 'ignore' }); } catch {}
     break;
   }
   dir = path.dirname(dir);
