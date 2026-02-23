@@ -35,7 +35,7 @@ Note: `.sln` files reference `.csproj` projects — they confirm .NET presence b
 
 **Extract**: Project name, tech stack, build system, available scripts.
 
-**Detect active package manager** (this determines command prefixes for CLAUDE.md and settings.json):
+**Detect active package manager** (this determines command prefixes for CLAUDE.md):
 
 | Type | Check (in priority order) | Result |
 |------|---------------------------|--------|
@@ -47,7 +47,7 @@ Note: `.sln` files reference `.csproj` projects — they confirm .NET presence b
 | Python | `poetry.lock` exists OR `[tool.poetry]` in pyproject.toml | poetry (prefix with `poetry run`) |
 | Python | default | pip (bare commands: `pytest`, `ruff`, etc.) |
 
-Use the detected package manager for all commands in CLAUDE.md and settings.json. For example, if the Node.js project uses pnpm, write `pnpm run build` not `npm run build`. If the Python project uses uv, write `uv run pytest` not just `pytest`.
+Use the detected package manager for all commands in CLAUDE.md. For example, if the Node.js project uses pnpm, write `pnpm run build` not `npm run build`. If the Python project uses uv, write `uv run pytest` not just `pytest`.
 
 **Analyze structure and extract doc insights:**
 - Top-level directories for architecture pattern
@@ -142,7 +142,7 @@ If existing docs were found, analyze them to identify what needs updating:
 
 | Dimension | Check |
 |-----------|-------|
-| **Commands** | Do build/test/lint commands in CLAUDE.md and settings.json `allow` list match current manifest scripts? |
+| **Commands** | Do build/test/lint commands in CLAUDE.md match current manifest scripts? |
 | **Tech stack** | Does the documented stack match current dependencies in manifest files? |
 | **Structure** | Do folder names, entry points, and architecture references in docs match the actual filesystem? |
 | **Doc coverage** | Are there detected project aspects (test framework, UI deps, complex architecture) with no corresponding doc? Are there docs for aspects no longer present? |
@@ -213,32 +213,7 @@ For each detected subproject (except root-as-project/root-as-member — the root
 - Mention parent monorepo name in the opening line
 - Keep under 60 lines
 
-## Step 5: Create settings.json
-
-Use template from `.claude/skills/claude-code-bootstrap/templates/settings.json` (which provides the deny list). **Replace the empty allow list entirely** with commands appropriate for the detected project type — only include commands for the tech stacks actually present in this project:
-
-| Type | Commands to Allow |
-|------|-------------------|
-| Node.js (npm) | `npm run`, `npx`, `npm ls` |
-| Node.js (pnpm) | `pnpm run`, `pnpm -r`, `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm lint`, `npx` |
-| Node.js (yarn) | `yarn run`, `yarn`, `npx` |
-| Node.js (bun) | `bun run`, `bunx` |
-| Rust | `cargo build`, `cargo test`, `cargo run`, `cargo clippy` |
-| Python (uv) | `uv run`, `uv sync`, `uv pip`, `ruff`, `mypy` |
-| Python (poetry) | `poetry run`, `poetry install`, `ruff`, `mypy` |
-| Python (pip) | `pytest`, `pip install`, `pip list`, `ruff`, `mypy`, `python -m pytest`, `python -m mypy` |
-| C#/.NET | `dotnet build`, `dotnet test`, `dotnet run`, `dotnet restore`, `dotnet tool restore` |
-| Java/Maven | `mvn compile`, `mvn test`, `mvn package` |
-| Java/Gradle | `gradle build`, `gradle test`, `gradlew` |
-| Go | `go build`, `go test`, `go run`, `go vet`, `golangci-lint` |
-| C/C++ | `cmake`, `make`, `ctest`, `ninja` |
-| Ruby | `bundle`, `rake`, `rspec` |
-
-**If monorepo:** Union the permission sets for all tech stacks detected across subprojects into a single root `.claude/settings.json`.
-
-**Preserve custom sections:** If an existing settings.json contains a `hooks` section or other custom configuration beyond `permissions`, preserve those sections when updating. Merge permission changes into the existing file structure rather than overwriting from the template.
-
-## Step 5b: Install Formatter Hooks
+## Step 5: Install Formatter Hooks
 
 Add auto-format hooks so files stay consistently formatted after every Edit/Write. Use templates from `.claude/skills/claude-code-bootstrap/templates/hooks/`.
 
@@ -256,24 +231,11 @@ Add auto-format hooks so files stay consistently formatted after every Edit/Writ
 
 1. Copy applicable template(s) from `.claude/skills/claude-code-bootstrap/templates/hooks/` to `.claude/hooks/`.
 2. External formatters not in deps → ask user "Add [formatter] as dev dependency and install format hook?" If declined, skip.
-3. Add a `hooks.PostToolUse` entry to `.claude/settings.json` (merge with existing). All hooks share one matcher entry — add each hook command to the `hooks` array:
+3. If any hooks were installed, create `.claude/settings.json` using the template from `.claude/skills/claude-code-bootstrap/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
 
-```json
-"hooks": {
-  "PostToolUse": [
-    {
-      "matcher": "Edit|Write",
-      "hooks": [
-        { "type": "command", "command": "<python-cmd> \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-python.py", "timeout": 30 },
-        { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-node.js", "timeout": 30 },
-        { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-csharp.sh", "timeout": 30 }
-      ]
-    }
-  ]
-}
-```
+**If no hooks were installed**, do not create settings.json (unless it already exists with other content).
 
-Include only the hooks that were actually installed. For Python use `<python-cmd> "..."` (the detected command — `python3` or `python`), for Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
+**Preserve existing content:** If an existing settings.json contains a `permissions` section or other custom configuration beyond `hooks`, preserve those sections. Merge hook changes into the existing file structure rather than overwriting.
 
 ## Step 6: Create Documentation Files
 
@@ -329,11 +291,11 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 
 **Content checks** — verify each file has real content, not placeholders:
 - `.claude/CLAUDE.md`: Actual project name, real commands, Documentation section. Line count <= 60.
-- `.claude/settings.json`: `allow` list matches detected tech stacks only (no unrelated commands). If file had custom sections (hooks, etc.), verify they're preserved.
+- `.claude/settings.json` (if created): `hooks.PostToolUse` references every installed hook file and vice versa. If file had custom sections (permissions, etc.), verify they're preserved.
 - `.claude/docs/coding-guidelines.md`: `[PROJECT NAME]` replaced with actual name.
 - Each `testing.md`, `styling.md`, `architecture.md`: References the project's actual frameworks, tooling, and directory names.
 - Monorepo: each subproject's `CLAUDE.md` exists, mentions subproject name, and is <= 60 lines.
-- `.claude/hooks/*`: Each hook matches its template; settings.json `hooks.PostToolUse` references every installed hook file and vice versa.
+- `.claude/hooks/*`: Each hook file matches its template.
 - **Sync changes (Step 6b)**: If sync changes were applied, verify each modified file still has valid markdown and no truncated content.
 
 **Cross-reference checks:**

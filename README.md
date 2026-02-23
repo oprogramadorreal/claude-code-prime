@@ -27,7 +27,6 @@ Claude Code's built-in `/init` command creates basic documentation. This skill c
 - **WHAT/WHY/HOW structure** - Organizes information for optimal LLM comprehension
 - **60-line CLAUDE.md** - Keeps the main file within LLM's peak attention window
 - **Progressive disclosure** - Details in separate docs, not one massive file
-- **Pre-configured permissions** - Safe defaults for build/test/lint commands
 - **Auto-format hooks** - Installs PostToolUse hooks for black, prettier, rustfmt, gofmt, csharpier (per detected stack)
 - **Documentation sync** - Reads existing docs for non-code insights (architecture rationale, workflow conventions), cross-checks against source code, and fixes contradictions post-generation
 - **Monorepo support** - Auto-detects monorepos via workspace tools and manifest scanning, with supporting signals from README and Docker Compose — generates scoped docs per subproject
@@ -37,7 +36,7 @@ Claude Code's built-in `/init` command creates basic documentation. This skill c
 | File                                | Purpose                                                          | Source       |
 | ----------------------------------- | ---------------------------------------------------------------- | ------------ |
 | `.claude/CLAUDE.md`                 | Project overview, commands, doc references                       | Generated    |
-| `.claude/settings.json`             | Command permissions and formatter hook configuration             | Template     |
+| `.claude/settings.json`             | Formatter hook configuration (created when hooks are installed)  | Template     |
 | `.claude/docs/coding-guidelines.md` | Code style and architecture guidelines                           | Template     |
 | `.claude/docs/testing.md`           | Testing conventions (if test framework detected)                 | Generated    |
 | `.claude/docs/styling.md`           | UI/CSS guidelines (if frontend project)                          | Generated    |
@@ -60,7 +59,7 @@ PostToolUse hooks that auto-format files after every Edit/Write, installed per d
 
 ### Monorepo Projects
 
-For monorepos (auto-detected via workspace tools, independent manifests in subdirectories, README analysis, and Docker Compose services), the same root files above are generated with monorepo-aware content (orchestrator CLAUDE.md, aggregated permissions). In addition, each subproject gets scoped documentation:
+For monorepos (auto-detected via workspace tools, independent manifests in subdirectories, README analysis, and Docker Compose services), the same root files above are generated with monorepo-aware content (orchestrator CLAUDE.md, combined formatter hooks). In addition, each subproject gets scoped documentation:
 
 | File | Purpose | Source |
 |------|---------|--------|
@@ -71,18 +70,12 @@ For monorepos (auto-detected via workspace tools, independent manifests in subdi
 
 Claude Code automatically discovers subproject CLAUDE.md files when working with files in those directories, so each package gets focused, relevant context.
 
-## Permission Philosophy
-
-The generated `settings.json` allows development commands (build, test, lint) while requiring explicit approval for git operations (commit, push, rebase). This ensures Claude helps with coding while leaving version control decisions to you.
-
-See `templates/settings.json` to customize defaults.
-
 ## Skill Structure
 
 | File | Purpose |
 |------|---------|
 | `SKILL.md` | Skill definition with step-by-step generation instructions |
-| `templates/settings.json` | Base permission settings (customize allowed/denied commands) |
+| `templates/settings.json` | PostToolUse hook reference structure (formatter hook configuration) |
 | `templates/docs/coding-guidelines.md` | Coding guidelines template (customize style rules) |
 | `templates/single-project-claude.md` | CLAUDE.md template for single projects |
 | `templates/monorepo-claude.md` | Root CLAUDE.md template for monorepo projects |
@@ -94,7 +87,7 @@ To understand or modify how the skill works, start with `SKILL.md`.
 
 ## Customization
 
-- **Permission rules**: Edit `templates/settings.json` to change allowed/denied commands
+- **Hook configuration**: Edit `templates/settings.json` to customize the PostToolUse hook structure
 - **Coding guidelines**: Edit `templates/docs/coding-guidelines.md` to customize style rules
 - **Generation logic**: Edit `SKILL.md` to change how Claude generates the other documentation files
 - **Single-project template**: Edit `templates/single-project-claude.md` to customize the CLAUDE.md structure for single projects

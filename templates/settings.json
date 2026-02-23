@@ -1,13 +1,16 @@
 {
-  "permissions": {
-    "allow": [
-    ],
-    "deny": [
-      "Bash(git commit*)",
-      "Bash(git push*)",
-      "Bash(git rebase*)",
-      "Bash(git reset --hard*)",
-      "Bash(git push --force*)"
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "<python-cmd> \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-python.py", "timeout": 30 },
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-node.js", "timeout": 30 },
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-rust.sh", "timeout": 30 },
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-go.sh", "timeout": 30 },
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format-csharp.sh", "timeout": 30 }
+        ]
+      }
     ]
   }
 }
