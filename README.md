@@ -94,6 +94,26 @@ To understand or modify how the skill works, start with `SKILL.md`.
 - **Monorepo templates**: Edit `templates/monorepo-claude.md` or `templates/subproject-claude.md` to customize monorepo documentation structure
 - **Formatter hooks**: Edit files in `templates/hooks/` to customize auto-formatting behavior or add new formatters
 
+## Ongoing Maintenance
+
+`/bootstrap` is not just for initial setup — re-running it on a project with existing documentation triggers an audit that compares your docs against the current project state, classifies them as Outdated / Missing / Accurate, and lets you choose what to update.
+
+For finer-grained ongoing quality, the official [claude-md-management](https://claude.com/plugins/claude-md-management) plugin (by Anthropic, 39k+ installs) provides complementary tools:
+
+| Tool | Purpose | When to use |
+|------|---------|-------------|
+| `claude-md-improver` | Audits and scores CLAUDE.md files, proposes targeted improvements | Periodic quality checks |
+| `/revise-claude-md` | Captures session learnings and suggests CLAUDE.md updates | After work sessions that reveal new patterns or gotchas |
+
+**Recommended workflow:**
+
+1. **Initial setup** — Run `/bootstrap` to generate documentation from scratch
+2. **After major changes** — Re-run `/bootstrap` to audit and refresh docs against current project state
+3. **Periodic quality checks** — Use `claude-md-improver` for scoring and targeted improvements
+4. **After work sessions** — Use `/revise-claude-md` to capture discoveries from real usage
+
+Install the plugin: `claude plugin add claude-md-management`
+
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
