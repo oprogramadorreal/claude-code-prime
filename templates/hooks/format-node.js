@@ -11,7 +11,7 @@ const data = JSON.parse(readFileSync(0, 'utf8'));
 const filePath = (data.tool_input || {}).file_path || '';
 if (!filePath) process.exit(0);
 
-const exts = ['.js', '.jsx', '.ts', '.tsx', '.vue', '.svelte', '.css', '.scss', '.html'];
+const exts = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.mts', '.cts', '.vue', '.svelte', '.astro', '.css', '.scss', '.html', '.json', '.yaml', '.yml', '.graphql'];
 if (!exts.some(ext => filePath.endsWith(ext))) process.exit(0);
 
 let dir = path.dirname(path.resolve(filePath));

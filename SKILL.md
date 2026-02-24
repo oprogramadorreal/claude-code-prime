@@ -185,6 +185,7 @@ Use template from `.claude/skills/claude-code-bootstrap/templates/single-project
 - Replace `[PROJECT NAME]` with the actual project name
 - Replace `[One-line description]` with purpose from README or manifest
 - Replace `[TECH STACK]` with detected languages and frameworks
+- Fill the Conventions section with 2-5 bullets drawn from doc-sourced insights (Step 1): architectural patterns, naming conventions, key entry points, and non-obvious rules. If no insights were found, infer conventions from the project structure (e.g., "Express routes in `src/routes/`, middleware in `src/middleware/`", "CLI entry point at `src/index.ts` using Commander.js").
 - Replace command placeholders with real commands using the detected package manager
 - Replace directory placeholders with actual project directories
 - In the Documentation section, list only docs that were actually created using `.claude/docs/` prefix
@@ -226,18 +227,19 @@ Add auto-format hooks so files stay consistently formatted after every Edit/Writ
 | Rust | `format-rust.sh` | rustfmt | Bash | Always (rustfmt is built-in) |
 | Go | `format-go.sh` | goimports → gofmt fallback | Bash | Always (hook detects goimports at runtime; offer `go install golang.org/x/tools/cmd/goimports@latest` if absent) |
 | C#/.NET | `format-csharp.sh` | csharpier | Bash | In `.config/dotnet-tools.json`, or user approves (suggest `dotnet tool install csharpier`) |
+| Java | `format-java.sh` | google-java-format | Bash | `google-java-format` is on PATH, or user approves (suggest installing from github.com/google/google-java-format) |
 
 **Detect Python command** (only when the Python formatter hook will be installed): Run `python3 --version`. If it fails, run `python --version` and verify the output shows Python 3.x. Use whichever succeeds as `<python-cmd>` in hook commands below. If neither works, skip the Python hook and inform the user.
 
 1. Copy applicable template(s) from `.claude/skills/claude-code-bootstrap/templates/hooks/` to `.claude/hooks/`.
 2. External formatters not in deps → ask user "Add [formatter] as dev dependency and install format hook?" If declined, skip.
-3. If any hooks were installed, create `.claude/settings.json` using the template from `.claude/skills/claude-code-bootstrap/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
+3. If any hooks were installed, create `.claude/settings.json` using the template from `.claude/skills/claude-code-bootstrap/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#, Java) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
 
 **If no hooks were installed**, do not create settings.json (unless it already exists with other content).
 
 **Preserve existing content:** If an existing settings.json contains a `permissions` section or other custom configuration beyond `hooks`, preserve those sections. Merge hook changes into the existing file structure rather than overwriting.
 
-**Node.js plugin setup** (when the Node.js hook is installed): Ensure `prettier-plugin-organize-imports` is a devDependency (install with detected package manager if missing; skip config below if user declines). Then add it to the Prettier config's `plugins` array (`.prettierrc`, `.prettierrc.json`, `prettier.config.*`, or `"prettier"` in `package.json`). If `prettier-plugin-tailwindcss` is present, insert organize-imports **before** it. If no config exists, create `.prettierrc` with `{ "plugins": ["prettier-plugin-organize-imports"] }`.
+**Node.js plugin setup** (when the Node.js hook is installed): Ensure `prettier-plugin-organize-imports` is a devDependency (install with detected package manager if missing; skip config below if user declines). Then add it to the Prettier config's `plugins` array. Check for config in this order: `.prettierrc`, `.prettierrc.json`, `.prettierrc.yaml`, `.prettierrc.yml`, `.prettierrc.toml`, `.prettierrc.mjs`, `.prettierrc.cjs`, `prettier.config.js`, `prettier.config.mjs`, `prettier.config.cjs`, `prettier.config.ts`, or `"prettier"` key in `package.json`. If `prettier-plugin-tailwindcss` is present, insert organize-imports **before** it. If no config exists, create `.prettierrc` with `{ "plugins": ["prettier-plugin-organize-imports"] }`.
 
 ## Step 5b: Install Code Simplifier Agent
 
@@ -252,11 +254,13 @@ Always overwrite — this is a verbatim template, not project-customized content
 
 **Create based on these detection rules:**
 
-| File | Create when ANY of these are true |
-|------|-----------------------------------|
-| `testing.md` | Manifest lists a test dependency (jest, vitest, mocha, karma, pytest, unittest, rspec, etc.) OR a `test`/`test:*` script exists in manifest OR a `tests/`, `test/`, `spec/`, `__tests__/` directory exists |
-| `styling.md` | Manifest lists a UI framework (react, vue, angular, svelte, solid) OR lists CSS tooling (tailwindcss, styled-components, sass, less, postcss) OR `.css`/`.scss`/`.less` files exist in `src/` |
-| `architecture.md` | Project has 3+ top-level source directories (excluding config, tests, docs, build output) OR uses recognized pattern directories (controllers/, services/, repositories/, handlers/, models/) |
+| File | Template | Create when ANY of these are true |
+|------|----------|-----------------------------------|
+| `testing.md` | `.claude/skills/claude-code-bootstrap/templates/docs/testing.md` | Manifest lists a test dependency (jest, vitest, mocha, karma, pytest, unittest, rspec, etc.) OR a `test`/`test:*` script exists in manifest OR a `tests/`, `test/`, `spec/`, `__tests__/` directory exists |
+| `styling.md` | `.claude/skills/claude-code-bootstrap/templates/docs/styling.md` | Manifest lists a UI framework (react, vue, angular, svelte, solid) OR lists CSS tooling (tailwindcss, styled-components, sass, less, postcss) OR `.css`/`.scss`/`.less` files exist in `src/` |
+| `architecture.md` | `.claude/skills/claude-code-bootstrap/templates/docs/architecture.md` | Project has 3+ top-level source directories (excluding config, tests, docs, build output) OR uses recognized pattern directories (controllers/, services/, repositories/, handlers/, models/) |
+
+Use each template as a skeleton — fill in all placeholders with actual project details (framework names, commands, directory paths, conventions). Don't leave any `[placeholder]` text in the final output.
 
 **Placement rules:**
 - **Single project:** All files go in `.claude/docs/`.
@@ -298,7 +302,7 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 **File existence** — verify every expected file was created. List all files in `.claude/` matching `*.md`, `*.json`, or `hooks/*`, and for monorepos also check each subproject path from Step 1 for `CLAUDE.md` and `docs/*.md`.
 
 **Content checks** — verify each file has real content, not placeholders:
-- `.claude/CLAUDE.md`: Actual project name, real commands, Documentation section. Line count <= 60.
+- `.claude/CLAUDE.md`: Actual project name, real commands, Conventions section (single project), Documentation section. Line count <= 60.
 - `.claude/settings.json` (if created): `hooks.PostToolUse` references every installed hook file and vice versa. If file had custom sections (permissions, etc.), verify they're preserved.
 - `.claude/docs/coding-guidelines.md`: `[PROJECT NAME]` replaced with actual name.
 - Each `testing.md`, `styling.md`, `architecture.md`: References the project's actual frameworks, tooling, and directory names.

@@ -4,6 +4,10 @@
 
 [One-line description]. Built with [TECH STACK].
 
+## Conventions
+
+[2-5 bullets: key architectural patterns, naming conventions, important entry points, and any non-obvious project-specific rules discovered from existing docs or code structure]
+
 ## Commands
 
 ```bash
