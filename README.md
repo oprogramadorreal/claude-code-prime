@@ -1,6 +1,6 @@
 # claude-code-bootstrap
 
-Initialize effective CLAUDE.md files using research-backed practices that help Claude Code deliver better, more context-aware assistance.
+Replace Claude Code's basic `/init` with research-backed CLAUDE.md files optimized for LLM comprehension and attention.
 
 ## Quick Start
 
@@ -14,109 +14,73 @@ git clone https://github.com/oprogramadorreal/claude-code-bootstrap ~/.claude/sk
 git clone https://github.com/oprogramadorreal/claude-code-bootstrap %USERPROFILE%\.claude\skills\claude-code-bootstrap
 ```
 
-**Run:** Start a new Claude Code session and type `/bootstrap` in any project directory. This slash command becomes available after installation, alongside built-in commands like `/init`.
+**Run:** Start a new Claude Code session and type `/bootstrap` in any project directory.
 
-> **What are skills?** Skills are reusable prompts that extend Claude Code with new slash commands. See [Claude Code documentation](https://docs.anthropic.com/en/docs/claude-code) for more.
+## What It Does
 
-## Why This Skill?
+AI-assisted coding amplifies output — but also amplifies drift from intended architecture. A well-structured CLAUDE.md acts as an anchor that resists this degradation.
 
-AI-assisted coding amplifies output — but also accelerates codebase quality degradation. The AI itself becomes a victim of this degradation: it reads sloppy patterns as context and reproduces them, compounding the problem faster than any team can review. A well-structured CLAUDE.md acts as an architectural anchor: a stable reference point that resists this drift.
+`/bootstrap` analyzes your project and generates documentation following [research-backed practices](https://www.humanlayer.dev/blog/writing-a-good-claude-md):
 
-Claude Code's built-in `/init` command creates basic documentation. This skill creates **effective** documentation using research-backed practices:
+- **WHAT/WHY/HOW structure** — Organizes information for optimal LLM comprehension
+- **60-line CLAUDE.md** — Keeps the main file within LLM's peak attention window
+- **Progressive disclosure** — Details in separate docs, not one massive file
+- **Audit on re-run** — Compares docs against current project state, classifies sections as Outdated / Missing / Accurate, and lets you choose what to update
+- **Auto-format hooks** — Installs PostToolUse hooks for black, prettier, rustfmt, gofmt, csharpier per detected stack
+- **Monorepo support** — Auto-detects monorepos via workspace tools and manifest scanning, generates scoped docs per subproject
+- **Documentation sync** — Cross-checks existing docs (README, CONTRIBUTING, etc.) against source code and fixes contradictions
 
-- **WHAT/WHY/HOW structure** - Organizes information for optimal LLM comprehension
-- **60-line CLAUDE.md** - Keeps the main file within LLM's peak attention window
-- **Progressive disclosure** - Details in separate docs, not one massive file
-- **Auto-format hooks** - Installs PostToolUse hooks for black, prettier, rustfmt, gofmt, csharpier (per detected stack)
-- **Documentation sync** - Reads existing docs for non-code insights (architecture rationale, workflow conventions), cross-checks against source code, and fixes contradictions post-generation
-- **Monorepo support** - Auto-detects monorepos via workspace tools and manifest scanning, with supporting signals from README and Docker Compose — generates scoped docs per subproject
+**Generated files:**
 
-## What Gets Generated
+- `.claude/CLAUDE.md` — Project overview, commands, doc references
+- `.claude/settings.json` — Formatter hook configuration
+- `.claude/docs/` — Coding guidelines, testing, styling, architecture (per detected stack)
+- `.claude/hooks/` — Auto-format hooks for detected stacks (see below)
+- Monorepo: each subproject gets its own `CLAUDE.md` and `docs/` with scoped documentation
 
-| File                                | Purpose                                                          | Source       |
-| ----------------------------------- | ---------------------------------------------------------------- | ------------ |
-| `.claude/CLAUDE.md`                 | Project overview, commands, doc references                       | Generated    |
-| `.claude/settings.json`             | Formatter hook configuration (created when hooks are installed)  | Template     |
-| `.claude/docs/coding-guidelines.md` | Code style and architecture guidelines                           | Template     |
-| `.claude/docs/testing.md`           | Testing conventions (if test framework detected)                 | Generated    |
-| `.claude/docs/styling.md`           | UI/CSS guidelines (if frontend project)                          | Generated    |
-| `.claude/docs/architecture.md`      | Project structure documentation                                  | Generated    |
-| `.claude/hooks/format-*.{py,js,sh}` | Auto-format hooks for detected stacks (see below)                | Template     |
-
-*Template* = copied from `templates/` and customized. *Generated* = created by Claude following `SKILL.md` instructions.
-
-### Formatter Hooks
+## Formatter Hooks
 
 PostToolUse hooks that auto-format files after every Edit/Write, installed per detected stack:
 
 | Hook | Formatter | Installed when |
 |------|-----------|----------------|
-| `format-python.py` | black + isort | Python project (in deps, or user approves) |
-| `format-node.js` | prettier | Node.js project (in devDependencies, or user approves) |
-| `format-rust.sh` | rustfmt | Rust project (built-in) |
-| `format-go.sh` | gofmt | Go project (built-in) |
-| `format-csharp.sh` | csharpier | C#/.NET project (in dotnet-tools.json, or user approves) |
+| `format-python.py` | black + isort | Python project detected |
+| `format-node.js` | prettier | Node.js project detected |
+| `format-rust.sh` | rustfmt | Rust project detected (built-in) |
+| `format-go.sh` | gofmt | Go project detected (built-in) |
+| `format-csharp.sh` | csharpier | C#/.NET project detected |
 
-### Monorepo Projects
+For stacks requiring external formatters (Python, Node.js, C#), `/bootstrap` checks your dependencies and asks before installing anything.
 
-For monorepos (auto-detected via workspace tools, independent manifests in subdirectories, README analysis, and Docker Compose services), the same root files above are generated with monorepo-aware content (orchestrator CLAUDE.md, combined formatter hooks). In addition, each subproject gets scoped documentation:
+## Keeping Docs Current
 
-| File | Purpose | Source |
-|------|---------|--------|
-| `<subproject>/CLAUDE.md` | Package-scoped overview, commands, local doc references | Generated |
-| `<subproject>/docs/testing.md` | Package-specific testing conventions (if applicable) | Generated |
-| `<subproject>/docs/styling.md` | Package-specific UI/CSS guidelines (if frontend) | Generated |
-| `<subproject>/docs/architecture.md` | Package-specific structure documentation | Generated |
+`/bootstrap` is not just for initial setup. Re-running it on an existing project triggers an intelligent audit that compares your docs against the current project state, classifies them as Outdated / Missing / Accurate, and lets you choose what to update.
 
-Claude Code automatically discovers subproject CLAUDE.md files when working with files in those directories, so each package gets focused, relevant context.
-
-## Skill Structure
-
-| File | Purpose |
-|------|---------|
-| `SKILL.md` | Skill definition with step-by-step generation instructions |
-| `templates/settings.json` | PostToolUse hook reference structure (formatter hook configuration) |
-| `templates/docs/coding-guidelines.md` | Coding guidelines template (customize style rules) |
-| `templates/single-project-claude.md` | CLAUDE.md template for single projects |
-| `templates/monorepo-claude.md` | Root CLAUDE.md template for monorepo projects |
-| `templates/subproject-claude.md` | Per-subproject CLAUDE.md template |
-| `templates/hooks/` | Formatter hook templates (Python, Node.js, Rust, Go, C#) |
-| `references/` | Best practices guide (based on HumanLayer research) |
-
-To understand or modify how the skill works, start with `SKILL.md`.
-
-## Customization
-
-- **Hook configuration**: Edit `templates/settings.json` to customize the PostToolUse hook structure
-- **Coding guidelines**: Edit `templates/docs/coding-guidelines.md` to customize style rules
-- **Generation logic**: Edit `SKILL.md` to change how Claude generates the other documentation files
-- **Single-project template**: Edit `templates/single-project-claude.md` to customize the CLAUDE.md structure for single projects
-- **Monorepo templates**: Edit `templates/monorepo-claude.md` or `templates/subproject-claude.md` to customize monorepo documentation structure
-- **Formatter hooks**: Edit files in `templates/hooks/` to customize auto-formatting behavior or add new formatters
-
-## Ongoing Maintenance
-
-`/bootstrap` is not just for initial setup — re-running it on a project with existing documentation triggers an audit that compares your docs against the current project state, classifies them as Outdated / Missing / Accurate, and lets you choose what to update.
-
-For finer-grained ongoing quality, the official [claude-md-management](https://claude.com/plugins/claude-md-management) plugin (by Anthropic, 39k+ installs) provides complementary tools:
-
-| Tool | Purpose | When to use |
-|------|---------|-------------|
-| `claude-md-improver` | Audits and scores CLAUDE.md files, proposes targeted improvements | Periodic quality checks |
-| `/revise-claude-md` | Captures session learnings and suggests CLAUDE.md updates | After work sessions that reveal new patterns or gotchas |
+For ongoing quality between audits, the official [claude-md-management](https://claude.com/plugins/claude-md-management) plugin (by Anthropic) provides complementary tools: `claude-md-improver` for scoring and targeted improvements, and `/revise-claude-md` for capturing session learnings.
 
 **Recommended workflow:**
 
 1. **Initial setup** — Run `/bootstrap` to generate documentation from scratch
-2. **After major changes** — Re-run `/bootstrap` to audit and refresh docs against current project state
+2. **After major changes** — Re-run `/bootstrap` to audit and refresh docs
 3. **Periodic quality checks** — Use `claude-md-improver` for scoring and targeted improvements
 4. **After work sessions** — Use `/revise-claude-md` to capture discoveries from real usage
 
 Install the plugin: `claude plugin add claude-md-management`
 
+## Customization
+
+To understand or modify how the skill works, start with `SKILL.md`. Key files:
+
+- **Generation logic**: `SKILL.md` — Step-by-step instructions Claude follows to generate docs
+- **CLAUDE.md templates**: `templates/single-project-claude.md`, `templates/monorepo-claude.md`, `templates/subproject-claude.md`
+- **Coding guidelines**: `templates/docs/coding-guidelines.md` — Shared style rules template
+- **Hook configuration**: `templates/settings.json` — PostToolUse hook structure
+- **Formatter hooks**: `templates/hooks/` — Hook templates (Python, Node.js, Rust, Go, C#)
+- **Best practices reference**: `references/claude-md-best-practices.md` — Research-backed guidance
+
 ## Requirements
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — `/bootstrap` is a [skill](https://docs.anthropic.com/en/docs/claude-code/skills) (reusable prompt that adds a slash command)
 - Git
 
 ## Credits
