@@ -229,12 +229,13 @@ Add auto-format hooks so files stay consistently formatted after every Edit/Writ
 | Go | `format-go.sh` | goimports → gofmt fallback | Bash | Always (hook detects goimports at runtime; offer `go install golang.org/x/tools/cmd/goimports@latest` if absent) |
 | C#/.NET | `format-csharp.sh` | csharpier | Bash | In `.config/dotnet-tools.json`, or user approves (suggest `dotnet tool install csharpier`) |
 | Java | `format-java.sh` | google-java-format | Bash | `google-java-format` is on PATH, or user approves (suggest installing from github.com/google/google-java-format) |
+| C/C++ | `format-cpp.sh` | clang-format | Bash | `clang-format` is on PATH, or user approves (bundled with LLVM/Clang; available via system package manager) |
 
 **Detect Python command** (only when the Python formatter hook will be installed): Run `python3 --version`. If it fails, run `python --version` and verify the output shows Python 3.x. Use whichever succeeds as `<python-cmd>` in hook commands below. If neither works, skip the Python hook and inform the user.
 
 1. Copy applicable template(s) from `.claude/skills/claude-code-bootstrap/templates/hooks/` to `.claude/hooks/`.
 2. External formatters not in deps → ask user "Add [formatter] as dev dependency and install format hook?" If declined, skip.
-3. If any hooks were installed, create `.claude/settings.json` using the template from `.claude/skills/claude-code-bootstrap/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#, Java) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
+3. If any hooks were installed, create `.claude/settings.json` using the template from `.claude/skills/claude-code-bootstrap/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#, Java, C/C++) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
 
 **If no hooks were installed**, do not create settings.json (unless it already exists with other content).
 
@@ -265,7 +266,7 @@ If not detected: Skip installation. In Step 7 summary, include a recommendation:
 
 | File | Template | Create when ANY of these are true |
 |------|----------|-----------------------------------|
-| `testing.md` | `.claude/skills/claude-code-bootstrap/templates/docs/testing.md` | Manifest lists a test dependency (jest, vitest, mocha, karma, pytest, unittest, rspec, etc.) OR a `test`/`test:*` script exists in manifest OR a `tests/`, `test/`, `spec/`, `__tests__/` directory exists |
+| `testing.md` | `.claude/skills/claude-code-bootstrap/templates/docs/testing.md` | Manifest lists a test dependency (jest, vitest, mocha, karma, pytest, unittest, rspec, gtest, catch2, doctest, ctest, etc.) OR a `test`/`test:*` script exists in manifest OR a `tests/`, `test/`, `spec/`, `__tests__/` directory exists |
 | `styling.md` | `.claude/skills/claude-code-bootstrap/templates/docs/styling.md` | Manifest lists a UI framework (react, vue, angular, svelte, solid) OR lists CSS tooling (tailwindcss, styled-components, sass, less, postcss) OR `.css`/`.scss`/`.less` files exist in `src/` |
 | `architecture.md` | `.claude/skills/claude-code-bootstrap/templates/docs/architecture.md` | Project has 3+ top-level source directories (excluding config, tests, docs, build output) OR uses recognized pattern directories (controllers/, services/, repositories/, handlers/, models/) |
 
