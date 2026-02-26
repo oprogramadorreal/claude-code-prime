@@ -1,0 +1,21 @@
+{
+  "name": "claude-code-bootstrap",
+  "owner": {
+    "name": "oprogramadorreal",
+    "url": "https://github.com/oprogramadorreal"
+  },
+  "metadata": {
+    "description": "Bootstrap plugin for Claude Code — project setup, permissions, and commit messages"
+  },
+  "plugins": [
+    {
+      "name": "bootstrap",
+      "source": {
+        "source": "github",
+        "repo": "oprogramadorreal/claude-code-bootstrap",
+        "ref": "plugin"
+      },
+      "description": "Project setup, permissions, and commit message skills for Claude Code"
+    }
+  ]
+}
