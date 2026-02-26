@@ -1,5 +1,4 @@
 ---
-name: commit-message
 description: Analyze local git changes and suggest conventional commit messages without committing
 disable-model-invocation: true
 ---

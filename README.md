@@ -4,7 +4,7 @@ What makes a good developer productive in a codebase also makes Claude Code prod
 
 Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows, and Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code is giving it a way to verify its own work.
 
-`/bootstrap:bsinit` replaces Claude Code's basic `/init` with a research-backed setup that keeps your project in the LLM's peak performance zone.
+`/bootstrap:init` replaces Claude Code's basic `/init` with a research-backed setup that keeps your project in the LLM's peak performance zone.
 
 ## Why This Plugin?
 
@@ -15,7 +15,7 @@ When you join a new project, you need good test coverage (to change code safely)
 - **Unit tests** enable self-correction: make change → run tests → see failure → fix
 - **Focused documentation** keeps the context window efficient and contradiction-free
 
-The LLM already knows best practices from training — but the trigger to apply them comes from the project context. `/bootstrap:bsinit` provides that trigger.
+The LLM already knows best practices from training — but the trigger to apply them comes from the project context. `/bootstrap:init` provides that trigger.
 
 ## Quick Start
 
@@ -26,13 +26,13 @@ The LLM already knows best practices from training — but the trigger to apply 
 /plugin install bootstrap@claude-code-bootstrap
 ```
 
-**Run:** Start a new Claude Code session and type `/bootstrap:bsinit` in any project directory.
+**Run:** Start a new Claude Code session and type `/bootstrap:init` in any project directory.
 
 ## Skills
 
 | Skill | Invocation | Purpose |
 |-------|-----------|---------|
-| [Bsinit](#bootstrapbsinit) | `/bootstrap:bsinit` | CLAUDE.md, docs, formatter hooks, quality agents |
+| [Init](#bootstrapinit) | `/bootstrap:init` | CLAUDE.md, docs, formatter hooks, quality agents |
 | [Permissions](#bootstrappermissions) | `/bootstrap:permissions` | Allow/deny rules, path-restriction hook |
 | [Commit Message](#bootstrapcommit-message) | `/bootstrap:commit-message` | Conventional commit message suggester |
 
@@ -46,7 +46,7 @@ Unlike most plugins that bundle hooks and agents at the plugin level, **bootstra
 
 The plugin is a **distribution wrapper** around project-setup skills. It makes installation easy (`/plugin install`), but the generated output is self-contained.
 
-## /bootstrap:bsinit
+## /bootstrap:init
 
 The main skill. Analyzes your project and sets up five pillars designed to maximize Claude Code's performance:
 
@@ -60,11 +60,11 @@ Installs PostToolUse hooks that auto-format code every time Claude modifies a fi
 
 ### 3. Code Quality
 
-Deploys a [code-simplifier](skills/bsinit/templates/agents/code-simplifier.md) agent that enforces your project's [coding guidelines](skills/bsinit/templates/docs/coding-guidelines.md) — clean code, small functions, clear naming, proper abstractions. This isn't about aesthetics: well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200).
+Deploys a [code-simplifier](skills/init/templates/agents/code-simplifier.md) agent that enforces your project's [coding guidelines](skills/init/templates/docs/coding-guidelines.md) — clean code, small functions, clear naming, proper abstractions. This isn't about aesthetics: well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200).
 
 ### 4. Test Coverage
 
-Tests are the feedback loop that makes AI agents self-correcting: make change → run tests → see failure → fix. Without tests, Claude Code is flying blind. When test infrastructure is detected, `/bootstrap:bsinit` installs a [test-guardian](skills/bsinit/templates/agents/test-guardian.md) agent that monitors coverage gaps — flagging untested code, verifying that existing tests still pass, and checking that test commands are runnable. It doesn't write tests or install frameworks; it ensures the project maintains its testing standards as it evolves. This directly enables Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices): giving Claude a way to verify its work.
+Tests are the feedback loop that makes AI agents self-correcting: make change → run tests → see failure → fix. Without tests, Claude Code is flying blind. When test infrastructure is detected, `/bootstrap:init` installs a [test-guardian](skills/init/templates/agents/test-guardian.md) agent that monitors coverage gaps — flagging untested code, verifying that existing tests still pass, and checking that test commands are runnable. It doesn't write tests or install frameworks; it ensures the project maintains its testing standards as it evolves. This directly enables Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices): giving Claude a way to verify its work.
 
 ### 5. Documentation Freshness
 
@@ -88,14 +88,14 @@ PostToolUse hooks that auto-format files after every Edit/Write, installed per d
 | `format-java.sh` | google-java-format | Java project detected |
 | `format-cpp.sh` | clang-format | C/C++ project detected |
 
-For stacks requiring external formatters (Python, Node.js, C#, Java, C/C++), `/bootstrap:bsinit` checks your dependencies and asks before installing anything.
+For stacks requiring external formatters (Python, Node.js, C#, Java, C/C++), `/bootstrap:init` checks your dependencies and asks before installing anything.
 
 ### Agents
 
 | Agent | Purpose | Installed when |
 |-------|---------|----------------|
-| [code-simplifier](skills/bsinit/templates/agents/code-simplifier.md) | Enforces coding guidelines on every change | Always |
-| [test-guardian](skills/bsinit/templates/agents/test-guardian.md) | Flags untested code, verifies test suite passes | Test infrastructure detected |
+| [code-simplifier](skills/init/templates/agents/code-simplifier.md) | Enforces coding guidelines on every change | Always |
+| [test-guardian](skills/init/templates/agents/test-guardian.md) | Flags untested code, verifies test suite passes | Test infrastructure detected |
 
 Both agents read your project's `.claude/CLAUDE.md` and `.claude/docs/` at runtime, so they follow your established conventions rather than imposing external rules. The code-simplifier activates proactively after code changes; the test-guardian operates at the end of logical tasks to verify test coverage. For a project-wide code review:
 
@@ -103,14 +103,14 @@ Both agents read your project's `.claude/CLAUDE.md` and `.claude/docs/` at runti
 
 ### Keeping Docs Current
 
-`/bootstrap:bsinit` is not just for initial setup. Re-running it on an existing project triggers an intelligent audit that compares your docs against the current project state, classifies them as Outdated / Missing / Accurate, and lets you choose what to update.
+`/bootstrap:init` is not just for initial setup. Re-running it on an existing project triggers an intelligent audit that compares your docs against the current project state, classifies them as Outdated / Missing / Accurate, and lets you choose what to update.
 
 For ongoing quality between audits, the official [claude-md-management](https://claude.com/plugins/claude-md-management) plugin (by Anthropic) provides complementary tools: `claude-md-improver` for scoring and targeted improvements, and `/revise-claude-md` for capturing session learnings.
 
 **Recommended workflow:**
 
-1. **Initial setup** — Run `/bootstrap:bsinit` to generate documentation from scratch
-2. **After major changes** — Re-run `/bootstrap:bsinit` to audit and refresh docs
+1. **Initial setup** — Run `/bootstrap:init` to generate documentation from scratch
+2. **After major changes** — Re-run `/bootstrap:init` to audit and refresh docs
 3. **Periodic quality checks** — Use `claude-md-improver` for scoring and targeted improvements
 4. **After work sessions** — Use `/revise-claude-md` to capture discoveries from real usage
 
@@ -138,7 +138,7 @@ Configures Claude Code permissions for safe agent autonomy — allow/deny rules 
 
 Especially useful on **native Windows** where OS-level sandboxing is not yet available, or as a **complementary layer** alongside sandboxing to reduce noise.
 
-Merges safely with `/bootstrap:bsinit` — both share `.claude/settings.json` without conflicts.
+Merges safely with `/bootstrap:init` — both share `.claude/settings.json` without conflicts.
 
 See [skills/permissions/README.md](skills/permissions/README.md) for full documentation, security model, enforcement reliability, and known limitations.
 
@@ -152,13 +152,13 @@ See [skills/commit-message/README.md](skills/commit-message/README.md) for full 
 
 To understand or modify how the plugin works, start with the skill's `SKILL.md`. Key files:
 
-- **Bsinit skill logic**: `skills/bsinit/SKILL.md` — Step-by-step instructions Claude follows
-- **CLAUDE.md templates**: `skills/bsinit/templates/single-project-claude.md`, `skills/bsinit/templates/monorepo-claude.md`, `skills/bsinit/templates/subproject-claude.md`
-- **Coding guidelines**: `skills/bsinit/templates/docs/coding-guidelines.md` — Shared style rules template
-- **Hook configuration**: `skills/bsinit/templates/settings.json` — PostToolUse hook structure
-- **Formatter hooks**: `skills/bsinit/templates/hooks/` — Hook templates (Python, Node.js, Rust, Go, C#, Java, C/C++)
-- **Agents**: `skills/bsinit/templates/agents/` — code-simplifier and test-guardian templates
-- **Best practices reference**: `skills/bsinit/references/claude-md-best-practices.md` — Research-backed guidance
+- **Init skill logic**: `skills/init/SKILL.md` — Step-by-step instructions Claude follows
+- **CLAUDE.md templates**: `skills/init/templates/single-project-claude.md`, `skills/init/templates/monorepo-claude.md`, `skills/init/templates/subproject-claude.md`
+- **Coding guidelines**: `skills/init/templates/docs/coding-guidelines.md` — Shared style rules template
+- **Hook configuration**: `skills/init/templates/settings.json` — PostToolUse hook structure
+- **Formatter hooks**: `skills/init/templates/hooks/` — Hook templates (Python, Node.js, Rust, Go, C#, Java, C/C++)
+- **Agents**: `skills/init/templates/agents/` — code-simplifier and test-guardian templates
+- **Best practices reference**: `skills/init/references/claude-md-best-practices.md` — Research-backed guidance
 - **Permissions skill**: `skills/permissions/SKILL.md` — Permission rules and hook installation
 - **Commit message skill**: `skills/commit-message/SKILL.md` — Git change analysis
 

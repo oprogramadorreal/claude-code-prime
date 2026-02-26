@@ -1,5 +1,4 @@
 ---
-name: permissions
 description: Configure Claude Code permissions for safe agent autonomy. Creates settings.json with allow/deny rules and a path-restriction hook.
 disable-model-invocation: true
 ---

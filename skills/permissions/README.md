@@ -88,15 +88,15 @@ This is **defense-in-depth**: multiple independent layers that each catch differ
 | `.claude/settings.json` | Permission allow/deny rules + PreToolUse hook configuration |
 | `.claude/hooks/restrict-paths.sh` | Path-restriction hook (tiered security logic) |
 
-If `.claude/settings.json` already exists (e.g., from [`/bootstrap:bsinit`](https://github.com/oprogramadorreal/claude-code-bootstrap)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. Run either skill first; both share the same file safely.
+If `.claude/settings.json` already exists (e.g., from [`/bootstrap:init`](https://github.com/oprogramadorreal/claude-code-bootstrap)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. Run either skill first; both share the same file safely.
 
-## Complements /bootstrap:bsinit
+## Complements /bootstrap:init
 
-This skill is designed as a companion to [`/bootstrap:bsinit`](https://github.com/oprogramadorreal/claude-code-bootstrap), which handles documentation, formatter hooks, and code quality agents. The two skills share `.claude/settings.json`:
+This skill is designed as a companion to [`/bootstrap:init`](https://github.com/oprogramadorreal/claude-code-bootstrap), which handles documentation, formatter hooks, and code quality agents. The two skills share `.claude/settings.json`:
 
 | Skill | Creates | Hook Type |
 |---|---|---|
-| `/bootstrap:bsinit` | PostToolUse hooks (auto-formatting after Edit/Write) | PostToolUse |
+| `/bootstrap:init` | PostToolUse hooks (auto-formatting after Edit/Write) | PostToolUse |
 | `/bootstrap:permissions` | Permission rules + PreToolUse hook (path restriction) | PreToolUse |
 
 Run either skill first — both merge safely into the same file.
