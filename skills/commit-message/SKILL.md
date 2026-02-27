@@ -1,5 +1,5 @@
 ---
-description: Analyze local git changes and suggest conventional commit messages without committing
+description: Suggest conventional commit messages by analyzing staged, unstaged, and untracked git changes — read-only, never commits
 disable-model-invocation: true
 ---
 

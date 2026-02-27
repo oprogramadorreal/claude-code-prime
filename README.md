@@ -4,7 +4,7 @@ What makes a good developer productive in a codebase also makes Claude Code prod
 
 Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows, and Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code is giving it a way to verify its own work.
 
-`/bootstrap:init` replaces Claude Code's basic `/init` with a research-backed setup that keeps your project in the LLM's peak performance zone.
+`/bootstrap:init` builds on Claude Code's `/init` with a research-backed setup that keeps your project in the LLM's peak performance zone.
 
 ## Why This Plugin?
 
@@ -76,7 +76,7 @@ Reviews existing documentation (README, CONTRIBUTING, etc.) for contradictions a
 
 ### Formatter Hooks
 
-PostToolUse hooks that auto-format files after every Edit/Write, installed per detected stack:
+PostToolUse hooks that auto-format files after every Edit/MultiEdit/Write, installed per detected stack:
 
 | Hook | Formatter | Installed when |
 |------|-----------|----------------|

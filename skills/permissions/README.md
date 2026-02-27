@@ -96,7 +96,7 @@ This skill is designed as a companion to [`/bootstrap:init`](https://github.com/
 
 | Skill | Creates | Hook Type |
 |---|---|---|
-| `/bootstrap:init` | PostToolUse hooks (auto-formatting after Edit/Write) | PostToolUse |
+| `/bootstrap:init` | PostToolUse hooks (auto-formatting after Edit/MultiEdit/Write) | PostToolUse |
 | `/bootstrap:permissions` | Permission rules + PreToolUse hook (path restriction) | PreToolUse |
 
 Run either skill first — both merge safely into the same file.

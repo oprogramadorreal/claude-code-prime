@@ -1,5 +1,5 @@
 ---
-description: Set up CLAUDE.md, docs, formatter hooks, and quality agents for any project
+description: Bootstrap project setup for Claude Code — generates CLAUDE.md with progressive disclosure docs, auto-format hooks, and code-quality agents. Replaces /init. Supports monorepos.
 disable-model-invocation: true
 ---
 
@@ -216,7 +216,7 @@ For each detected subproject (except root-as-project/root-as-member — the root
 
 ## Step 5: Install Formatter Hooks
 
-Add auto-format hooks so files stay consistently formatted after every Edit/Write. Use templates from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
+Add auto-format hooks so files stay consistently formatted after every Edit/MultiEdit/Write. Use templates from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
 
 **Audit-aware rule applies** (see Step 2). Additionally, skip a hook if `.claude/hooks/` already contains a file named `format-<stack>.*` (e.g., `format-python.py`, `format-python.sh`).
 
