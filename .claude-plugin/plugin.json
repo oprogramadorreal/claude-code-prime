@@ -1,6 +1,6 @@
 {
   "name": "bootstrap",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Research-backed project setup — CLAUDE.md, auto-format hooks, quality agents, permissions, and commit messages",
   "author": {
     "name": "oprogramadorreal",

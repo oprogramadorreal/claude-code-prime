@@ -29,7 +29,7 @@ Before analyzing, read `.claude/CLAUDE.md` to understand the project structure. 
 
 ## Lightweight Trigger
 
-Operate at the end of logical tasks, not after every file edit. Avoid running the full test suite on trivial changes. When reviewing, focus on files changed in the current task scope.
+Operate at the end of logical tasks, not after every file edit. Avoid running the full test suite on trivial changes. When reviewing, focus on files changed in the current task scope. Flag if new features or bug fixes were implemented without corresponding tests.
 
 ## Your Process
 

@@ -26,7 +26,7 @@ Re-running on an existing project triggers an intelligent audit that classifies 
 |---|---|
 | `.claude/CLAUDE.md` | Project overview, commands, doc references |
 | `.claude/settings.json` | Formatter hook configuration |
-| `.claude/docs/coding-guidelines.md` | Code style and architecture guidelines |
+| `.claude/docs/coding-guidelines.md` | Coding standards and quality guidelines |
 | `.claude/docs/testing.md` | Testing conventions (when test framework detected) |
 | `.claude/docs/styling.md` | UI/CSS guidelines (when frontend detected) |
 | `.claude/docs/architecture.md` | Project structure (when complex structure detected) |

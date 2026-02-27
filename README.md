@@ -122,7 +122,7 @@ Install the plugin: `claude plugin add claude-md-management`
 |------|---------|
 | `.claude/CLAUDE.md` | Project overview, commands, doc references |
 | `.claude/settings.json` | Formatter hook configuration |
-| `.claude/docs/coding-guidelines.md` | Code style and architecture guidelines |
+| `.claude/docs/coding-guidelines.md` | Coding standards and quality guidelines |
 | `.claude/docs/testing.md` | Testing conventions (when test framework detected) |
 | `.claude/docs/styling.md` | UI/CSS guidelines (when frontend detected) |
 | `.claude/docs/architecture.md` | Project structure (when complex structure detected) |
@@ -147,20 +147,6 @@ See [skills/permissions/README.md](skills/permissions/README.md) for full docume
 Analyzes local git changes (staged, unstaged, and untracked) and suggests [conventional commit](https://www.conventionalcommits.org/) messages — without committing anything. Suggests splitting into multiple commits when changes span different concerns.
 
 See [skills/commit-message/README.md](skills/commit-message/README.md) for full documentation.
-
-## Customization
-
-To understand or modify how the plugin works, start with the skill's `SKILL.md`. Key files:
-
-- **Init skill logic**: `skills/init/SKILL.md` — Step-by-step instructions Claude follows
-- **CLAUDE.md templates**: `skills/init/templates/single-project-claude.md`, `skills/init/templates/monorepo-claude.md`, `skills/init/templates/subproject-claude.md`
-- **Coding guidelines**: `skills/init/templates/docs/coding-guidelines.md` — Shared style rules template
-- **Hook configuration**: `skills/init/templates/settings.json` — PostToolUse hook structure
-- **Formatter hooks**: `skills/init/templates/hooks/` — Hook templates (Python, Node.js, Rust, Go, C#, Java, C/C++)
-- **Agents**: `skills/init/templates/agents/` — code-simplifier and test-guardian templates
-- **Best practices reference**: `skills/init/references/claude-md-best-practices.md` — Research-backed guidance
-- **Permissions skill**: `skills/permissions/SKILL.md` — Permission rules and hook installation
-- **Commit message skill**: `skills/commit-message/SKILL.md` — Git change analysis
 
 ## Research & References
 

@@ -26,8 +26,8 @@ Keep functions small with a single responsibility. Minimize parameters. Group re
 
 ## Dependencies and Architecture
 
-### Minimize Dependencies
-Prefer existing dependencies and built-in features. Avoid adding new packages unnecessarily.
+### Use Built-In Features First
+Prefer framework and standard-library solutions over custom code or new dependencies. Follow the framework's idiomatic patterns and conventions.
 
 ### Pragmatic SOLID
 Apply SOLID principles when they improve clarity and maintainability. Don't add indirection just to "be SOLID."
@@ -39,3 +39,11 @@ Only create abstractions for clarity. Ensure high cohesion, low coupling, and mi
 
 ### Comment Intent, Not Code
 Comment only non-obvious intent and tradeoffs. Don't narrate what the code already expresses.
+
+## Testing
+
+### Test Alongside Code
+New features need tests. Bug fixes need regression tests. Don't consider a change complete until tests pass.
+
+### Verify After Changes
+Run the test suite after implementation to catch unintended breakage. Check that existing tests still pass before moving on.
