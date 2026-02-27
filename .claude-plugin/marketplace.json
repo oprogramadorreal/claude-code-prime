@@ -14,7 +14,7 @@
         "source": "github",
         "repo": "oprogramadorreal/claude-code-bootstrap"
       },
-      "description": "Project setup, permissions, and commit message skills for Claude Code"
+      "description": "Research-backed project setup — CLAUDE.md, auto-format hooks, quality agents, permissions, and commit messages"
     }
   ]
 }

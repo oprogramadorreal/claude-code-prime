@@ -1,7 +1,7 @@
 {
   "name": "bootstrap",
   "version": "1.0.0",
-  "description": "Project setup, permissions, and commit message skills for Claude Code",
+  "description": "Research-backed project setup — CLAUDE.md, auto-format hooks, quality agents, permissions, and commit messages",
   "author": {
     "name": "oprogramadorreal",
     "url": "https://github.com/oprogramadorreal"
