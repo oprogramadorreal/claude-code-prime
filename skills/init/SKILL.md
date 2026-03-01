@@ -254,7 +254,7 @@ Always overwrite — this is a verbatim template, not project-customized content
 
 If detected: Copy `$CLAUDE_PLUGIN_ROOT/skills/init/templates/agents/test-guardian.md` to `.claude/agents/test-guardian.md`. Always overwrite — this is a verbatim template, not project-customized content.
 
-If not detected: Skip installation. In Step 7 summary, include a recommendation: "No test infrastructure detected. Consider adding tests — Anthropic's #1 best practice for Claude Code is giving Claude a way to verify its work."
+If not detected: Skip installation. In Step 7 summary, include: "⚠ No test infrastructure detected. Skipping test-guardian agent and testing docs. To set up a test framework and improve test coverage, run `/bootstrap:unit-test`."
 
 ## Step 6: Create Documentation Files
 

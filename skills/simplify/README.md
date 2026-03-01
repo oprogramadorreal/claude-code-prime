@@ -1,14 +1,14 @@
-# bootstrap:refine
+# bootstrap:simplify
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that analyzes your codebase against the project's coding guidelines — with emphasis on issues that span multiple files — and presents a prioritized refinement plan. You choose what to apply; the test suite verifies nothing broke.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that analyzes your codebase against the project's coding guidelines — with emphasis on issues that span multiple files — and presents a prioritized simplification plan. You choose what to apply; the test suite verifies nothing broke.
 
-Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/bootstrap:init` sets up quality infrastructure with agents that guard new code automatically, but existing code can still accumulate technical debt. `/bootstrap:refine` is the on-demand complement: a deliberate, project-wide review you run when you want to actively improve existing code.
+Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/bootstrap:init` sets up quality infrastructure with agents that guard new code automatically, but existing code can still accumulate technical debt. `/bootstrap:simplify` is the on-demand complement: a deliberate, project-wide review you run when you want to actively improve existing code.
 
 ## Features
 
 - **Cross-cutting focus** — prioritizes issues that span multiple files: duplication across modules, pattern inconsistency, architectural drift, missing shared abstractions
 - **Flexible scope** — full project, specific directory, or files changed since a commit/date
-- **Two-phase workflow** — presents a refinement plan first, then applies only what you approve
+- **Two-phase workflow** — presents a simplification plan first, then applies only what you approve
 - **Test verification** — runs the test suite after applying changes; reverts any change that causes failures
 - **Conservative by default** — only suggests changes justified by the project's own guidelines
 - **Prioritized findings** — High/Medium/Low impact with concrete before/after sketches, capped at 12 per run for actionable output
@@ -22,10 +22,10 @@ This skill is part of the [bootstrap](https://github.com/oprogramadorreal/claude
 
 In Claude Code, use any of these:
 
-- `/bootstrap:refine` — full project review
-- `/bootstrap:refine` "focus on the auth module"
-- `/bootstrap:refine` "review changes since last week"
-- "refine existing code against guidelines"
+- `/bootstrap:simplify` — full project review
+- `/bootstrap:simplify` "focus on the auth module"
+- `/bootstrap:simplify` "review changes since last week"
+- "simplify existing code against guidelines"
 - "find code quality issues across the project"
 - "review code quality across the project"
 
@@ -42,7 +42,7 @@ In Claude Code, use any of these:
 The skill presents a structured plan before making any changes:
 
 ```
-## Refinement Plan
+## Simplification Plan
 
 ### Summary
 - Scope: full project
@@ -85,13 +85,28 @@ You then choose: **Apply all**, **Selective** (pick by number), or **Skip**.
 
 The code-simplifier agent and this skill are complementary — both use `coding-guidelines.md` as their source of truth but operate independently:
 
-| | Code-simplifier agent | `/bootstrap:refine` |
+| | Code-simplifier agent | `/bootstrap:simplify` |
 |---|---|---|
 | Trigger | Automatic, after every edit | On-demand, user-invoked |
 | Scope | Recently modified code | Full project, directory, or changed files |
 | Focus | Per-file clarity and simplicity | Patterns across multiple files |
 | Action | Applies changes directly | Plan first, apply on approval |
 | Role | Passive quality guardian | Active codebase review |
+
+## Relationship to Builtin /simplify
+
+Claude Code includes a builtin `/simplify` command. This follows the same pattern as `/init`:
+
+| | Builtin `/simplify` | `/bootstrap:simplify` |
+|---|---|---|
+| Scope | Recently modified code within a session | Full project, directory, or changed files |
+| Guidelines | General best practices | Project-specific `coding-guidelines.md` |
+| Workflow | Direct application | Plan first, apply on approval |
+| Focus | Per-file simplification | Cross-file patterns: duplication, inconsistency, architectural drift |
+| Verification | — | Runs test suite, reverts failures |
+| Finding cap | — | 12 per run, prioritized by impact |
+
+`/bootstrap:simplify` is the enhanced, project-aware complement — just as `/bootstrap:init` extends the builtin `/init` with progressive disclosure docs, formatter hooks, and quality agents.
 
 ## Skill Structure
 

@@ -1,11 +1,11 @@
 ---
-description: On-demand code review — run after /bootstrap:init, when code quality drifts, or for periodic cleanup. Analyzes the codebase against project coding guidelines, surfaces issues that span multiple files (duplication across modules, pattern inconsistency, architectural drift), and presents a refinement plan you approve before changes are applied.
+description: On-demand code review — run after /bootstrap:init, when code quality drifts, or for periodic cleanup. Analyzes the codebase against project coding guidelines, surfaces issues that span multiple files (duplication across modules, pattern inconsistency, architectural drift), and presents a simplification plan you approve before changes are applied.
 disable-model-invocation: true
 ---
 
-# Project-Wide Code Refinement
+# Project-Wide Code Simplification
 
-Analyze source code against the project's coding guidelines to find issues that span multiple files: duplication across modules, inconsistent patterns between areas, architectural drift, and dead code. Present a prioritized refinement plan, then apply only user-approved changes with test verification.
+Analyze source code against the project's coding guidelines to find issues that span multiple files: duplication across modules, inconsistent patterns between areas, architectural drift, and dead code. Present a prioritized simplification plan, then apply only user-approved changes with test verification.
 
 The code-simplifier agent guards new code after every edit — this skill is the on-demand complement for reviewing existing code across the project.
 
@@ -28,7 +28,7 @@ Check that these files exist:
 | **Directory / module** | Specific path(s) the user provides | Targeted cleanup |
 | **Changed since** | Files modified since a commit, tag, or date | Incremental review |
 
-Default to **full project** if the user just says "refine" without specifying.
+Default to **full project** if the user just says "simplify" without specifying.
 
 For **changed since**: use `git diff --name-only <ref>...HEAD` for commit SHAs, branch names, and tags. For relative dates, use `git log --since="2 weeks ago" --format= --name-only` instead (`--since` is a `git log` flag, not `git diff`). Filter to source files only (apply the exclusion rules from Step 2).
 
@@ -42,9 +42,9 @@ For monorepos with **full project** scope: ask which subprojects to include (def
 
 1. `.claude/CLAUDE.md` — project overview, conventions, tech stack, test commands
 2. `.claude/docs/coding-guidelines.md` — coding standards (primary evaluation criteria)
-3. `.claude/docs/testing.md` (if exists) — testing conventions, so refinements don't break test patterns or established test helpers
+3. `.claude/docs/testing.md` (if exists) — testing conventions, so simplifications don't break test patterns or established test helpers
 4. `.claude/docs/architecture.md` (if exists) — architectural boundaries, so refactoring respects module structure and intended separation of concerns
-5. `.claude/docs/styling.md` (if exists) — UI/CSS conventions, so frontend refinements stay consistent
+5. `.claude/docs/styling.md` (if exists) — UI/CSS conventions, so frontend simplifications stay consistent
 
 #### Monorepo
 
@@ -127,14 +127,14 @@ When in doubt, don't flag it. Prefer small, safe changes over ambitious restruct
 
 ### Finding caps
 
-Surface at most **12 findings per run** and **5 per area**, prioritized by impact. If more issues exist, note the count (e.g., "12 of ~25 findings shown") and suggest re-running with a narrower scope — e.g., `/bootstrap:refine` "focus on src/auth" or "review only the api module".
+Surface at most **12 findings per run** and **5 per area**, prioritized by impact. If more issues exist, note the count (e.g., "12 of ~25 findings shown") and suggest re-running with a narrower scope — e.g., `/bootstrap:simplify` "focus on src/auth" or "review only the api module".
 
-## Step 4: Present Refinement Plan
+## Step 4: Present Simplification Plan
 
 Present findings as a structured report:
 
 ```
-## Refinement Plan
+## Simplification Plan
 
 ### Summary
 - Scope: [full project / directory / changed since X]
@@ -192,7 +192,7 @@ Remember the user's choice and approved finding numbers for Step 6.
 ## Step 6: Apply Approved Changes and Report
 
 For each approved finding:
-1. Apply the refinement using Edit or MultiEdit
+1. Apply the simplification using Edit or MultiEdit
 2. Verify the change matches the suggestion from Step 4
 
 After applying all approved changes, run the project's test command (from `.claude/CLAUDE.md`) if available:
