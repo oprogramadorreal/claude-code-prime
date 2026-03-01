@@ -33,8 +33,8 @@ The LLM already knows best practices from training — but the trigger to apply 
 | Skill | Invocation | Purpose |
 |-------|-----------|---------|
 | [Init](#bootstrapinit) | `/bootstrap:init` | CLAUDE.md, docs, formatter hooks, quality agents |
-| [Simplify](#bootstrapsimplify) | `/bootstrap:simplify` | Project-wide code simplification against coding guidelines |
 | [Unit Test](#bootstrapunit-test) | `/bootstrap:unit-test` | On-demand unit test coverage improvement |
+| [Simplify](#bootstrapsimplify) | `/bootstrap:simplify` | Project-wide code simplification against coding guidelines |
 | [Permissions](#bootstrappermissions) | `/bootstrap:permissions` | Allow/deny rules, path-restriction hook |
 | [Commit Message](#bootstrapcommit-message) | `/bootstrap:commit-message` | Conventional commit message suggester |
 
@@ -47,6 +47,21 @@ Unlike most plugins that bundle hooks and agents at the plugin level, **bootstra
 - **No hidden dependencies** — the automation is visible, auditable, and version-controlled alongside your code
 
 The plugin is a **distribution wrapper** around project-setup skills. It makes installation easy (`/plugin install`), but the generated output is self-contained.
+
+## Recommended Workflow
+
+1. **Initial setup** — Run `/bootstrap:init` to set up project context (audits and updates existing docs if already present)
+2. **Test coverage** — Run `/bootstrap:unit-test` to establish or improve unit test coverage
+3. **After major changes** — Re-run `/bootstrap:init` to audit and refresh docs
+4. **Code quality review** — Run `/bootstrap:simplify` for a full codebase analysis against your coding guidelines
+
+**During development** — use the builtin `/simplify` after each feature or bug fix to clean up recent changes before committing. `/bootstrap:simplify` (step 4) covers the full project periodically; the builtin handles the inner loop.
+
+**Complementary tools** (optional — from Anthropic's [claude-md-management](https://claude.com/plugins/claude-md-management) plugin):
+- **Periodic quality checks** — Use `claude-md-improver` for scoring and targeted improvements
+- **After work sessions** — Use `/revise-claude-md` to capture discoveries from real usage
+
+Install: `claude plugin add claude-md-management`
 
 ## /bootstrap:init
 
@@ -105,21 +120,6 @@ Both agents read your project's `.claude/CLAUDE.md` and `.claude/docs/` at runti
 
 `/bootstrap:init` is not just for initial setup. Re-running it on an existing project triggers an intelligent audit that compares your docs against the current project state, classifies them as Outdated / Missing / Accurate, and lets you choose what to update.
 
-**Recommended workflow:**
-
-1. **Initial setup** — Run `/bootstrap:init` to set up project context (audits and updates existing docs if already present)
-2. **Test coverage** — Run `/bootstrap:unit-test` to establish or improve unit test coverage
-3. **After major changes** — Re-run `/bootstrap:init` to audit and refresh docs
-4. **Code quality review** — Run `/bootstrap:simplify` for a full codebase analysis against your coding guidelines
-
-**During development** — use the builtin `/simplify` after each feature or bug fix to clean up recent changes before committing. `/bootstrap:simplify` (step 4) covers the full project periodically; the builtin handles the inner loop.
-
-**Complementary tools** (optional — from Anthropic's [claude-md-management](https://claude.com/plugins/claude-md-management) plugin):
-- **Periodic quality checks** — Use `claude-md-improver` for scoring and targeted improvements
-- **After work sessions** — Use `/revise-claude-md` to capture discoveries from real usage
-
-Install: `claude plugin add claude-md-management`
-
 ### Generated Files
 
 | File | Purpose |
@@ -136,28 +136,6 @@ Install: `claude plugin add claude-md-management`
 
 **Monorepo:** each subproject also gets its own `CLAUDE.md` and scoped `docs/`.
 
-## /bootstrap:permissions
-
-Configures Claude Code permissions for safe agent autonomy — allow/deny rules that eliminate routine prompts, plus a PreToolUse hook that enforces tiered path-based security. Writes outside the project require approval; deletes outside the project are blocked.
-
-Especially useful on **native Windows** where OS-level sandboxing is not yet available, or as a **complementary layer** alongside sandboxing to reduce noise.
-
-Merges safely with `/bootstrap:init` — both share `.claude/settings.json` without conflicts.
-
-See [skills/permissions/README.md](skills/permissions/README.md) for full documentation, security model, enforcement reliability, and known limitations.
-
-## /bootstrap:simplify
-
-Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/bootstrap:init` sets up quality infrastructure with agents that guard new code automatically — but existing code can still accumulate technical debt. `/bootstrap:simplify` is the on-demand complement: a deliberate review you run when you want to actively improve existing code.
-
-Analyzes source code against your project's coding guidelines with emphasis on **issues that span multiple files** — duplication across modules, inconsistent patterns between areas, architectural drift. Presents a prioritized simplification plan (capped at 12 findings per run), then applies only what you approve. The test suite runs automatically to verify nothing broke.
-
-**Flexible scope** — review the full project, a specific directory, or only files changed since a commit/date. **Conservative by design** — only suggests changes justified by the project's own guidelines. Works without `/bootstrap:init` by falling back to generic coding guidelines.
-
-Claude Code includes a builtin `/simplify` command. `/bootstrap:simplify` is the enhanced, project-aware complement — just as `/bootstrap:init` extends the builtin `/init`. Key differences: full project scope vs per-session, project-specific guidelines vs general best practices, plan-then-apply workflow, and cross-file pattern detection.
-
-See [skills/simplify/README.md](skills/simplify/README.md) for full documentation.
-
 ## /bootstrap:unit-test
 
 Tests are the feedback loop that makes AI agents self-correcting — but many codebases start with gaps. `/bootstrap:unit-test` fills them deliberately: it discovers what's missing, provisions test infrastructure if needed, estimates an achievable coverage target, and generates tests that follow your project's conventions.
@@ -171,6 +149,28 @@ Key capabilities:
 - **Prioritized test plan** — up to 10 items per run, highest-value targets first, user-approved before execution
 
 See [skills/unit-test/README.md](skills/unit-test/README.md) for full documentation.
+
+## /bootstrap:simplify
+
+Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/bootstrap:init` sets up quality infrastructure with agents that guard new code automatically — but existing code can still accumulate technical debt. `/bootstrap:simplify` is the on-demand complement: a deliberate review you run when you want to actively improve existing code.
+
+Analyzes source code against your project's coding guidelines with emphasis on **issues that span multiple files** — duplication across modules, inconsistent patterns between areas, architectural drift. Presents a prioritized simplification plan (capped at 12 findings per run), then applies only what you approve. The test suite runs automatically to verify nothing broke.
+
+**Flexible scope** — review the full project, a specific directory, or only files changed since a commit/date. **Conservative by design** — only suggests changes justified by the project's own guidelines. Works without `/bootstrap:init` by falling back to generic coding guidelines.
+
+Claude Code includes a builtin `/simplify` command. `/bootstrap:simplify` is the enhanced, project-aware complement — just as `/bootstrap:init` extends the builtin `/init`. Key differences: full project scope vs per-session, project-specific guidelines vs general best practices, plan-then-apply workflow, and cross-file pattern detection.
+
+See [skills/simplify/README.md](skills/simplify/README.md) for full documentation.
+
+## /bootstrap:permissions
+
+Configures Claude Code permissions for safe agent autonomy — allow/deny rules that eliminate routine prompts, plus a PreToolUse hook that enforces tiered path-based security. Writes outside the project require approval; deletes outside the project are blocked.
+
+Especially useful on **native Windows** where OS-level sandboxing is not yet available, or as a **complementary layer** alongside sandboxing to reduce noise.
+
+Merges safely with `/bootstrap:init` — both share `.claude/settings.json` without conflicts.
+
+See [skills/permissions/README.md](skills/permissions/README.md) for full documentation, security model, enforcement reliability, and known limitations.
 
 ## /bootstrap:commit-message
 
