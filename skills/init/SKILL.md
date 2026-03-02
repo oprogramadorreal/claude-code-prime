@@ -1,9 +1,9 @@
 ---
-description: This skill primes a project for Claude Code — generates CLAUDE.md with progressive disclosure docs, auto-format hooks, and code-quality agents. Replaces /init. Supports monorepos.
+description: This skill prepares a project for Claude Code — generates CLAUDE.md with progressive disclosure docs, auto-format hooks, and code-quality agents. Replaces /init. Supports monorepos.
 disable-model-invocation: true
 ---
 
-# Prime Project for Claude Code
+# Initialize Project for Claude Code
 
 Analyze the project and set up Claude Code for optimal performance: generate CLAUDE.md with supporting docs (WHAT/WHY/HOW, progressive disclosure), install auto-format hooks per detected stack, deploy code-simplifier and test-guardian agents, and sync existing documentation against source code. Supports single projects and monorepos.
 
