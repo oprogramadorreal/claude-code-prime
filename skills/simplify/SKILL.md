@@ -1,5 +1,5 @@
 ---
-description: On-demand code review — run after /prime:init, when code quality drifts, or for periodic cleanup. Analyzes the codebase against project coding guidelines, surfaces issues that span multiple files (duplication across modules, pattern inconsistency, architectural drift), and presents a simplification plan for approval before changes are applied.
+description: This skill analyzes the codebase against project coding guidelines as on-demand code review — run after /prime:init, when code quality drifts, or for periodic cleanup. Surfaces issues that span multiple files (duplication across modules, pattern inconsistency, architectural drift) and presents a simplification plan for approval before changes are applied.
 disable-model-invocation: true
 ---
 
@@ -20,13 +20,10 @@ Check that these files exist:
 - `coding-guidelines.md` missing → read `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/coding-guidelines.md` as a generic baseline; inform the user that findings are based on generic guidelines, not project-specific ones
 - Both missing → apply both fallbacks, strongly recommend `/prime:init`
 
-**Ask the user to choose a scope:**
-
-| Scope | What gets analyzed | Best for |
-|-------|-------------------|----------|
-| **Full project** | All source directories | First run, periodic review |
-| **Directory / module** | Specific path(s) the user provides | Targeted cleanup |
-| **Changed since** | Files modified since a commit, tag, or date | Incremental review |
+Use `AskUserQuestion` to let the user choose a scope — header "Scope", question "What scope would you like to analyze?":
+- **Full project** — "All source directories — best for first run or periodic review"
+- **Directory** — "Specific path(s) — best for targeted cleanup"
+- **Changed since** — "Files modified since a commit, tag, or date — incremental review"
 
 Default to **full project** if the user just says "simplify" without specifying.
 
@@ -183,12 +180,12 @@ Include "Areas with No Findings" to confirm coverage — the user should know th
 
 ## Step 5: Ask User How to Proceed
 
-Present three options:
-- **Apply all** — apply every recommendation
-- **Selective** — user specifies finding numbers to apply (e.g., "1, 3, 5")
-- **Skip** — no changes; keep the report as reference
+Use `AskUserQuestion` — header "Action", question "How would you like to proceed with the simplification findings?":
+- **Apply all** — "Apply every recommendation"
+- **Selective** — "Choose specific finding numbers to apply"
+- **Skip** — "No changes — keep the report as reference"
 
-Remember the user's choice and approved finding numbers for Step 6.
+If the user selects **Selective**, ask which finding numbers to apply (e.g., "1, 3, 5"). Remember the user's choice and approved finding numbers for Step 6.
 
 ## Step 6: Apply Approved Changes and Report
 

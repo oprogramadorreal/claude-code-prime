@@ -1,5 +1,5 @@
 ---
-description: On-demand unit test coverage improvement — discovers testing gaps, provisions test infrastructure, and generates tests that follow project conventions. Conservative: only adds new test files, never refactors existing source code.
+description: This skill improves unit test coverage on demand — discovers testing gaps, provisions test infrastructure, and generates tests that follow project conventions. Conservative: only adds new test files, never refactors existing source code.
 disable-model-invocation: true
 ---
 
@@ -60,7 +60,7 @@ Present a summary table to the user:
 
 ### Subprojects without a test framework
 
-Analyze the tech stack and recommend the most popular framework with appropriate coverage tooling. Consult `references/framework-recommendations.md` for stack-specific recommendations. These are starting points — analyze the actual project to decide. Ask for **explicit user approval** before installing anything.
+Analyze the tech stack and recommend the most popular framework with appropriate coverage tooling. Consult `$CLAUDE_PLUGIN_ROOT/skills/unit-test/references/framework-recommendations.md` for stack-specific recommendations. These are starting points — analyze the actual project to decide. Ask for **explicit user approval** before installing anything.
 
 If installation fails (network issues, version conflicts, incompatible environments), report the error to the user and stop — do not proceed to test generation without a working framework.
 
@@ -136,7 +136,12 @@ Create a prioritized list, **capped at 10 items per run**:
 - Declarative configuration
 - Thin wrappers with no logic
 
-Present the plan and ask the user to approve which items to proceed with.
+Present the plan, then use `AskUserQuestion` — header "Plan", question "How would you like to proceed with the test generation plan?":
+- **Approve all** — "Generate tests for all planned items"
+- **Selective** — "Choose specific items by number"
+- **Skip** — "No tests — keep the plan as reference"
+
+If the user selects **Selective**, ask which item numbers to proceed with (e.g., "1, 3, 5").
 
 ## Step 7: Test Writing
 
