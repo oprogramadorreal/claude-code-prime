@@ -1,4 +1,4 @@
-# prime:commit-message
+# optimus:commit-message
 
 A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that analyzes your local git changes and suggests [conventional commit](https://www.conventionalcommits.org/) messages — without committing anything.
 
@@ -13,13 +13,13 @@ Consistent commit messages improve repository navigability for both humans and L
 
 ## Quick Start
 
-This skill is part of the [prime](https://github.com/oprogramadorreal/claude-code-prime) plugin. See the [main README](../../README.md) for installation instructions.
+This skill is part of the [optimus](https://github.com/oprogramadorreal/optimus-claude) plugin. See the [main README](../../README.md) for installation instructions.
 
 ## Usage
 
 In Claude Code, use any of these:
 
-- `/prime:commit-message`
+- `/optimus:commit-message`
 - "suggest a commit message"
 - "generate commit message"
 - "summarize my changes"
@@ -29,7 +29,7 @@ The skill will analyze your local changes and output a suggested commit message 
 ## When to Run
 
 - **Before committing** — get a well-structured message instead of writing one manually
-- **After `/prime:code-review`** — once your changes pass review, generate the commit message
+- **After `/optimus:code-review`** — once your changes pass review, generate the commit message
 - **When changes span multiple concerns** — the skill suggests how to split into separate commits
 - **Quick message for small changes** — faster than crafting a conventional commit message by hand
 
@@ -61,14 +61,14 @@ The skill runs `git diff` (staged and unstaged) and `git status` to collect all 
 
 ## Relationship to Other Skills
 
-| | `/prime:commit-message` | `/prime:code-review` |
+| | `/optimus:commit-message` | `/optimus:code-review` |
 |---|---|---|
 | Analyzes | Changed code intent | Changed code quality |
 | Output | Commit message suggestion | Findings with fixes |
 | Workflow | Run after review passes | Run before committing |
 | Scope | All local changes | All local changes (or PR) |
 
-**Recommended sequence**: `/prime:code-review` first (catch issues), then `/prime:commit-message` (describe what you did).
+**Recommended sequence**: `/optimus:code-review` first (catch issues), then `/optimus:commit-message` (describe what you did).
 
 ## Skill Structure
 

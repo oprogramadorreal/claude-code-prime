@@ -207,7 +207,7 @@ Always overwrite — this is a verbatim template, not project-customized content
 
 If detected: Copy `$CLAUDE_PLUGIN_ROOT/skills/init/templates/agents/test-guardian.md` to `.claude/agents/test-guardian.md`. Always overwrite — this is a verbatim template, not project-customized content.
 
-If not detected: Skip installation. In Step 7 summary, include: "⚠ No test infrastructure detected. Skipping test-guardian agent and testing docs. To set up a test framework and improve test coverage, run `/prime:unit-test`."
+If not detected: Skip installation. In Step 7 summary, include: "⚠ No test infrastructure detected. Skipping test-guardian agent and testing docs. To set up a test framework and improve test coverage, run `/optimus:unit-test`."
 
 ## Step 6: Create Documentation Files
 

@@ -3,7 +3,7 @@ description: This skill configures Claude Code permissions for safe agent autono
 disable-model-invocation: true
 ---
 
-# Prime Permissions
+# Optimus Permissions
 
 Configure safe permission rules and a path-restriction hook so Claude Code agents can work autonomously inside the project without constant permission prompts, while blocking destructive operations outside the project.
 

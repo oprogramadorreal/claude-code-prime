@@ -1,5 +1,5 @@
 {
-  "name": "claude-code-prime",
+  "name": "optimus-claude",
   "owner": {
     "name": "oprogramadorreal",
     "url": "https://github.com/oprogramadorreal"
@@ -9,10 +9,10 @@
   },
   "plugins": [
     {
-      "name": "prime",
+      "name": "optimus",
       "source": {
         "source": "github",
-        "repo": "oprogramadorreal/claude-code-prime"
+        "repo": "oprogramadorreal/optimus-claude"
       },
       "description": "Research-backed project setup — CLAUDE.md, auto-format hooks, quality agents, code simplification, code review, unit testing, permissions, and commit messages"
     }

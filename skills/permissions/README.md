@@ -1,14 +1,14 @@
-# prime:permissions
+# optimus:permissions
 
 Claude Code's [built-in sandboxing](https://code.claude.com/docs/en/sandboxing) provides OS-level isolation on macOS (Seatbelt) and Linux/WSL2 (bubblewrap) — but on native Windows, sandboxing is [not yet available](https://code.claude.com/docs/en/sandboxing#limitations). That leaves two options: constant permission prompts (safe but slow), or `--dangerously-skip-permissions` (fast but unsafe).
 
-`/prime:permissions` provides a third path: **allow/deny rules** that eliminate routine prompts, plus a **PreToolUse hook** that enforces a tiered security model — writes outside the project require approval, deletes outside the project are blocked. Not OS-level isolation, but significantly safer than no guardrails at all.
+`/optimus:permissions` provides a third path: **allow/deny rules** that eliminate routine prompts, plus a **PreToolUse hook** that enforces a tiered security model — writes outside the project require approval, deletes outside the project are blocked. Not OS-level isolation, but significantly safer than no guardrails at all.
 
 ## Quick Start
 
-This skill is part of the [prime](https://github.com/oprogramadorreal/claude-code-prime) plugin. See the [main README](../../README.md) for installation instructions.
+This skill is part of the [optimus](https://github.com/oprogramadorreal/optimus-claude) plugin. See the [main README](../../README.md) for installation instructions.
 
-**Run:** Type `/prime:permissions` in any project directory.
+**Run:** Type `/optimus:permissions` in any project directory.
 
 ## Where This Fits
 
@@ -36,7 +36,7 @@ Claude Code has multiple layers for managing agent autonomy. The right choice de
 
 ## What It Does
 
-`/prime:permissions` generates two files that work together to provide three layers of protection:
+`/optimus:permissions` generates two files that work together to provide three layers of protection:
 
 ### 1. Allow List — Eliminate Routine Prompts
 
@@ -88,16 +88,16 @@ This is **defense-in-depth**: multiple independent layers that each catch differ
 | `.claude/settings.json` | Permission allow/deny rules + PreToolUse hook configuration |
 | `.claude/hooks/restrict-paths.sh` | Path-restriction hook (tiered security logic) |
 
-If `.claude/settings.json` already exists (e.g., from [`/prime:init`](https://github.com/oprogramadorreal/claude-code-prime)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. Run either skill first; both share the same file safely.
+If `.claude/settings.json` already exists (e.g., from [`/optimus:init`](https://github.com/oprogramadorreal/optimus-claude)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. Run either skill first; both share the same file safely.
 
-## Complements /prime:init
+## Complements /optimus:init
 
-This skill is designed as a companion to [`/prime:init`](https://github.com/oprogramadorreal/claude-code-prime), which handles documentation, formatter hooks, and code quality agents. The two skills share `.claude/settings.json`:
+This skill is designed as a companion to [`/optimus:init`](https://github.com/oprogramadorreal/optimus-claude), which handles documentation, formatter hooks, and code quality agents. The two skills share `.claude/settings.json`:
 
 | Skill | Creates | Hook Type |
 |---|---|---|
-| `/prime:init` | PostToolUse hooks (auto-formatting after Edit/MultiEdit/Write) | PostToolUse |
-| `/prime:permissions` | Permission rules + PreToolUse hook (path restriction) | PreToolUse |
+| `/optimus:init` | PostToolUse hooks (auto-formatting after Edit/MultiEdit/Write) | PostToolUse |
+| `/optimus:permissions` | Permission rules + PreToolUse hook (path restriction) | PreToolUse |
 
 Run either skill first — both merge safely into the same file.
 
