@@ -69,7 +69,7 @@ The plugin is a **distribution wrapper** around project-setup skills. It makes i
 
 ## /optimus:init
 
-Analyzes your project and sets up five pillars: context architecture (CLAUDE.md + progressive disclosure docs), code consistency (auto-format hooks), code quality (code-simplifier agent), test coverage (test-guardian agent), and documentation freshness (audit against source code). Supports monorepos, 7 formatter stacks, and intelligent audit on re-run.
+Analyzes your project and sets up five pillars: context architecture (CLAUDE.md + progressive disclosure docs), code consistency (auto-format hooks), code quality (code-simplifier agent), test coverage (test-guardian agent), and documentation freshness (audit against source code). Supports monorepos, multi-repo workspaces, 7 formatter stacks, and intelligent audit on re-run.
 
 See [skills/init/README.md](skills/init/README.md) for full documentation.
 

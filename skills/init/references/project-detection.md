@@ -1,6 +1,22 @@
-# Monorepo Detection Logic
+# Project Structure Detection Logic
 
-Detailed detection algorithm for identifying monorepo structures. Referenced from Step 1 of the init skill.
+Detailed detection algorithm for identifying monorepo and multi-repo workspace structures. Referenced from Step 1 of the init skill.
+
+## Step 0 — Check for multi-repo workspace (runs before Steps A/B/C)
+
+If the current directory has no `.git/` directory:
+- Scan immediate subdirectories for `.git/` directories (skip dot-directories and non-project dirs from the Step B skip list)
+- If 2+ subdirectories have `.git/`: confirmed **multi-repo workspace** — each is an independent repo
+- If 1 subdirectory has `.git/`: not a workspace — suggest user cd into that repo and run init there
+- If 0 `.git/` found: not a recognized project structure — inform user
+
+When multi-repo workspace is detected:
+- Enumerate each repo with its path and name
+- For each repo, run Steps A/B/C internally to detect if the repo is itself a monorepo or single project
+
+If `.git/` exists in the current directory, skip this step and proceed to Step A (standard monorepo detection within a single repo).
+
+**Manifest validity (applies to all steps):** A lock file without its corresponding manifest (e.g., `package-lock.json` without `package.json`) does not count as a valid manifest.
 
 ## Step A — Check for Workspace Config Files (confirms monorepo alone)
 
@@ -36,6 +52,7 @@ The root itself may be an independent project. Count it as an additional project
 
 ## Decision Matrix
 
+- Multi-repo workspace (Step 0) → confirmed multi-repo, enumerate repos
 - Workspace config found (Step A) → confirmed monorepo, enumerate from config
 - 2+ projects with manifests (Step B) → confirmed monorepo, enumerate from projects
 - Supporting signals (Step C) + 1 dir with manifest → likely monorepo, ask user to confirm

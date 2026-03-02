@@ -12,7 +12,7 @@ What makes a good developer productive in a codebase also makes Claude Code prod
 - **Test Coverage** — installs a [test-guardian](templates/agents/test-guardian.md) agent that monitors coverage gaps when test infrastructure is detected — flagging untested code, verifying that existing tests still pass, and checking that test commands are runnable. It doesn't write tests or install frameworks; it ensures the project maintains its testing standards as it evolves. This directly enables Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices): giving Claude a way to verify its work.
 - **Documentation Freshness** — reviews existing documentation (README, CONTRIBUTING, etc.) for contradictions against the actual source code. Stale docs in context degrade LLM performance — if documentation says one thing and the code says another, you're actively harming output quality.
 - **Audit on re-run** — compares docs against current project state, classifies sections as Outdated / Missing / Accurate, and lets you choose what to update
-- **Monorepo support** — auto-detects monorepos via workspace tools and manifest scanning, generates scoped docs per subproject
+- **Monorepo & multi-repo workspace support** — auto-detects monorepos and multi-repo workspaces (separate git repos under a shared parent); generates fully self-contained `.claude/` per repo
 
 ## Quick Start
 
@@ -40,7 +40,7 @@ In Claude Code, use any of these:
 
 ## How It Works
 
-1. **Detects project context** — tech stack, package manager, monorepo status, existing docs, test infrastructure
+1. **Detects project context** — tech stack, package manager, project structure (single / monorepo / multi-repo workspace), existing docs, test infrastructure
 2. **Audits existing documentation** (if present) — classifies as Outdated / Missing / Accurate; you choose what to update
 3. **Creates directory structure** — `.claude/docs/`, `.claude/hooks/`, `.claude/agents/`
 4. **Generates CLAUDE.md** — WHAT/WHY/HOW structure, progressive disclosure, <=60 lines
@@ -89,6 +89,8 @@ Both agents reference your project's `.claude/CLAUDE.md` and `.claude/docs/` fil
 
 **Monorepo:** each subproject also gets its own `CLAUDE.md` and scoped `docs/`.
 
+**Multi-repo workspace:** each repo gets its own complete `.claude/` (version-controlled). A lightweight parent `CLAUDE.md` provides cross-repo context (local-only).
+
 ## Skill Structure
 
 | File | Purpose |
@@ -101,7 +103,7 @@ Both agents reference your project's `.claude/CLAUDE.md` and `.claude/docs/` fil
 
 To understand or modify how the skill works, start with `SKILL.md`. Key customization points:
 
-- **CLAUDE.md templates**: `templates/single-project-claude.md`, `templates/monorepo-claude.md`, `templates/subproject-claude.md`
+- **CLAUDE.md templates**: `templates/single-project-claude.md`, `templates/monorepo-claude.md`, `templates/subproject-claude.md`, `templates/multi-repo-claude.md`
 - **Coding guidelines**: `templates/docs/coding-guidelines.md`
 - **Formatter hooks**: `templates/hooks/` (Python, Node.js, Rust, Go, C#, Java, C/C++)
 - **Agents**: `templates/agents/` (code-simplifier, test-guardian)

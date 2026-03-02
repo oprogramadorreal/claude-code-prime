@@ -142,6 +142,10 @@ For monorepos with multiple subprojects, use a hierarchical CLAUDE.md approach:
 - All levels are additive — root provides shared context, subproject provides specifics
 - More specific instructions naturally take precedence on conflict
 
+## Multi-Repo Workspace Pattern
+
+For multiple independent git repos under a non-git parent directory (e.g., separate frontend and backend repos), each repo gets its own full `.claude/` setup as a single project (or monorepo, if internally structured that way). A lightweight parent `CLAUDE.md` (local-only, not version-controlled) maps the repos and cross-repo conventions. Unlike monorepos, nothing is shared at root — each repo is fully self-contained so any teammate cloning a single repo gets the complete Claude Code experience.
+
 ## Quality Checklist
 
 When writing or reviewing your CLAUDE.md:
@@ -156,6 +160,7 @@ When writing or reviewing your CLAUDE.md:
 - [ ] Every line earns its place
 - [ ] Monorepo: root CLAUDE.md is an orchestrator, not a dump of all subproject details
 - [ ] Monorepo: each subproject has its own scoped CLAUDE.md under 60 lines
+- [ ] Multi-repo workspace: each repo is self-contained; parent CLAUDE.md is local-only
 
 ## Summary
 
