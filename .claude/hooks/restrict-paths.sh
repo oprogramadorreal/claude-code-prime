@@ -1,15 +1,33 @@
 #!/usr/bin/env bash
-# PreToolUse hook: tiered security for file operations.
+# ============================================================================
+# restrict-paths.sh — Claude Code PreToolUse hook
+# Installed by: /optimus:permissions (optimus-claude plugin)
+# Source:       https://github.com/oprogramadorreal/optimus-claude
+# Docs:         skills/permissions/README.md
+# ============================================================================
 #
-# Structured tools (Edit/Write/MultiEdit/NotebookEdit):
-#   Inside project  → allow (exit 0, no prompt)
-#   Outside project → ask user permission (permissionDecision: "ask")
+# PURPOSE:
+#   Prevents Claude Code from writing or deleting files outside your project
+#   directory. This is a safety guardrail, not a permissions bypass — it adds
+#   restrictions, not removes them.
 #
-# Bash (rm/rmdir only):
-#   Inside project  → allow (exit 0)
-#   Outside project → HARD BLOCK (permissionDecision: "deny")
+# WHAT THIS SCRIPT DOES:
+#   - Edit/Write operations inside the project  → silently allowed
+#   - Edit/Write operations outside the project → prompts you for approval
+#   - rm/rmdir commands outside the project     → hard blocked
+#   - Everything else (reads, searches, etc.)   → passes through unchanged
 #
-# All other tool calls pass through unchanged (exit 0).
+# WHAT THIS SCRIPT DOES NOT DO:
+#   - Does NOT send data anywhere (no network calls)
+#   - Does NOT log or record file paths or commands
+#   - Does NOT modify, read, or copy your files
+#   - Does NOT run in the background or persist after Claude Code exits
+#
+# TO DISABLE OR REMOVE:
+#   1. Delete this file: rm .claude/hooks/restrict-paths.sh
+#   2. Remove the PreToolUse hook entry from .claude/settings.json
+#   Or simply ignore it — the hook only runs when Claude Code invokes tools.
+# ============================================================================
 
 input=$(cat)
 
