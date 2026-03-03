@@ -33,7 +33,16 @@
       "Bash(git checkout -- *)",
       "Bash(git checkout .)",
       "Bash(git restore *)",
-      "Bash(git stash drop*)"
+      "Bash(git stash drop*)",
+      "Bash(docker system prune*)",
+      "Bash(docker compose down -v*)",
+      "Bash(kubectl delete *)",
+      "Bash(npm publish*)",
+      "Bash(cargo publish*)",
+      "Bash(twine upload*)",
+      "Bash(gem push*)",
+      "Bash(npx npm-cli-login*)",
+      "Bash(curl * -d @*)"
     ]
   },
   "hooks": {

@@ -69,7 +69,7 @@ Run through this checklist. Fix any issues before reporting.
 1. `.claude/hooks/restrict-paths.sh` exists and contains the hook logic
 2. `.claude/settings.json` exists and contains:
    - `permissions.allow` with at least the 13 tool entries from the template
-   - `permissions.deny` with at least the 18 deny patterns from the template
+   - `permissions.deny` with at least the 27 deny patterns from the template
    - `hooks.PreToolUse` with an entry referencing `restrict-paths.sh`
 3. If the file had existing PostToolUse hooks or other content, verify it is preserved
 
@@ -78,3 +78,5 @@ Run through this checklist. Fix any issues before reporting.
 - Number of tools in the allow list, number of deny patterns
 - If MCP servers were detected, list them
 - Brief security model reminder: writes outside project will prompt, deletes outside project are blocked, reads are unrestricted
+- Trust model reminder: commands not on the deny list will execute without prompts inside the project (database operations, file deletions, network requests, etc.). See the skill's README for the full trust model
+- Mention opt-in unversioned file protection: set `OPTIMUS_PROTECT_UNVERSIONED=1` to prompt before modifying unversioned files

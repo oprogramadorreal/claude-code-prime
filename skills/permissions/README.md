@@ -48,13 +48,16 @@ If your project uses [MCP servers](https://docs.anthropic.com/en/docs/claude-cod
 
 ### 2. Deny List — Block Dangerous Patterns
 
-Blocks 18 dangerous Bash patterns using Claude Code's [permission pattern matching](https://code.claude.com/docs/en/permissions), which operates on the tool invocation before execution:
+Blocks 27 dangerous Bash patterns using Claude Code's [permission pattern matching](https://code.claude.com/docs/en/permissions), which operates on the tool invocation before execution:
 
 | Category | Blocked Patterns |
 |---|---|
 | **Git destructive** | `git commit`, `git push`, `git push --force`, `git reset --hard`, `git rebase`, `git branch -D`, `git clean`, `git checkout --`, `git checkout .`, `git restore`, `git stash drop` |
 | **System destructive** | `rm -rf /`, `rm -rf ~`, `sudo` |
 | **Remote code execution** | `curl \| bash`, `curl \| sh`, `wget \| bash`, `wget \| sh` |
+| **Infrastructure destructive** | `docker system prune`, `docker compose down -v`, `kubectl delete` |
+| **Package publishing** | `npm publish`, `cargo publish`, `twine upload`, `gem push`, `npx npm-cli-login` |
+| **Data exfiltration (limited)** | `curl -d @file` (best-effort; trivially bypassable via alternative syntax) |
 
 ### 3. PreToolUse Hook — Tiered Path Enforcement
 
@@ -70,16 +73,55 @@ For structured tools (Edit/Write/NotebookEdit), the hook validates the `file_pat
 
 For Bash `rm`/`rmdir`, the hook does best-effort command parsing. Other Bash write commands (`cp`, `mv`, `echo >`) are not intercepted.
 
+## Trust Model and Assumptions
+
+This skill operates on the principle that **operations inside the project directory are trusted**. Before using it, understand what this means in practice.
+
+### What runs WITHOUT prompts inside the project
+
+Any Bash command that does not match the 27 deny patterns executes without asking, including:
+
+- **Database operations** — `psql -c "DROP TABLE users"`, `redis-cli FLUSHALL`, `sqlite3 db.sqlite "DELETE FROM orders"`
+- **File deletion** — `rm data.csv`, `rm -rf uploads/`, `rm database.sqlite` (only `rm -rf /` and `rm -rf ~` are in the deny list)
+- **Docker operations** — `docker stop`, `docker rm` (only `docker system prune` and `docker compose down -v` are denied)
+- **Network requests** — `curl`, `wget`, HTTP calls to any endpoint
+- **Process management** — `kill`, `pkill`, service restarts
+
+### Unversioned files have no safety net (by default)
+
+Git-tracked files can be recovered with `git checkout` or `git stash`. **Unversioned files cannot.** If your project contains files not tracked by git — uploaded files, local databases, data exports, build artifacts with local state — deletion is permanent and unprompted.
+
+To mitigate this, set `OPTIMUS_PROTECT_UNVERSIONED=1` before starting Claude Code. This prompts before modifying or deleting unversioned files inside the project. See [Unversioned File Protection](#unversioned-file-protection-opt-in) for details and limitations.
+
+### The deny list is a blocklist, not an allowlist
+
+The 27 blocked patterns catch common destructive operations, but **anything not on the list passes through**. The deny list is a safety net for known-dangerous commands, not a comprehensive policy. You can add project-specific patterns (e.g., `"Bash(docker *)"`) — see [Customization](#customization).
+
+> **Critical limitation — build command escalation:** Allowing both file edits and Bash execution means any build system can be used for arbitrary code execution. Example: Claude edits `package.json` to add a `"preinstall"` script, then runs `npm install` — the script executes with full user permissions. This is inherent to any permission model that allows both edits and shell access, and cannot be mitigated by deny patterns alone.
+
 ## Enforcement Reliability
 
 | Layer | Mechanism | Reliability | Why |
 |---|---|---|---|
 | **Allow list** | 13 tools auto-approved | High | Built-in [Claude Code feature](https://code.claude.com/docs/en/permissions) |
-| **Deny list** | 18 Bash patterns blocked | Medium | Pattern matching can be bypassed via chaining ([#13371](https://github.com/anthropics/claude-code/issues/13371)) |
+| **Deny list** | 27 Bash patterns blocked | Medium | Pattern matching can be bypassed via chaining ([#13371](https://github.com/anthropics/claude-code/issues/13371)) |
 | **PreToolUse hook (Edit/Write)** | Writes outside project prompt user | **High** | Validates structured `file_path` — cannot be obfuscated |
 | **PreToolUse hook (Bash rm/rmdir)** | Deletes outside project blocked | Medium | Best-effort command parsing |
 
 This is **defense-in-depth**: multiple independent layers that each catch different classes of risk. No single layer is perfect, but together they cover the most common destructive operations.
+
+### Hook Fail-Open Behavior
+
+The path-restriction hook is designed to **fail open** (allow the operation) when it cannot determine safety:
+
+| Condition | Behavior | Why |
+|---|---|---|
+| `CLAUDE_PROJECT_DIR` not set | Allow | Cannot determine project root; blocking would break all operations |
+| JSON input parsing fails | Allow | Malformed input should not block legitimate tool use |
+| `file_path` extraction fails | Allow | Some tool invocations may have unexpected structure |
+| Not a git repo (unversioned protection) | Allow | `git ls-files` unavailable; assumes tracked |
+
+This is a deliberate design choice: a fail-closed hook would block legitimate operations whenever Claude Code changes its JSON format.
 
 ## What Gets Generated
 
@@ -109,6 +151,30 @@ Run either skill first — both merge safely into the same file.
 | `templates/settings.json` | Base permission settings (allow/deny lists + PreToolUse hook) |
 | `templates/hooks/restrict-paths.sh` | Path-restriction hook template |
 
+## Unversioned File Protection (opt-in)
+
+By default, the hook allows all operations inside the project — including modifying or deleting files that are not tracked by git. Set `OPTIMUS_PROTECT_UNVERSIONED=1` before starting Claude Code to enable extra protection:
+
+```bash
+OPTIMUS_PROTECT_UNVERSIONED=1 claude
+```
+
+When enabled, the hook prompts before modifying or deleting existing files inside the project that are not tracked by git (`git ls-files`). New file creation is not affected.
+
+| Operation | Git-tracked? | Behavior |
+|---|---|---|
+| Edit/Write existing file | Yes | Allow (recoverable via git) |
+| Edit/Write existing file | No | **Ask** (changes permanent) |
+| Write new file | N/A | Allow (creating, not destroying) |
+| rm/rmdir | Yes | Allow (recoverable via git) |
+| rm/rmdir | No | **Ask** (deletion permanent) |
+
+### Known limitations of this feature
+
+- **False positives on regenerable files** — `node_modules/`, `dist/`, `build/` are unversioned but easily recreated. The hook cannot distinguish "gitignored because regenerable" from "gitignored because sensitive." This is why the feature is opt-in.
+- **Prompts on every edit** — Hooks fire on every tool call with no caching. Editing `.env` five times produces five prompts. Consider running `git add` on frequently-edited unversioned files to suppress prompts.
+- **Fails open** — If the project is not a git repository or `git` is unavailable, the check is skipped and all operations are allowed.
+
 ## Customization
 
 To understand or modify how the skill works, start with `SKILL.md`. Key customization points:
@@ -117,6 +183,7 @@ To understand or modify how the skill works, start with `SKILL.md`. Key customiz
 - **Deny list**: Edit `templates/settings.json` → `permissions.deny` to add more blocked patterns (e.g., `"Bash(docker *)"`) or remove overly-strict ones
 - **Hook behavior**: Edit `templates/hooks/restrict-paths.sh` to change what operations are blocked, asked, or allowed
 - **MCP servers**: If your project uses MCP servers (`.mcp.json`), the skill auto-detects them and adds `mcp__<server>` entries to the allow list
+- **Unversioned protection**: Set `OPTIMUS_PROTECT_UNVERSIONED=1` to prompt before modifying unversioned files. See [Unversioned File Protection](#unversioned-file-protection-opt-in)
 
 ## Known Limitations
 
@@ -124,17 +191,20 @@ This skill provides **defense-in-depth**, not bulletproof isolation. Be aware of
 
 | Limitation | Details |
 |---|---|
-| **Hook bypass bug** | PreToolUse hooks may not reliably block in all cases ([#3514](https://github.com/anthropics/claude-code/issues/3514)) |
+| **Inside project = fully trusted** | All operations inside the project run without prompts unless they match a deny pattern. See [Trust Model and Assumptions](#trust-model-and-assumptions) for what this means in practice |
 | **Pattern matching bypass** | Bash deny patterns can be bypassed via command chaining or option insertion ([#13371](https://github.com/anthropics/claude-code/issues/13371)) |
-| **Bash writes not caught** | Only `rm`/`rmdir` is intercepted by the hook. Other Bash writes (`echo >`, `cp`, `mv`) are not blocked |
-| **Build command escalation** | Allowing file edits + build commands enables arbitrary code execution (e.g., editing `package.json` scripts then running `npm run`) |
+| **Bash writes not caught** | Only `rm`/`rmdir` is intercepted by the hook. Other Bash writes (`echo >`, `cp`, `mv`) outside the project are not blocked |
+| **Build command escalation** | File edits + build commands = arbitrary code execution. See the [critical limitation callout](#trust-model-and-assumptions) above |
+| **Data exfiltration** | Network commands like `curl -X POST` can upload data to external servers. The deny list blocks `curl -d @file` but this is trivially bypassable |
+| **Deny list is a blocklist** | Only 27 specific patterns are blocked. Database commands, service management, and many other destructive operations are not covered |
 | **Not OS-level sandboxing** | For full isolation, use [sandboxing](https://code.claude.com/docs/en/sandboxing) or [devcontainers](https://code.claude.com/docs/en/devcontainer) |
 
 Despite these limitations, this approach is **significantly safer** than `--dangerously-skip-permissions`:
 
 1. **Structured tool validation is reliable** — Edit/Write `file_path` inputs cannot be obfuscated
-2. **The deny list blocks the most common destructive patterns** — git push, rm -rf /, sudo, etc.
+2. **The deny list blocks the most common destructive patterns** — git push, rm -rf /, sudo, npm publish, etc.
 3. **Any write outside the project requires explicit user approval** — unknown operations default to asking, not allowing
+4. **Unversioned file protection is available** — opt-in via `OPTIMUS_PROTECT_UNVERSIONED=1` for extra safety
 
 ## References
 
