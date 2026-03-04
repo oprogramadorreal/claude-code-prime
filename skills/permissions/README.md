@@ -168,7 +168,8 @@ The hook automatically protects well-known sensitive and irreplaceable files tha
 | `docker-compose.override.yml` | Local Docker config |
 | `*.key`, `*.pem`, `*.pfx`, `*.p12`, `*.cert`, `*.crt`, `*.jks` | Certificates / Keys |
 | `*.sqlite`, `*.sqlite3`, `*.db` | Database files |
-| `*.mdf`, `*.ldf` | Database files (SQL Server) |
+| `*.db-shm`, `*.db-wal`, `*.db-journal` | SQLite companion files (WAL/journal) |
+| `*.mdf`, `*.ldf`, `*.ndf` | Database files (SQL Server) |
 | `*.bak`, `*.dump`, `*.sql.gz` | Database backups |
 | `*.suo`, `*.user` | IDE user settings |
 

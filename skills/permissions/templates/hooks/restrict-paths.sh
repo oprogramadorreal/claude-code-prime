@@ -75,7 +75,7 @@ is_precious() {
     # Certificates / keys
     *.key|*.pem|*.pfx|*.p12|*.cert|*.crt|*.jks) return 0 ;;
     # Database files
-    *.sqlite|*.sqlite3|*.db|*.mdf|*.ldf) return 0 ;;
+    *.sqlite|*.sqlite3|*.db|*.db-shm|*.db-wal|*.db-journal|*.mdf|*.ldf|*.ndf) return 0 ;;
     # Database backups
     *.bak|*.dump|*.sql.gz) return 0 ;;
     # IDE user settings
