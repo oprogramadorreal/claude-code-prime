@@ -61,7 +61,7 @@ If a single `.sln` file exists at the root, parse its `Project(...)` entries to 
 - 2+ projects with manifests (Step B) → confirmed monorepo, enumerate from projects
 - Supporting signals (Step C) + 1 dir with manifest → likely monorepo, ask user to confirm
 - Supporting signals only → insufficient evidence, ask user to identify subproject dirs
-- No signals → single project
+- No signals → single project (one repo, one codebase — not a monorepo)
 
 ## Subproject Enumeration
 
