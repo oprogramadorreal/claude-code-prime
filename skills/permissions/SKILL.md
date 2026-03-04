@@ -13,7 +13,9 @@ Configure safe permission rules and a path-restriction hook so Claude Code agent
 |-----------|---------------|-----------------|
 | Read/Search | Allow | Allow |
 | Write/Edit | Allow | Ask user |
+| Write/Edit precious unversioned file | **Ask user** | Ask user |
 | Delete (rm/rmdir) | Allow | **BLOCKED** |
+| Delete precious unversioned file | **BLOCKED** | **BLOCKED** |
 
 ## Step 1: Detect Existing Configuration
 
@@ -79,4 +81,11 @@ Run through this checklist. Fix any issues before reporting.
 - If MCP servers were detected, list them
 - Brief security model reminder: writes outside project will prompt, deletes outside project are blocked, reads are unrestricted
 - Trust model reminder: commands not on the deny list will execute without prompts inside the project (database operations, file deletions, network requests, etc.). See the skill's README for the full trust model
-- Mention opt-in unversioned file protection: set `OPTIMUS_PROTECT_UNVERSIONED=1` to prompt before modifying unversioned files
+- Precious file protection is always active — the hook automatically protects well-known sensitive files (`.env`, `*.key`, `*.pem`, `*.sqlite`, etc.) that are not tracked by git
+
+4. Scan for precious unversioned files in the project:
+   ```bash
+   find . -maxdepth 4 \( -name ".env" -o -name ".env.*" -o -name "local.settings.json" -o -name "credentials.*" -o -name "secrets.*" -o -name "docker-compose.override.yml" -o -name "appsettings.*.json" -o -name "*.key" -o -name "*.pem" -o -name "*.pfx" -o -name "*.p12" -o -name "*.cert" -o -name "*.crt" -o -name "*.jks" -o -name "*.sqlite" -o -name "*.sqlite3" -o -name "*.db" -o -name "*.mdf" -o -name "*.ldf" -o -name "*.bak" -o -name "*.dump" -o -name "*.sql.gz" -o -name "*.suo" -o -name "*.user" \) -not -path "./.git/*" -not -path "*/node_modules/*" -not -path "*/obj/*" -not -path "*/bin/*" 2>/dev/null
+   ```
+   - If any are found and not git-tracked, report them as protected files
+   - If the scan discovers unversioned files that look sensitive but do not match built-in patterns (e.g., custom config files like `config.local.yaml`), ask the user if they want to add custom patterns to the `is_precious()` function in `.claude/hooks/restrict-paths.sh`

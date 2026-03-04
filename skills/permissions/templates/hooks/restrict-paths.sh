@@ -15,6 +15,8 @@
 #   - Edit/Write operations inside the project  → silently allowed
 #   - Edit/Write operations outside the project → prompts you for approval
 #   - rm/rmdir commands outside the project     → hard blocked
+#   - Edit/Write of precious unversioned files  → prompts you for approval
+#   - rm/rmdir of precious unversioned files    → hard blocked
 #   - Everything else (reads, searches, etc.)   → passes through unchanged
 #
 # WHAT THIS SCRIPT DOES NOT DO:
@@ -29,12 +31,11 @@
 #   is missing), it allows the operation rather than blocking it. This avoids
 #   breaking legitimate tool use when input formats change.
 #
-# UNVERSIONED FILE PROTECTION (opt-in):
-#   Set OPTIMUS_PROTECT_UNVERSIONED=1 to prompt before modifying or deleting
-#   files inside the project that are NOT tracked by git. Unversioned files
-#   cannot be recovered after changes. Disabled by default because it also
-#   prompts for regenerable files (node_modules, dist, build output).
-#   See the skill's README for details and known limitations.
+# PRECIOUS FILE PROTECTION (always-on):
+#   Well-known sensitive files (.env, *.key, *.pem, *.sqlite, etc.) that are
+#   not tracked by git receive extra protection: edits prompt for approval,
+#   deletions are blocked. No configuration needed — patterns are hardcoded
+#   in the is_precious() function. See the skill's README for the full list.
 #
 # TO DISABLE OR REMOVE:
 #   1. Delete this file: rm .claude/hooks/restrict-paths.sh
@@ -48,19 +49,39 @@ root="${CLAUDE_PROJECT_DIR}"
 # Fail-open: if project root is unknown, allow rather than block all tool use
 [[ -z "$root" ]] && exit 0
 
-# --- Opt-in unversioned file protection ---
-protect_unversioned="${OPTIMUS_PROTECT_UNVERSIONED:-0}"
+# --- Precious file protection (always-on) ---
 is_git_repo=false
-if [[ "$protect_unversioned" != "0" ]]; then
-  git -C "$root" rev-parse --is-inside-work-tree &>/dev/null && is_git_repo=true
-fi
+git -C "$root" rev-parse --is-inside-work-tree &>/dev/null && is_git_repo=true
 
 is_git_tracked() {
   # Fail-open: if not a git repo or git unavailable, assume tracked (allow)
-  # Note: is_git_repo is only populated when protect_unversioned is enabled.
-  # Only call this function inside protect_unversioned guards.
   [[ "$is_git_repo" == "true" ]] || return 0
   git -C "$root" ls-files --error-unmatch "$1" &>/dev/null
+}
+
+is_precious() {
+  local lname
+  lname="$(basename "$1")"
+  # Case-insensitive matching for Windows (NTFS) and macOS (APFS)
+  [[ "${OSTYPE:-}" == msys* || "${OSTYPE:-}" == cygwin* || "${OSTYPE:-}" == darwin* ]] && lname="${lname,,}"
+  case "$lname" in
+    # Secrets / credentials
+    .env|.env.*) return 0 ;;
+    local.settings.json|credentials.*|secrets.*) return 0 ;;
+    docker-compose.override.yml) return 0 ;;
+    appsettings.*.json)
+      # appsettings.json (no dot-suffix) is usually tracked; variants are not
+      [[ "$lname" != "appsettings.json" ]] && return 0 ;;
+    # Certificates / keys
+    *.key|*.pem|*.pfx|*.p12|*.cert|*.crt|*.jks) return 0 ;;
+    # Database files
+    *.sqlite|*.sqlite3|*.db|*.mdf|*.ldf) return 0 ;;
+    # Database backups
+    *.bak|*.dump|*.sql.gz) return 0 ;;
+    # IDE user settings
+    *.suo|*.user) return 0 ;;
+  esac
+  return 1
 }
 
 # --- Path normalization (cross-platform) ---
@@ -117,9 +138,9 @@ case "$tool_name" in
     if ! is_inside_project "$filepath"; then
       ask_permission "File '$filepath' is outside project root. Allow this write?"
     fi
-    # Opt-in: prompt before modifying existing unversioned files
-    if [[ "$protect_unversioned" != "0" && -e "$filepath" ]] && ! is_git_tracked "$filepath"; then
-      ask_permission "File '$filepath' is not tracked by git. Changes cannot be recovered. Allow this write?"
+    # Precious file protection: prompt before modifying sensitive unversioned files
+    if [[ -e "$filepath" ]] && is_precious "$filepath" && ! is_git_tracked "$filepath"; then
+      ask_permission "File '$(basename "$filepath")' is a precious file not tracked by git. Changes may be permanent. Allow this write?"
     fi
     exit 0
     ;;
@@ -130,9 +151,9 @@ case "$tool_name" in
     if ! is_inside_project "$filepath"; then
       ask_permission "Notebook '$filepath' is outside project root. Allow this edit?"
     fi
-    # Opt-in: prompt before modifying existing unversioned notebooks
-    if [[ "$protect_unversioned" != "0" && -e "$filepath" ]] && ! is_git_tracked "$filepath"; then
-      ask_permission "Notebook '$filepath' is not tracked by git. Changes cannot be recovered. Allow this edit?"
+    # Precious file protection: prompt before modifying sensitive unversioned notebooks
+    if [[ -e "$filepath" ]] && is_precious "$filepath" && ! is_git_tracked "$filepath"; then
+      ask_permission "File '$(basename "$filepath")' is a precious file not tracked by git. Changes may be permanent. Allow this edit?"
     fi
     exit 0
     ;;
@@ -149,9 +170,9 @@ case "$tool_name" in
       if ! is_inside_project "$word"; then
         deny_operation "BLOCKED: Cannot delete '$word' — outside project root."
       fi
-      # Opt-in: prompt before deleting unversioned files inside the project
-      if [[ "$protect_unversioned" != "0" && -e "$word" ]] && is_inside_project "$word" && ! is_git_tracked "$word"; then
-        ask_permission "File '$word' is not tracked by git. Deletion is permanent. Allow?"
+      # Precious file protection: block deletion of sensitive unversioned files
+      if [[ -e "$word" ]] && is_inside_project "$word" && is_precious "$word" && ! is_git_tracked "$word"; then
+        deny_operation "BLOCKED: '$(basename "$word")' is a precious file not tracked by git. Deletion denied."
       fi
     done
     exit 0
