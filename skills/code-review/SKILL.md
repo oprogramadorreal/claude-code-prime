@@ -41,7 +41,7 @@ git status --short
   - Run `git log --oneline origin/main..HEAD` (try `main`, then `master` if no remote)
   - If commits found → offer to review the branch diff
   - Also check for a PR/MR (use the same platform detection as PR mode below):
-    - If GitLab: `glab mr view --output json` — if it fails, check stderr: "no open merge request" or "404" means no MR; auth or network errors → inform the user
+    - If GitLab: `glab mr view --output json` (ignore errors if `glab` is not installed) — if it fails, check stderr: "no open merge request" or "404" means no MR; auth or network errors → inform the user
     - If GitHub: `gh pr view --json number,state,title` (ignore errors if `gh` is not installed)
     - If platform unknown: try both, ignore all errors
   - If PR/MR found → offer to review it
@@ -163,7 +163,7 @@ Before proceeding to the review, present a brief summary:
 - Docs loaded (with paths)
 - Docs missing (with fallback status)
 - Agents available (with skip status for missing ones)
-- Project type (single project / monorepo)
+- Project type (single project / monorepo / multi-repo workspace)
 
 Let the user confirm before launching agents.
 

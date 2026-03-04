@@ -96,7 +96,7 @@ Analyze highest-churn directories first. For full-project scope on large codebas
 
 ### Context Summary
 
-Before proceeding to analysis, present a brief summary: docs loaded (with paths), docs missing (with fallback status), project type (single/monorepo), and analysis areas identified with their git activity rank. Let the user confirm before heavy analysis begins.
+Before proceeding to analysis, present a brief summary: docs loaded (with paths), docs missing (with fallback status), project type (single/monorepo/multi-repo workspace), and analysis areas identified with their git activity rank. Let the user confirm before heavy analysis begins.
 
 ## Step 3: Analyze Source Code
 
