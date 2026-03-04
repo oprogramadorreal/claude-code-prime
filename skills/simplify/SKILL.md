@@ -95,7 +95,7 @@ For each area, evaluate source files against the constraints loaded in Step 2.
 
 These findings span multiple files — the unique value of project-wide review that single-file analysis cannot provide:
 
-- **Duplication across modules** — Repeated logic in different files/directories that could be consolidated (only when consolidation improves clarity)
+- **Duplication across modules** — Repeated logic in different files/directories that could be consolidated (when consolidation improves clarity or reduces maintenance burden)
 - **Pattern inconsistency** — Code in one area that deviates from patterns established elsewhere in the same codebase (e.g., error handling done three different ways, inconsistent service layer patterns)
 - **Architectural drift** — Code that has evolved away from the boundaries defined in `architecture.md` (e.g., direct DB access in a controller when the project uses a repository pattern)
 - **Missing shared abstraction** — Multiple files working around the absence of a common utility or type that would clarify intent across the codebase
@@ -103,13 +103,7 @@ These findings span multiple files — the unique value of project-wide review t
 
 ### Per-file analysis
 
-These supplement cross-cutting findings with localized improvements:
-
-- **Complexity** — Functions too long, deeply nested, or violating SRP
-- **Naming** — Variables, functions, or types with unclear or misleading names
-- **Dead code** — Unused functions, unreachable branches, commented-out blocks
-- **Unnecessary abstraction** — Over-engineered patterns, premature generalizations
-- **Comment quality** — Comments narrating what code expresses; missing comments on non-obvious intent
+These supplement cross-cutting findings with localized improvements. Apply each principle from the project's coding guidelines (loaded in Step 2) as an analysis lens — for each principle the guidelines establish, check whether the code follows it.
 
 ### Finding quality bar
 
@@ -119,7 +113,7 @@ Only surface findings that meet ALL of these criteria:
 - The fix is concrete and demonstrable (not vague "consider refactoring")
 - The improvement is meaningful enough that a reviewer would approve the change
 
-When in doubt, don't flag it. Prefer small, safe changes over ambitious restructuring. Never change what the code does — only how it expresses it.
+When in doubt, don't flag it. Prefer well-justified, low-risk changes over speculative restructuring. Never change what the code does — only how it expresses it.
 
 **Monorepo:** Apply each subproject's own constraint docs to its code. The shared `coding-guidelines.md` applies everywhere, but `testing.md`, `styling.md`, and `architecture.md` are subproject-scoped — don't apply backend testing conventions to frontend code or vice versa.
 

@@ -65,7 +65,7 @@ The skill presents a structured plan before making any changes:
 
 **2. Duplicated validation logic** (High)
 - File: src/auth/login.ts:42
-- Guideline: DRY / Small, Focused Functions (SRP)
+- Guideline: DRY / SRP
 - Current: Email validation repeated in login.ts, register.ts, reset.ts
 - Suggested: Extract to shared validateEmail() in src/auth/validate.ts
 ```
@@ -90,7 +90,7 @@ The code-simplifier agent and this skill are complementary — both use `coding-
 | Trigger | Automatic, after every edit | On-demand, user-invoked |
 | Scope | Recently modified code | Full project, directory, or changed files |
 | Focus | Per-file clarity and simplicity | Patterns across multiple files |
-| Action | Applies changes directly | Plan first, apply on approval |
+| Action | Applies safe changes directly; suggests structural changes for approval | Plan first, apply on approval |
 | Role | Passive quality guardian | Active codebase review |
 
 ## Relationship to Builtin /simplify
