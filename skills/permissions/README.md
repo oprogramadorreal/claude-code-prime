@@ -132,7 +132,7 @@ This is a deliberate design choice: a fail-closed hook would block legitimate op
 | `.claude/settings.json` | Permission allow/deny rules + PreToolUse hook configuration |
 | `.claude/hooks/restrict-paths.sh` | Path-restriction hook (tiered security logic) |
 
-If `.claude/settings.json` already exists (e.g., from [`/optimus:init`](https://github.com/oprogramadorreal/optimus-claude)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. Run either skill first; both share the same file safely.
+If `.claude/settings.json` already exists (e.g., from [`/optimus:init`](https://github.com/oprogramadorreal/optimus-claude)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. The hook script (`.claude/hooks/restrict-paths.sh`) is always replaced with the latest template version. Run either skill first; both share the same file safely.
 
 ## Complements /optimus:init
 
@@ -190,6 +190,8 @@ Unlike the previous `OPTIMUS_PROTECT_UNVERSIONED` approach, precious file protec
 ### Extending with custom patterns
 
 Re-run `/optimus:permissions` to scan for project-specific precious files. The skill will detect unversioned files that look sensitive and offer to add custom patterns to `is_precious()` in `.claude/hooks/restrict-paths.sh`. You can also edit the function directly.
+
+**Note:** Re-running the skill replaces the hook with the latest template version. If you've added custom patterns to `is_precious()`, they will be overwritten. For persistent customizations, edit the template in the plugin source or re-add patterns after updating.
 
 ### Limitations
 

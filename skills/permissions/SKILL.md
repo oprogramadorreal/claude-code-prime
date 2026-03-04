@@ -20,7 +20,7 @@ Configure safe permission rules and a path-restriction hook so Claude Code agent
 ## Step 1: Detect Existing Configuration
 
 1. Check if `.claude/settings.json` exists. If so, read its full content — it will be preserved during merge.
-2. Check if `.claude/hooks/restrict-paths.sh` (or `restrict-paths.*`) already exists. If so, skip hook installation in Step 3.
+2. Check if `.claude/hooks/restrict-paths.sh` (or `restrict-paths.*`) already exists. Note whether this is a fresh install or an update — report this to the user in Step 5.
 3. Check if `.mcp.json` exists at the project root. If so, extract all MCP server names (top-level keys) for Step 4.
 
 Print a brief detection summary to the user: what exists, what will be created/updated.
@@ -33,9 +33,7 @@ mkdir -p .claude/hooks
 
 ## Step 3: Install Path-Restriction Hook
 
-**Skip** if `.claude/hooks/restrict-paths.*` already exists.
-
-Copy the hook template to the project:
+Copy the hook template to the project (overwrites any existing version):
 - Source: `$CLAUDE_PLUGIN_ROOT/skills/permissions/templates/hooks/restrict-paths.sh`
 - Destination: `.claude/hooks/restrict-paths.sh`
 
@@ -88,4 +86,4 @@ Run through this checklist. Fix any issues before reporting.
    find . -maxdepth 4 \( -name ".env" -o -name ".env.*" -o -name "local.settings.json" -o -name "credentials.*" -o -name "secrets.*" -o -name "docker-compose.override.yml" -o -name "appsettings.*.json" -o -name "*.key" -o -name "*.pem" -o -name "*.pfx" -o -name "*.p12" -o -name "*.cert" -o -name "*.crt" -o -name "*.jks" -o -name "*.sqlite" -o -name "*.sqlite3" -o -name "*.db" -o -name "*.mdf" -o -name "*.ldf" -o -name "*.bak" -o -name "*.dump" -o -name "*.sql.gz" -o -name "*.suo" -o -name "*.user" \) -not -path "./.git/*" -not -path "*/node_modules/*" -not -path "*/obj/*" -not -path "*/bin/*" 2>/dev/null
    ```
    - If any are found and not git-tracked, report them as protected files
-   - If the scan discovers unversioned files that look sensitive but do not match built-in patterns (e.g., custom config files like `config.local.yaml`), ask the user if they want to add custom patterns to the `is_precious()` function in `.claude/hooks/restrict-paths.sh`
+   - If the scan discovers unversioned files that look sensitive but do not match built-in patterns (e.g., custom config files like `config.local.yaml`), ask the user if they want to add custom patterns to the `is_precious()` function in `.claude/hooks/restrict-paths.sh`. **Note:** custom edits to this file will be replaced if the user re-runs `/optimus:permissions`. For persistent customizations, edit the template in the plugin source instead.
