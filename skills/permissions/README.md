@@ -67,7 +67,9 @@ A [PreToolUse hook](https://code.claude.com/docs/en/hooks) that inspects every E
 |---|---|---|
 | **Read / Search** | Allow (no prompt) | Allow (no prompt) |
 | **Write / Edit** | Allow (no prompt) | **Ask user** permission |
+| **Write / Edit precious unversioned file** | **Ask user** permission | **Ask user** permission |
 | **Delete (rm/rmdir)** | Allow (no prompt) | **BLOCKED** (hard deny) |
+| **Delete precious unversioned file** | **BLOCKED** (hard deny) | **BLOCKED** (hard deny) |
 
 For structured tools (Edit/Write/NotebookEdit), the hook validates the `file_path` parameter directly — this is a structured field that cannot be obfuscated, making this the most reliable enforcement layer.
 
@@ -87,11 +89,11 @@ Any Bash command that does not match the 27 deny patterns executes without askin
 - **Network requests** — `curl`, `wget`, HTTP calls to any endpoint
 - **Process management** — `kill`, `pkill`, service restarts
 
-### Unversioned files have no safety net (by default)
+### Precious unversioned files are protected automatically
 
-Git-tracked files can be recovered with `git checkout` or `git stash`. **Unversioned files cannot.** If your project contains files not tracked by git — uploaded files, local databases, data exports, build artifacts with local state — deletion is permanent and unprompted.
+Well-known sensitive files (`.env`, `*.key`, `*.sqlite`, etc.) that are not tracked by git are automatically protected: edits prompt for approval, deletions are blocked. See [Precious File Protection](#precious-file-protection-always-on) for the full list.
 
-To mitigate this, set `OPTIMUS_PROTECT_UNVERSIONED=1` before starting Claude Code. This prompts before modifying or deleting unversioned files inside the project. See [Unversioned File Protection](#unversioned-file-protection-opt-in) for details and limitations.
+Other unversioned files (build output, `node_modules/`, data exports) are **not** protected — deletion is permanent and unprompted. If your project has non-standard sensitive files, add patterns to the `is_precious()` function in the hook script or re-run `/optimus:permissions` to scan for project-specific files.
 
 ### The deny list is a blocklist, not an allowlist
 
@@ -119,7 +121,7 @@ The path-restriction hook is designed to **fail open** (allow the operation) whe
 | `CLAUDE_PROJECT_DIR` not set | Allow | Cannot determine project root; blocking would break all operations |
 | JSON input parsing fails | Allow | Malformed input should not block legitimate tool use |
 | `file_path` extraction fails | Allow | Some tool invocations may have unexpected structure |
-| Not a git repo (unversioned protection) | Allow | `git ls-files` unavailable; assumes tracked |
+| Not a git repo (precious file protection) | Allow | `git ls-files` unavailable; assumes tracked |
 
 This is a deliberate design choice: a fail-closed hook would block legitimate operations whenever Claude Code changes its JSON format.
 
@@ -151,27 +153,48 @@ Run either skill first — both merge safely into the same file.
 | `templates/settings.json` | Base permission settings (allow/deny lists + PreToolUse hook) |
 | `templates/hooks/restrict-paths.sh` | Path-restriction hook template |
 
-## Unversioned File Protection (opt-in)
+## Precious File Protection (always-on)
 
-By default, the hook allows all operations inside the project — including modifying or deleting files that are not tracked by git. Set `OPTIMUS_PROTECT_UNVERSIONED=1` before starting Claude Code to enable extra protection:
+The hook automatically protects well-known sensitive and irreplaceable files that are not tracked by git. No configuration needed.
 
-```bash
-OPTIMUS_PROTECT_UNVERSIONED=1 claude
-```
+### Protected patterns
 
-When enabled, the hook prompts before modifying or deleting existing files inside the project that are not tracked by git (`git ls-files`). New file creation is not affected.
+| Pattern | Category |
+|---------|----------|
+| `.env`, `.env.*` | Secrets |
+| `appsettings.*.json` (not `appsettings.json`) | Secrets |
+| `local.settings.json` | Secrets |
+| `credentials.*`, `secrets.*` | Secrets |
+| `docker-compose.override.yml` | Local Docker config |
+| `*.key`, `*.pem`, `*.pfx`, `*.p12`, `*.cert`, `*.crt`, `*.jks` | Certificates / Keys |
+| `*.sqlite`, `*.sqlite3`, `*.db` | Database files |
+| `*.mdf`, `*.ldf` | Database files (SQL Server) |
+| `*.bak`, `*.dump`, `*.sql.gz` | Database backups |
+| `*.suo`, `*.user` | IDE user settings |
 
-| Operation | Git-tracked? | Behavior |
-|---|---|---|
-| Edit/Write existing file | Yes | Allow (recoverable via git) |
-| Edit/Write existing file | No | **Ask** (changes permanent) |
-| Write new file | N/A | Allow (creating, not destroying) |
-| rm/rmdir | Yes | Allow (recoverable via git) |
-| rm/rmdir | No | **Ask** (deletion permanent) |
+### Behavior
 
-### Known limitations of this feature
+| Operation | Git-tracked? | Precious? | Behavior |
+|-----------|-------------|-----------|----------|
+| Edit/Write | Yes | Any | Allow (recoverable via git) |
+| Edit/Write | No | Yes | **Ask** (changes may be permanent) |
+| Edit/Write | No | No | Allow |
+| rm/rmdir | Yes | Any | Allow (recoverable via git) |
+| rm/rmdir | No | Yes | **BLOCKED** (deletion denied) |
+| rm/rmdir | No | No | Allow |
 
-- **False positives on regenerable files** — `node_modules/`, `dist/`, `build/` are unversioned but easily recreated. The hook cannot distinguish "gitignored because regenerable" from "gitignored because sensitive." This is why the feature is opt-in.
+### Why always-on?
+
+Unlike the previous `OPTIMUS_PROTECT_UNVERSIONED` approach, precious file protection targets only files that are known to be sensitive or irreplaceable. This avoids false positives on regenerable files like `node_modules/` or `dist/` — only well-known precious patterns trigger protection.
+
+### Extending with custom patterns
+
+Re-run `/optimus:permissions` to scan for project-specific precious files. The skill will detect unversioned files that look sensitive and offer to add custom patterns to `is_precious()` in `.claude/hooks/restrict-paths.sh`. You can also edit the function directly.
+
+### Limitations
+
+- **Basename matching only** — the hook matches the file's name, not its path. A file named `secrets.txt` in any directory will be protected.
+- **Not exhaustive** — the list covers common patterns but cannot anticipate every project's sensitive files.
 - **Prompts on every edit** — Hooks fire on every tool call with no caching. Editing `.env` five times produces five prompts. Consider running `git add` on frequently-edited unversioned files to suppress prompts.
 - **Fails open** — If the project is not a git repository or `git` is unavailable, the check is skipped and all operations are allowed.
 
@@ -183,7 +206,7 @@ To understand or modify how the skill works, start with `SKILL.md`. Key customiz
 - **Deny list**: Edit `templates/settings.json` → `permissions.deny` to add more blocked patterns (e.g., `"Bash(docker *)"`) or remove overly-strict ones
 - **Hook behavior**: Edit `templates/hooks/restrict-paths.sh` to change what operations are blocked, asked, or allowed
 - **MCP servers**: If your project uses MCP servers (`.mcp.json`), the skill auto-detects them and adds `mcp__<server>` entries to the allow list
-- **Unversioned protection**: Set `OPTIMUS_PROTECT_UNVERSIONED=1` to prompt before modifying unversioned files. See [Unversioned File Protection](#unversioned-file-protection-opt-in)
+- **Precious patterns**: Edit `is_precious()` in `templates/hooks/restrict-paths.sh` to add or remove protected file patterns, or re-run `/optimus:permissions` to scan for project-specific files
 
 ## Known Limitations
 
@@ -204,7 +227,7 @@ Despite these limitations, this approach is **significantly safer** than `--dang
 1. **Structured tool validation is reliable** — Edit/Write `file_path` inputs cannot be obfuscated
 2. **The deny list blocks the most common destructive patterns** — git push, rm -rf /, sudo, npm publish, etc.
 3. **Any write outside the project requires explicit user approval** — unknown operations default to asking, not allowing
-4. **Unversioned file protection is available** — opt-in via `OPTIMUS_PROTECT_UNVERSIONED=1` for extra safety
+4. **Precious files are always protected** — well-known sensitive files (.env, *.key, *.sqlite, etc.) are automatically guarded when not tracked by git
 
 ## References
 
