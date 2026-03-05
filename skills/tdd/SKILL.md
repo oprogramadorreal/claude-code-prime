@@ -43,6 +43,10 @@ If the user provided a task description inline (e.g., `/optimus:tdd "Add auth en
 - **New feature** — "Implement a new capability (e.g., 'Add user authentication endpoint')"
 - **Bug fix** — "Fix a bug by reproducing it with a test first (e.g., 'Login fails when email has uppercase')"
 
+If the task description is longer than ~2-3 sentences (e.g., a pasted spec, Jira ticket, or acceptance criteria list), distill it into a **single-sentence goal** and confirm with `AskUserQuestion` — header "Distilled goal", question "I've distilled your spec to: '[single-sentence summary]'. Is this accurate?":
+- **Looks good** — "Proceed with this goal"
+- **Adjust** — "Let me refine the focus"
+
 ### Analyze suitability
 
 Examine the task description against the codebase and classify it:
@@ -113,6 +117,12 @@ Decomposition strategies by task type:
 - **Business logic** — one behavior per business rule or edge case
 - **Bug fixes** — first behavior is always "reproduce the bug" (a test that demonstrates the current broken behavior)
 - **Data transformations** — one behavior per transformation step or boundary (empty input, boundary values, malformed data)
+
+If the decomposition produces more than 10 behaviors, split into milestones. Present the first milestone (~5-8 behaviors that deliver a coherent slice of functionality) as the current scope, and list remaining behaviors as "Future milestones" with brief descriptions. After completing the last behavior of the current milestone, use `AskUserQuestion` — header "Milestone complete", question "Milestone [N] is done ([N] behaviors). Continue to the next milestone?":
+- **Next milestone** — "Load the next milestone's behaviors for approval"
+- **Stop here** — "Done for now — show summary"
+
+If the user chooses to continue, present the next milestone's behaviors for approval (return to the "Behaviors" confirmation above), then resume Step 4. This prevents overwhelming behavior lists and gives natural stopping points.
 
 Present the decomposition as a numbered list:
 

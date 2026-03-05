@@ -52,6 +52,21 @@ In Claude Code, use any of these:
 - "implement with TDD"
 - "let's do this test-first"
 
+Provide a **brief description** (1-2 sentences). The skill analyzes the codebase and decomposes the task into specific testable behaviors — you don't need to specify every detail upfront. For lengthy specs (e.g., a pasted Jira ticket or acceptance criteria), the skill will distill the core goal and confirm before proceeding.
+
+### Interactive Example
+
+```
+> /optimus:tdd
+
+## TDD scope
+
+What feature or bug fix do you want to implement with TDD?
+
+- **New feature** — "Implement a new capability (e.g., 'Add user authentication endpoint')"
+- **Bug fix** — "Fix a bug by reproducing it with a test first (e.g., 'Login fails when email has uppercase')"
+```
+
 ### New Feature Example
 
 ```
@@ -130,7 +145,7 @@ For larger features, the skill decomposes into many small behaviors. Example:
 Start cycling? [Start cycling / Adjust]
 ```
 
-Each behavior becomes one Red-Green-Refactor cycle. The feature is built incrementally — the first 3 cycles deliver a working "add to cart", cycles 4-5 add retrieval, and so on.
+Each behavior becomes one Red-Green-Refactor cycle. The feature is built incrementally — the first 3 cycles deliver a working "add to cart", cycles 4-5 add retrieval, and so on. If the decomposition exceeds 10 behaviors, the skill splits them into milestones (~5-8 behaviors each), presents the first milestone, and asks whether to continue after completing it.
 
 ## When to Run
 
@@ -201,7 +216,7 @@ The skill produces a structured summary after completing:
 ## How It Works
 
 1. Verifies project context (`CLAUDE.md`, `coding-guidelines.md`) and test infrastructure exist
-2. Analyzes task suitability — redirects unsuitable tasks (refactoring, docs, styling) to the right skill
+2. Distills lengthy specs into a single-sentence goal for confirmation, then analyzes task suitability — redirects unsuitable tasks (refactoring, docs, styling) to the right skill
 3. Creates a feature branch from the current branch (e.g., `tdd/add-password-reset`)
 4. Decomposes the feature or bug fix into small, testable behaviors for user approval
 5. For each behavior: Red (write failing test) → Green (minimal implementation) → Refactor (clean up against coding guidelines)
