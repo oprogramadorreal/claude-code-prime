@@ -156,7 +156,7 @@ This is a deliberate design choice: a fail-closed hook would block legitimate op
 | `.claude/settings.json` | Permission allow/deny rules + PreToolUse hook configuration |
 | `.claude/hooks/restrict-paths.sh` | Path-restriction hook (tiered security logic) |
 
-If `.claude/settings.json` already exists (e.g., from [`/optimus:init`](https://github.com/oprogramadorreal/optimus-claude)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. The hook script (`.claude/hooks/restrict-paths.sh`) is always replaced with the latest template version. Run either skill first; both share the same file safely.
+If `.claude/settings.json` already exists (e.g., from [`/optimus:init`](https://github.com/oprogramadorreal/optimus-claude)), the skill **merges** permissions into it — existing hooks, custom rules, and other configuration are preserved. The one exception is git deny patterns: if existing patterns are more restrictive than the template's well-tested set, the skill asks whether to replace them with the template's set or keep all. The hook script (`.claude/hooks/restrict-paths.sh`) is always replaced with the latest template version. Run either skill first; both share the same file safely.
 
 ## Complements /optimus:init
 

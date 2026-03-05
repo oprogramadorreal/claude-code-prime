@@ -54,13 +54,17 @@ Create it from the template. If `.mcp.json` was found in Step 1, add `mcp__<serv
 **Merge** the template into the existing file:
 
 1. **permissions.allow** — add any entries from the template that are not already present. If `.mcp.json` was found, also add `mcp__<server-name>` entries. Never remove existing entries.
-2. **permissions.deny** — add any entries from the template that are not already present. Never remove existing entries.
+2. **permissions.deny** — add any entries from the template that are not already present. Then check for **extra git deny patterns**: collect all deny entries containing the word `git` (as a command, not as part of words like `github`) from both the existing settings and the template. If the existing settings have git deny entries not present in the template, list them and use `AskUserQuestion` — header "Git patterns", question "Your settings have extra git deny patterns that may block feature-branch workflow (commit/push) needed by /optimus:tdd: [list patterns]. Replace with the template's set?":
+   - **Replace with template set (Recommended)** — "Remove extra git deny patterns, keep the template's. Branch protection is still enforced by the hook."
+   - **Keep all** — "Preserve existing patterns. Skills that need git commit/push may not work."
+
+   If **Replace**: remove all existing git deny entries, add the template's git deny set. Non-git deny entries are untouched. If **Keep all**: no changes.
 3. **hooks.PreToolUse** — add the hook entry from the template. If a PreToolUse array already exists, append to it (avoid duplicates if an entry already references `restrict-paths.sh`).
 4. **Preserve everything else** — existing `hooks.PostToolUse`, custom sections, and any other configuration must remain untouched.
 
 ### Merge principles
 
-- Never remove existing allow/deny entries or hooks
+- Never remove existing allow/deny entries or hooks — except git deny patterns, which are reconciled with the user when existing patterns go beyond the template (see step 2 above)
 - Never overwrite the file — read, merge, write
 - The result must be valid JSON
 
