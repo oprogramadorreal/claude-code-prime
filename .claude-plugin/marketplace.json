@@ -11,8 +11,8 @@
     {
       "name": "optimus",
       "source": {
-        "source": "github",
-        "repo": "oprogramadorreal/optimus-claude"
+        "source": "url",
+        "url": "https://github.com/oprogramadorreal/optimus-claude.git"
       },
       "description": "Research-backed project setup — CLAUDE.md, auto-format hooks, quality agents, TDD, code simplification, code review, unit testing, permissions, and commit messages"
     }

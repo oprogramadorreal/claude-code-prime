@@ -89,8 +89,8 @@ Follow the conventions visible in existing skills — study `skills/commit-messa
     {
       "name": "optimus",
       "source": {
-        "source": "github",
-        "repo": "oprogramadorreal/optimus-claude"
+        "source": "url",
+        "url": "https://github.com/oprogramadorreal/optimus-claude.git"
       }
     }
   ]
@@ -114,8 +114,8 @@ Add a `ref` to `.claude-plugin/marketplace.json` pointing to your branch:
 
 ```json
 "source": {
-  "source": "github",
-  "repo": "oprogramadorreal/optimus-claude",
+  "source": "url",
+  "url": "https://github.com/oprogramadorreal/optimus-claude.git",
   "ref": "your-branch-name"
 }
 ```
