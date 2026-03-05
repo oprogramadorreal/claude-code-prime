@@ -96,7 +96,7 @@ Before proceeding, confirm you have all of the following. If any are missing, re
 - If monorepo: **workspace tool** (if any)
 - If multi-repo workspace: **repo list** with each repo's path, tech stack, and internal structure (single project or monorepo)
 - If nested app root detected: **app root path** (e.g., `ngapp/`)
-- **Existing files inventory** (existence check only — content of docs is read in Step 1b; agents are never audited, always overwritten): which of `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/docs/*`, `.claude/agents/code-simplifier.md`, `.claude/agents/test-guardian.md`, root `CLAUDE.md`, subproject `CLAUDE.md` files already exist
+- **Existing files inventory** (existence check only — content of docs is read in Step 1b; agents, hooks, and `coding-guidelines.md` are never audited, always overwritten): which of `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/docs/*`, `.claude/agents/code-simplifier.md`, `.claude/agents/test-guardian.md`, root `CLAUDE.md`, subproject `CLAUDE.md` files already exist
 - **Test infrastructure detected** (yes/no): test framework in dependencies, test command in scripts, or test directory present. If **no**: do not use `AskUserQuestion` about setting up tests or offer to skip — init never provisions test infrastructure. Note the absence in the summary and continue.
 - **Doc-sourced insights** (if any documentation found): verified conventions, architecture rationale, workflow rules — all cross-checked against source code
 
@@ -112,7 +112,7 @@ If no test infrastructure was detected, include this note in the Detection Summa
 
 If existing docs were found, analyze them to identify what needs updating:
 
-1. **Read all existing doc files** from the inventory (CLAUDE.md, settings.json, all `.claude/docs/*.md`, and for monorepos each subproject's CLAUDE.md and `docs/*.md`).
+1. **Read all existing doc files** from the inventory (CLAUDE.md, settings.json, all `.claude/docs/*.md` except `coding-guidelines.md`, and for monorepos each subproject's CLAUDE.md and `docs/*.md`).
 
 2. **Compare documented state vs detected state:**
 
@@ -140,7 +140,7 @@ Remember the user's choice and approved findings. Steps 2–6 will reference the
 
 ## Step 2: Handle Existing Files
 
-**Audit-aware rule (applies to Steps 2–6, not Step 6b):** If user chose "Fresh start", treat all files as Missing. Otherwise: if Step 1b marked a file as Accurate, skip it. If Outdated, apply only user-approved changes — preserve everything else. If Missing or no audit was run, create normally. For "Selective" updates, only act on approved findings.
+**Audit-aware rule (applies to Steps 2–6, not Step 6b):** If user chose "Fresh start", treat all files as Missing. Otherwise: if Step 1b marked a file as Accurate, skip it. If Outdated, apply only user-approved changes — preserve everything else. If Missing or no audit was run, create normally. For "Selective" updates, only act on approved findings. **Exception:** agents, hooks, and `coding-guidelines.md` are verbatim templates — always overwrite regardless of audit status.
 
 **Before creating any file**, check if it already exists. If so, read it first. Inform the user what was preserved vs changed.
 
@@ -208,7 +208,7 @@ For each detected subproject (except root-as-project/root-as-member — the root
 
 Add auto-format hooks so files stay consistently formatted after every Edit/MultiEdit/Write. Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/formatter-setup.md` for the full hook template table, Python command detection, installation steps, settings.json creation rules, and Node.js plugin setup (Prettier + organize-imports).
 
-**Audit-aware rule applies** (see Step 2). Additionally, skip a hook if `.claude/hooks/` already contains a file named `format-<stack>.*` (e.g., `format-python.py`, `format-python.sh`).
+Always overwrite existing hooks — these are verbatim templates, not project-customized content.
 
 Supported stacks: Python (black + isort), Node.js (prettier), Rust (rustfmt), Go (goimports/gofmt), C#/.NET (csharpier), Java (google-java-format), C/C++ (clang-format). Templates are in `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
 
@@ -234,7 +234,7 @@ If not detected: Skip installation. In Step 7 summary, include: "⚠ No test inf
 ## Step 6: Create Documentation Files
 
 **Always create in `.claude/docs/`:**
-- `coding-guidelines.md` - Use template from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/coding-guidelines.md` (replace [PROJECT NAME]). Shared across the entire repo.
+- `coding-guidelines.md` - Use template from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/coding-guidelines.md` (replace [PROJECT NAME]). Shared across the entire repo. Always overwrite — this is a verbatim template, not project-customized content.
 
 **Create based on these detection rules:**
 

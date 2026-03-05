@@ -33,7 +33,7 @@ In Claude Code, use any of these:
 ## When to Run
 
 - **New project** — initial setup of all five pillars (context, consistency, quality, tests, docs)
-- **After major changes** — re-run to audit and refresh docs (intelligent diff, not overwrite)
+- **After major changes** — re-run to audit and refresh docs (agents, hooks, and coding-guidelines are always refreshed from templates; other docs use intelligent diff)
 - **After adding new stack components** — picks up new dependencies, adds formatter hooks for newly detected stacks
 - **Periodic maintenance** — keeps docs in sync with evolving codebase; stale docs actively degrade LLM performance
 - **Onboarding new teammates** — ensures consistent Claude Code behavior via git-tracked config in `.claude/`
@@ -110,9 +110,9 @@ To understand or modify how the skill works, start with `SKILL.md`. Key customiz
 
 ### Tuning coding guidelines
 
-The coding guidelines file (`.claude/docs/coding-guidelines.md` in your project) is the primary control surface for how the code-simplifier agent, `/optimus:simplify`, and `/optimus:code-review` evaluate your code. Every principle you add, remove, or edit directly changes what these tools flag. After `/optimus:init` generates it, you own it — tune any rule to match your project's conventions.
+The coding guidelines file (`.claude/docs/coding-guidelines.md` in your project) is the primary control surface for how the code-simplifier agent, `/optimus:simplify`, and `/optimus:code-review` evaluate your code. Every principle you add, remove, or edit directly changes what these tools flag.
 
-The template (`templates/docs/coding-guidelines.md`) controls what new projects get; your project's copy at `.claude/docs/coding-guidelines.md` is what drives behavior at runtime.
+Note: re-running `/optimus:init` always overwrites `coding-guidelines.md`, agents, and hooks from the latest plugin templates — use `git diff` to review changes. To add project-specific rules that survive re-runs, put them in `.claude/CLAUDE.md` instead.
 
 ## Relationship to Other Skills
 
