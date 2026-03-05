@@ -4,6 +4,7 @@
 
 - `/optimus:init` generates CLAUDE.md, coding guidelines, formatter hooks, and quality agents
 - `/optimus:unit-test` fills test coverage gaps with generated tests that enable AI self-correction
+- `/optimus:tdd` guides test-driven development — Red-Green-Refactor cycles for new features and bug fixes
 - `/optimus:simplify` finds and applies code simplifications across your project
 - `/optimus:code-review` catches bugs and violations in your changes before they enter the repo
 
