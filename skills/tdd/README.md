@@ -22,8 +22,9 @@ The [2025 DORA report](https://cloud.google.com/discover/how-test-driven-develop
 - **Guideline-aware refactoring** — applies your project's `coding-guidelines.md` during the Refactor step
 - **Convention-aware tests** — follows your `testing.md` for framework, file location, naming, and mocking patterns
 - **Test verification at every step** — runs the full test suite after Red, Green, and Refactor to catch regressions instantly
+- **Lint/type-check verification** — runs lint or type-check commands (if configured) during the Green step to catch type errors that passing tests might miss
 - **Commit points** — suggests conventional commit messages after each cycle for small, focused commits
-- **Coverage tracking** — reports coverage delta when coverage tooling is configured
+- **Coverage tracking** — detects coverage commands from testing.md, test runner flags, or package scripts; reports delta
 - **Multi-repo workspace support** — targets specific repos in multi-repo setups
 - **Submodule exclusion** — skips git submodule directories
 
@@ -103,6 +104,29 @@ Start cycling? [Start cycling / Adjust]
 
 The first behavior writes a test that **reproduces the bug** — proving it exists. Then the fix makes that test pass.
 
+### Decomposition Example (Medium Feature)
+
+For larger features, the skill decomposes into many small behaviors. Example:
+
+```
+> /optimus:tdd "Add shopping cart"
+
+## Behaviors to Implement
+
+1. POST /cart/items adds a product to the cart — returns 201 with cart contents
+2. POST /cart/items returns 404 when product ID doesn't exist
+3. POST /cart/items returns 400 when quantity is zero or negative
+4. GET /cart returns current cart contents with product details and totals
+5. GET /cart returns empty array when cart has no items
+6. DELETE /cart/items/:id removes an item from the cart — returns updated cart
+7. Cart total sums item prices multiplied by quantities
+8. Cart total applies discount code when valid — reduces total by percentage
+
+Start cycling? [Start cycling / Adjust]
+```
+
+Each behavior becomes one Red-Green-Refactor cycle. The feature is built incrementally — the first 3 cycles deliver a working "add to cart", cycles 4-5 add retrieval, and so on.
+
 ## When to Run
 
 - **Starting a new feature** — build it test-first from the start
@@ -176,7 +200,7 @@ pending (1 behavior remaining).
 2. Analyzes task suitability — redirects unsuitable tasks (refactoring, docs, styling) to the right skill
 3. Decomposes the feature or bug fix into small, testable behaviors for user approval
 4. For each behavior: Red (write failing test) → Green (minimal implementation) → Refactor (clean up against coding guidelines)
-5. Runs the full test suite at every transition (Red, Green, Refactor)
+5. Runs the full test suite at every transition (Red, Green, Refactor) and lint/type-check during Green
 6. Suggests commit points after each cycle for small, focused commits
 7. Reports summary with behaviors completed, tests written, and coverage delta
 
