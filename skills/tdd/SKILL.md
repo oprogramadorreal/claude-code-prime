@@ -89,6 +89,12 @@ Break the user's description into small, individually testable behaviors. Each b
 - **Independent** — it can be tested and implemented without the other behaviors being done yet
 - **Small** — one test, one assertion focus (a test may have supporting assertions, but tests one thing)
 
+Decomposition strategies by task type:
+- **API endpoints** — one behavior per response scenario (success case, each error code, each validation rule)
+- **Business logic** — one behavior per business rule or edge case
+- **Bug fixes** — first behavior is always "reproduce the bug" (a test that demonstrates the current broken behavior)
+- **Data transformations** — one behavior per transformation step or boundary (empty input, boundary values, malformed data)
+
 Present the decomposition as a numbered list:
 
 ```
@@ -151,9 +157,13 @@ Write the **minimum code** to make the failing test pass. Resist the urge to imp
 
 Run the project's test command. **All tests must pass** — including the new one.
 
-- **All pass** — proceed to Step 6
+- **All pass** — proceed to lint/type-check below
 - **New test still fails** — fix the implementation (not the test). The test defines the expected behavior; the code must meet it
 - **Other tests broke** — the implementation introduced a regression. Fix it before proceeding — all tests must stay green
+
+### Lint / type-check (if available)
+
+If a lint or type-check command is configured in `CLAUDE.md` or the project manifest (e.g., `tsc --noEmit`, `cargo check`, `go vet`, `dotnet build`), run it. Type errors in implementation code can hide behind passing tests. If it fails, fix the implementation before proceeding to Step 6.
 
 Report to the user:
 
@@ -164,6 +174,7 @@ Test: [test file path]:[test name]
 Status: PASSES ✓
 Implementation: [file path]:[function/method]
 All tests: passing ✓
+Type-check: passing ✓ [or omit this line if no type-check command is available]
 ```
 
 ## Step 6: Refactor — Clean Up While Green
@@ -174,7 +185,7 @@ With all tests passing, review the code just written (both test and implementati
 - **KISS** — is there anything simpler that still passes the test?
 - **SRP** — is the function doing one thing?
 - **Domain-Accurate Naming** — do names reflect the domain?
-- **Pragmatic Abstractions** — is there duplication worth extracting? (Only if it's already duplicated — don't extract speculatively)
+- **Pragmatic Abstractions** — is there duplication worth extracting? (Only if code written during this TDD session is already duplicated — don't search the entire codebase for extraction opportunities and don't extract speculatively)
 
 Also review the test:
 - Is the test name a clear behavior specification?
@@ -229,7 +240,10 @@ After all behaviors are implemented (or the user stops early), present:
 - Files modified: [list modified files]
 
 ### Coverage
-[If coverage tooling is configured in testing.md, run coverage measurement and report delta]
+[Detect coverage command from: testing.md coverage section, test runner built-in flag
+(e.g., vitest --coverage, pytest --cov=., go test -cover, dotnet test --collect:"XPlat Code Coverage"),
+or package.json coverage script. Run it before the first cycle and after the last cycle to measure delta.
+If no coverage command is found, omit this section entirely.]
 - Before: [X]%
 - After: [Y]%
 - Delta: +[Z]%
