@@ -12,6 +12,7 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 - **Project-wide discovery** — scans for test files, frameworks, coverage tooling, and optimus infrastructure status
 - **Framework recommendation** — analyzes tech stack and recommends the most popular test framework with coverage tooling
 - **Coverage tooling setup** — detects when a framework exists but coverage measurement is missing; installs report generators for tools that only produce machine-readable output
+- **Build/bootstrap repair** — fixes test infrastructure and test files that fail to compile (deprecated imports, missing polyfills, renamed APIs) with user approval before proceeding
 - **Infrastructure provisioning** — installs test-guardian agent, creates testing.md, updates CLAUDE.md, README.md, and .gitignore if init skipped them
 - **Achievable threshold estimation** — analyzes testable vs untestable code to set realistic coverage targets without requiring refactoring
 - **Prioritized test plan** — up to 10 items per run, highest-value targets first, user-approved before execution

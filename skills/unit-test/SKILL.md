@@ -112,7 +112,9 @@ If `.gitignore` exists and doesn't already ignore the test output directory (e.g
 
 Before writing any tests:
 
-1. **Run existing test suite.** If tests fail, stop and report — a clean baseline is required before adding new tests.
+1. **Run existing test suite.** Distinguish between failure types:
+   - **Build/bootstrap failure** (test runner cannot start, or test files fail to compile — broken imports, missing polyfills, deprecated paths in setup files like `src/test.ts`, `jest.config.*`, `conftest.py`, or compilation errors in `.spec`/`.test` files due to renamed/removed APIs) — these are build-level issues, not test logic. Report the specific errors, ask the user for approval to fix them, and re-run. Apply minimal changes: update import paths, fix type references, adjust mocks to match current signatures. If the fix requires more than build-level corrections, stop and report.
+   - **Test assertion failures** (tests compile and run, but some fail) — stop and report. A clean baseline is required before adding new tests. Report failing tests in the Step 8 "Bugs Discovered" section.
 
 2. **Measure baseline coverage:**
    - If coverage tooling is available → run coverage and record baseline numbers

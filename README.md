@@ -75,7 +75,7 @@ See [skills/init/README.md](skills/init/README.md) for full documentation.
 
 ## /optimus:unit-test
 
-Discovers test coverage gaps, provisions test infrastructure if needed, estimates achievable coverage targets, and generates tests that follow your project's conventions. Conservative by design — only adds new test files, never refactors source code. Flags untestable code and reports bugs found during test writing. Excludes git submodules during discovery.
+Discovers test coverage gaps, provisions test infrastructure if needed, estimates achievable coverage targets, and generates tests that follow your project's conventions. Conservative by design — adds new test files and repairs broken test infrastructure (with approval), never refactors source code. Flags untestable code and reports bugs found during test writing. Excludes git submodules during discovery.
 
 See [skills/unit-test/README.md](skills/unit-test/README.md) for full documentation.
 
