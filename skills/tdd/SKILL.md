@@ -11,7 +11,7 @@ This skill is for **new features** and **bug fixes** — not refactoring. For re
 
 ## Step 1: Pre-flight
 
-If the current directory is a multi-repo workspace (no `.git/` at root, 2+ child directories containing a `.git` *directory* — not `.git` files, which indicate submodules), process each repo independently: run Steps 1–8 inside the repo the user is targeting. If ambiguous, ask which repo.
+If the current directory is a multi-repo workspace (no `.git/` at root, 2+ child directories containing a `.git` *directory* — not `.git` files, which indicate submodules), process each repo independently: run Steps 1–9 inside the repo the user is targeting. If ambiguous, ask which repo.
 
 ### Verify prerequisites
 
@@ -32,6 +32,14 @@ Locate the test runner command from `testing.md`, `CLAUDE.md`, or project manife
 - **Tests pass** — proceed to Step 2 (Suitability Analysis)
 - **Tests fail** — stop and report. Existing failures must be resolved before TDD can begin (a failing suite makes Red/Green indistinguishable)
 - **No test runner found** — stop and recommend running `/optimus:unit-test` first to provision test infrastructure (framework, runner, coverage tooling, `testing.md`)
+
+### Check quality agents (optional)
+
+Check whether these project-level agent files exist:
+- `.claude/agents/code-simplifier.md`
+- `.claude/agents/test-guardian.md`
+
+Record which are available — they will be used in the Quality Gate step after cycling completes. If neither exists, the quality gate will be skipped. This is not a blocker; recommend `/optimus:init` if missing and the user wants agent-backed quality checks.
 
 ## Step 2: Suitability Analysis
 
@@ -249,7 +257,94 @@ Then, if behaviors remain, use `AskUserQuestion` — header "Next step", questio
 
 If behaviors remain and the user chooses to continue, return to Step 4 (Red) for the next one.
 
-## Step 8: Summary, Push, and PR/MR
+If no behaviors remain, or the user chooses "Stop here", proceed to Step 8 (Quality Gate).
+
+## Step 8: Quality Gate (parallel agents)
+
+If no quality agents were found in Step 1, skip this step entirely and proceed to Step 9.
+
+This step runs after all Red-Green-Refactor cycles are complete. It launches available project agents in parallel for a holistic review of all code written during the TDD session. Running agents here — not per-cycle — catches cross-cycle issues (duplication between behaviors, naming drift, accumulated pattern violations, edge-case coverage gaps) that are invisible within a single cycle.
+
+### Gather changed files
+
+Collect all files changed during the TDD session: `git diff --name-only <original-branch>...HEAD` (where `<original-branch>` is the branch recorded in Step 3). This is the scope for both agents.
+
+### Launch parallel agents
+
+Launch up to 2 `general-purpose` Agent tool calls simultaneously — one per available agent. Only launch agents whose definition files exist (checked in Step 1).
+
+**Agent A — Code Simplifier** (only if `.claude/agents/code-simplifier.md` exists):
+
+```
+Read `.claude/agents/code-simplifier.md` for your role and approach.
+Read `.claude/docs/coding-guidelines.md` and `.claude/CLAUDE.md` for project standards.
+
+Review ALL of the following files for cross-cycle simplification opportunities:
+[list of changed file paths]
+
+This code was written incrementally across multiple TDD cycles. Look for issues
+that emerge from incremental development:
+- Duplication across behaviors (e.g., similar handlers that should share logic)
+- Naming inconsistencies between code written in different cycles
+- Dead code introduced early then superseded by later cycles
+- Pattern violations that accumulated gradually
+- Abstractions that should be extracted now that the full feature shape is visible
+
+Apply the focus areas from your role definition and the project's coding guidelines.
+For each finding: file:line, guideline violated, brief description, suggested improvement.
+Do NOT suggest changes outside the changed files. Do NOT flag style/formatting, bugs, or security.
+Maximum 5 findings. Report as a structured list.
+```
+
+**Agent B — Test Guardian** (only if `.claude/agents/test-guardian.md` exists):
+
+```
+Read `.claude/agents/test-guardian.md` for your role and approach.
+Read `.claude/CLAUDE.md` for project structure, then read the relevant testing.md.
+
+Analyze ALL of the following files for test coverage gaps:
+[list of changed file paths]
+
+This code was built using TDD — every behavior has a test. Focus on what TDD's
+one-behavior-at-a-time approach may have missed:
+- Edge cases and boundary conditions not covered by the happy-path-first tests
+- Error propagation paths across multiple behaviors
+- Test-to-source mapping for all new/modified source files
+- Structural barriers that prevent unit testing (tight coupling, hidden dependencies)
+
+Run the full test suite to confirm everything passes.
+Apply the focus areas from your role definition and the project's testing conventions.
+For each finding: source file and function name, finding type (Test Gap | Structural Barrier),
+what should be tested or what barrier prevents testing, recommended test file path (if applicable).
+Do NOT write test code. Only identify gaps.
+Maximum 5 findings. Report as a structured list.
+```
+
+### Present findings
+
+After both agents complete, present a consolidated quality report:
+
+```
+## Quality Gate
+
+### Code Simplifier
+[Findings from code-simplifier, or "No issues found — code follows project guidelines."]
+
+### Test Guardian
+[Findings from test-guardian, or "All code has test coverage. No structural barriers detected."]
+```
+
+If no agents produced findings, report "Quality gate passed — no issues found" and proceed silently to Step 9.
+
+### Act on findings
+
+If either agent produced findings, use `AskUserQuestion` — header "Quality gate", question "Agents found [N] items. How to proceed?":
+- **Address findings** — "Fix the issues before pushing"
+- **Push as-is** — "Acknowledged — proceed to summary and PR/MR"
+
+If the user chooses to address findings: apply fixes, run the test suite to verify all tests still pass, then stage and commit with a conventional message (e.g., `refactor(scope): address quality gate findings`). Proceed to Step 9.
+
+## Step 9: Summary, Push, and PR/MR
 
 After all behaviors are implemented (or the user stops early):
 
@@ -276,6 +371,7 @@ If there are uncommitted changes (e.g., the user stopped mid-cycle before the au
 - Tests passing: all ✓
 - Files created: [list new files]
 - Files modified: [list modified files]
+- Quality gate: code-simplifier ([N] findings), test-guardian ([N] findings) [or "skipped — agents not installed"]
 
 ### Coverage
 [Detect coverage command from: testing.md coverage section, test runner built-in flag
