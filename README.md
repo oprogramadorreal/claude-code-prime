@@ -18,9 +18,10 @@
 What makes a good developer productive also makes Claude Code productive: **clean code, good tests, and clear docs.**
 
 - **DRY code and meaningful names** avoid wasting context tokens and give the LLM better semantic signals
-- **Unit tests** enable self-correction — TDD takes this further by writing tests *before* code, preventing the AI from rubber-stamping its own bugs
+- **Unit tests** enable self-correction — the AI makes a change, runs tests, sees the failure, and fixes it
+- **Test-driven development** takes this further: tests written *before* code are an independent specification, not a rubber stamp of whatever the AI just generated — and [providing LLMs with tests alongside tasks consistently improves code generation](https://arxiv.org/abs/2402.13521)
 
-Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows, and Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code is giving it a way to verify its own work.
+Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows, and the [2025 DORA report](https://cloud.google.com/discover/how-test-driven-development-amplifies-ai-success) confirms that AI amplifies existing practices — TDD provides the control system. That's why Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code is giving it a way to verify its own work — and TDD is the purest form of that.
 
 ## Architecture: Project-Scoped by Design
 
@@ -72,6 +73,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for project structure, skill anatomy, fea
 - [AI-Friendly Code Design](https://www.thoughtworks.com/radar/techniques/ai-friendly-code-design) — Thoughtworks Tech Radar Vol. 32: "good software design for humans also benefits AI"
 - [Context Length Alone Hurts LLM Performance](https://arxiv.org/abs/2510.05381) — Du et al. 2025: 13.9%–85% degradation as input length increases
 - [Writing a Good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md) — HumanLayer: WHAT/WHY/HOW structure, progressive disclosure, <60 lines
+- [Test-Driven Development for Code Generation](https://arxiv.org/abs/2402.13521) — Mathews et al. 2024: providing LLMs with tests alongside problem statements consistently improves code generation outcomes
+- [AI Makes Engineering Discipline More Important](https://codemanship.wordpress.com/2026/02/26/71-of-developers-and-engineering-leaders-believe-ai-makes-engineering-discipline-more-important/) — Codemanship 2026: 71% of developers say disciplined practices like TDD become more important with AI, not less
 
 ## Requirements
 
