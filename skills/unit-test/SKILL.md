@@ -170,6 +170,7 @@ If the user selects **Selective**, ask which item numbers to proceed with (e.g.,
 Tests must follow:
 - `coding-guidelines.md` for quality standards (naming, structure, clarity)
 - `testing.md` for testing conventions (framework idioms, file naming, directory structure)
+- `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/testing-anti-patterns.md` for mocking discipline — prefer real code over mocks, never assert on mock behavior, mock only external services or non-deterministic dependencies
 - Existing test files for patterns (imports, assertion style, describe/it structure, fixture handling)
 
 ### Conservative constraint
