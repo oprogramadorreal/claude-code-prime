@@ -15,12 +15,6 @@
 
 Start a new Claude Code session and type `/optimus:init` in any project directory. See [Skills](#skills) for the full list.
 
-### Stay up to date (optional)
-
-Enable auto-update so new versions are installed automatically at startup:
-
-`/plugin` → Marketplaces → `optimus-claude` → Enable auto-update
-
 ## Why This Plugin?
 
 What makes a good developer productive also makes Claude Code productive: **clean code, good tests, and clear docs.**
