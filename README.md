@@ -25,11 +25,9 @@ Enable auto-update so new versions are installed automatically at startup:
 
 What makes a good developer productive also makes Claude Code productive: **clean code, good tests, and clear docs.**
 
-- **DRY code and meaningful names** avoid wasting context tokens and give the LLM better semantic signals
-- **Unit tests** enable self-correction — the AI makes a change, runs tests, sees the failure, and fixes it
-- **Test-driven development** takes this further: tests written *before* code are an independent specification, not a rubber stamp of whatever the AI just generated — and [providing LLMs with tests alongside tasks consistently improves code generation](https://arxiv.org/abs/2402.13521)
+Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, and LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows. Clean, DRY code with meaningful names keeps context lean and gives the LLM better semantic signals. The [2025 DORA report](https://cloud.google.com/discover/how-test-driven-development-amplifies-ai-success) puts it simply: AI amplifies existing practices, good or bad.
 
-Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, and LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows. The [2025 DORA report](https://cloud.google.com/discover/how-test-driven-development-amplifies-ai-success) puts it simply: AI amplifies existing practices, good or bad. Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code reflects this — give the AI a way to verify its own work, and TDD is the purest form of that verification.
+Another key point: [providing LLMs with tests alongside tasks consistently improves code generation](https://arxiv.org/abs/2402.13521). Tests enable self-correction. Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code reflects this: "make the AI self-verifying". Unit tests and TDD are the purest way to achieve it.
 
 ## Architecture: Project-Scoped by Design
 
@@ -37,7 +35,7 @@ Unlike most plugins that bundle hooks and agents at the plugin level, **optimus 
 
 - **Hooks, agents, docs, and settings travel with the repo via git** — any teammate gets identical behavior, even without this plugin installed
 - **Enforces standards linters can't check** — naming conventions, architectural patterns, DRY principles, guided by project-specific docs and agents
-- **No hidden dependencies** — the plugin is needed only for setup; the generated output is self-contained, visible, auditable, and version-controlled
+- **No hidden dependencies** — the generated output is self-contained, visible, auditable, and version-controlled. Keep the plugin installed for daily skills like TDD, commit-message, and code-review
 
 ## Skills
 
