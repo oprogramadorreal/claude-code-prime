@@ -265,7 +265,15 @@ The user's original branch is never modified. All code review happens through th
 | Focus | Build correct code from the start | Catch issues in finished changes |
 | Workflow | Use TDD to build, then code-review the PR/MR |
 
-**Full workflow**: `/optimus:init` → `/optimus:unit-test` (provision infrastructure + retroactive tests) → `/optimus:permissions` (branch-aware git protection) → `/optimus:tdd` (build new features test-first — creates branch, commits, pushes, creates PR/MR) → `/optimus:code-review` (review the PR/MR).
+| | `/optimus:tdd` | `/optimus:pr` |
+|---|---|---|
+| PR creation | Built-in — creates PR at end of TDD session | Dedicated — any branch, any workflow |
+| Description | TDD-specific (behaviors, coverage delta) using shared template | Generated from branch diff using shared template |
+| When to use | Automatic — part of the TDD workflow | After any feature work or code review |
+
+Both skills use the same PR description template (`skills/pr/references/pr-template.md`) for consistent formatting.
+
+**Full workflow**: `/optimus:init` → `/optimus:unit-test` (provision infrastructure + retroactive tests) → `/optimus:permissions` (branch-aware git protection) → `/optimus:tdd` (build new features test-first — creates branch, commits, pushes, creates PR/MR) → `/optimus:code-review` (review the PR/MR). For non-TDD workflows, use `/optimus:pr` to create PRs with structured descriptions.
 
 ## Skill Structure
 

@@ -49,6 +49,7 @@ Unlike most plugins that bundle hooks and agents at the plugin level, **optimus 
 |-------|-------------|
 | [`/optimus:permissions`](skills/permissions/README.md) | Allow/deny rules + PreToolUse hook for tiered path security and branch-aware git protection. Feature branches work freely; protected branches require PRs. Useful on native Windows. |
 | [`/optimus:commit-message`](skills/commit-message/README.md) | [Conventional commit](https://www.conventionalcommits.org/) suggestions from local git changes. Splits multi-concern diffs. Multi-repo aware. |
+| [`/optimus:pr`](skills/pr/README.md) | Pull request / merge request creation with structured descriptions — Summary, Changes, Rationale, Test plan. GitHub & GitLab. |
 
 ## Recommended Workflow
 
@@ -57,7 +58,7 @@ Unlike most plugins that bundle hooks and agents at the plugin level, **optimus 
 3. **After major changes** — re-run `/optimus:init` to audit and refresh docs
 4. **Code quality** — `/optimus:simplify` for full codebase analysis against your coding guidelines
 
-**During development** — `/optimus:tdd` to build features test-first, `/optimus:code-review` before merging, `/optimus:commit-message` for conventional commits.
+**During development** — `/optimus:tdd` to build features test-first, `/optimus:code-review` before merging, `/optimus:pr` to create well-structured pull requests, `/optimus:commit-message` for conventional commits.
 
 **Complementary tools** — Anthropic's official [code-review](https://github.com/anthropics/claude-code/tree/main/plugins/code-review) plugin for post-push PR review, [claude-md-management](https://claude.com/plugins/claude-md-management) for CLAUDE.md scoring and revision, and the builtin `/simplify` for per-change cleanup.
 

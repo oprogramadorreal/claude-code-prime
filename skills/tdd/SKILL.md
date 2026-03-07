@@ -362,26 +362,35 @@ If there are commits on the branch:
    - If neither matches, check for CI files: `.gitlab-ci.yml` → GitLab; `.github/` directory → GitHub
    - If platform is still unknown → skip PR/MR creation, report the push and suggest creating one manually
 
-3. **Create a PR/MR** with a title and description:
+3. **Determine the base branch**:
+   - Get the repo's default branch: `git remote show origin | sed -n 's/  HEAD branch: //p'`
+   - Store as `<base>` (typically `main` or `master`)
+
+4. **Create a PR/MR** with a title and description:
+
+   Read the description format from `$CLAUDE_PLUGIN_ROOT/skills/pr/references/pr-template.md`.
 
    **GitHub** (requires `gh` CLI):
    - Verify `gh` is available: `gh --version`. If not, skip and tell the user to create the PR manually
-   - `gh pr create --title "<conventional title>" --body "<description>" --base <original-branch>`
+   - Write the body to a temp file: `TMPFILE=$(mktemp /tmp/pr-body-XXXXXX.md)`
+   - `gh pr create --title "<conventional title>" --body-file "$TMPFILE" --base <base>`
+   - Clean up: `rm -f "$TMPFILE"`
 
    **GitLab** (requires `glab` CLI):
    - Verify `glab` is available: `glab --version`. If not, skip and tell the user to create the MR manually
-   - `glab mr create --fill --title "<conventional title>" --description "<description>" --target-branch <original-branch>`
+   - `glab mr create --title "<conventional title>" --description "<description>" --target-branch <base>`
 
-   **PR/MR description** should include:
-   - Task description (from Step 2)
-   - List of behaviors implemented (from the summary table)
-   - Test count and coverage delta (if available)
+   **PR/MR description** should follow the template format (Summary, Changes, Rationale, Test Plan) and include TDD-specific content:
+   - Task description (from Step 2) in the Summary section
+   - List of behaviors implemented (from the summary table) in the Summary bullet list
+   - Changed files with descriptions in the Changes section
+   - Test count and coverage delta (if available) in the Test Plan section
 
-4. **Report** to the user:
+5. **Report** to the user:
 
 ```
 ### Git Activity
-- Branch: `<branch-name>` (from `<original-branch>`)
+- Branch: `<branch-name>` → `<base>`
 - Commits: [N]
 - Pushed: ✓
 - PR/MR: [URL] (or "Create manually — `gh`/`glab` not available")
