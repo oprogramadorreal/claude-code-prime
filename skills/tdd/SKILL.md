@@ -119,6 +119,34 @@ Created branch `<branch-name>` from `<original-branch>`.
 All TDD work will be committed to this branch.
 ```
 
+### Worktree isolation (optional)
+
+After branch creation, offer git worktree isolation so the user's main workspace stays clean. Use `AskUserQuestion` — header "Workspace", question "Use a git worktree for isolated development? Your main workspace stays on the original branch.":
+- **Use worktree (Recommended)** — "Work in `.worktrees/<branch-name>` — main workspace stays clean, enables parallel work"
+- **Stay on branch** — "Work directly on the branch in the current directory (standard git workflow)"
+
+If the user chooses worktree isolation:
+
+1. **Check for worktree directory**: if `.worktrees/` does not exist, create it: `mkdir -p .worktrees`
+2. **Ensure `.worktrees/` is gitignored**: check if `.gitignore` contains `.worktrees/` or `.worktrees`. If not, append `.worktrees/` to `.gitignore` and stage it: `echo '.worktrees/' >> .gitignore && git add .gitignore`
+3. **Switch branch back**: the branch was already created, so switch the main workspace back: `git checkout <original-branch>`
+4. **Create worktree**: `git worktree add .worktrees/<branch-name> <branch-name>`
+5. **Run project setup** in the worktree (if applicable): detect setup commands from `CLAUDE.md` or manifest files (`npm install`, `pip install -e .`, `cargo build`, etc.) and run them inside the worktree directory
+6. **Verify test baseline**: run the test command inside the worktree to confirm tests pass in the isolated environment
+7. **Report**:
+
+```
+## Worktree
+
+Working in: `.worktrees/<branch-name>`
+Main workspace: `<original-branch>` (unchanged)
+Tests: passing ✓
+```
+
+If worktree creation fails (e.g., git version too old, filesystem issues), fall back to the standard branch workflow silently and inform the user.
+
+**Important**: When using a worktree, all subsequent steps (4–9) must run commands inside the worktree directory. Use `cd .worktrees/<branch-name>` before running tests, linting, or git commands. File paths in reports should be relative to the project root for clarity.
+
 ### Decompose into behaviors
 
 Break the user's description into small, individually testable behaviors. Each behavior should be:
@@ -167,7 +195,7 @@ Place the test file according to the project's convention (from `testing.md`). I
 
 ### Run the test suite
 
-**Verification protocol** — every test run in this skill (Steps 4, 5, 6) must be verified the same way: read the complete test output, check the exit code, and count pass/fail totals. Never claim "should pass" or "probably works" — state the actual result with evidence (e.g., "14 passed, 1 failed"). This protocol applies to every "Run the test suite" instruction below.
+**Verification protocol** — every test run in this skill (Steps 4, 5, 6) must follow the gate function in `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md`: identify the command, run it fresh, read complete output, verify the claim matches the evidence, only then report. Never claim "should pass" or "probably works" — state the actual result with evidence (e.g., "14 passed, 1 failed"). This protocol applies to every "Run the test suite" instruction below.
 
 Run the project's test command. The new test **must fail**. Verify:
 
@@ -209,8 +237,32 @@ Run the project's test command. **All tests must pass** — including the new on
     - **Rethink the approach** — "Step back and reconsider the behavior's design or decomposition"
     - **Simplify the behavior** — "Break this behavior into smaller, simpler sub-behaviors"
     - **Skip for now** — "Revert implementation changes from this cycle (`git checkout -- <implementation files>`), mark the test as skipped per the project's convention (e.g., `skip`/`xit`/`@pytest.mark.skip`), move to the next behavior"
-  - **Bug-fix regression check** — when the current behavior is a bug reproduction (the first behavior in a bug-fix decomposition), verify the red-green cycle is genuine after the test passes: commit the test file first (`git add <test-file> && git commit -m "test: <behavior>"`), then revert only implementation files (`git stash push <implementation-files>`), run the test (it **must fail**), restore the fix (`git stash pop`), run again (it **must pass**). This proves the test catches the bug and the fix resolves it. If the test passes with the fix reverted, first restore the fix (`git stash pop`), then rewrite the test
 - **Other tests broke** — the implementation introduced a regression. Fix it before proceeding — all tests must stay green
+
+### Bug-fix regression gate
+
+**When:** the current behavior is a bug reproduction (the first behavior in a bug-fix decomposition). **Skip** for regular feature behaviors.
+
+This gate proves two things: (1) the test genuinely catches the bug, and (2) the fix genuinely resolves it. Without this, you may have a test that passes regardless of the fix — providing false confidence.
+
+1. **Commit the test** separately: `git add <test-file> && git commit -m "test: reproduce <bug-description>"`
+2. **Revert only the fix**: `git stash push <implementation-files>`
+3. **Run the test** — it **must fail**. This proves the test catches the bug.
+4. **Restore the fix**: `git stash pop`
+5. **Run the test again** — it **must pass**. This proves the fix resolves the bug.
+
+Report:
+
+```
+## 🔒 Regression Gate — [Bug description]
+
+Test: [test file path]:[test name]
+Without fix: FAILS ✓ (test catches the bug)
+With fix: PASSES ✓ (fix resolves the bug)
+Verdict: REGRESSION GATE PASSED
+```
+
+If the test **passes with the fix reverted** (step 3), the test is not actually catching the bug. Restore the fix (`git stash pop`), then rewrite the test to target the actual failure condition.
 
 ### Lint / type-check (if available)
 
@@ -389,5 +441,15 @@ If there are commits on the branch:
 ```
 
 If behaviors remain unfinished, note them and suggest re-running `/optimus:tdd` to continue.
+
+### Worktree cleanup
+
+If a worktree was used (Step 3), offer cleanup after the PR/MR is created:
+
+1. Switch to the main workspace directory (parent of `.worktrees/`)
+2. Remove the worktree: `git worktree remove .worktrees/<branch-name>`
+3. If the `.worktrees/` directory is now empty, remove it: `rmdir .worktrees 2>/dev/null`
+
+If the user prefers to keep the worktree (e.g., for further work), skip cleanup and note: "Worktree `.worktrees/<branch-name>` is still active. Remove it manually with `git worktree remove .worktrees/<branch-name>` when done."
 
 Remind the user that the PR/MR should be reviewed before merging, and suggest using `/optimus:code-review` to review it.

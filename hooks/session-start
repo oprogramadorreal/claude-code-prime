@@ -1,0 +1,24 @@
+#!/bin/bash
+set -euo pipefail
+
+# SessionStart hook — reminds Claude about available optimus skills on every
+# session start, resume, clear, and compact. Keeps the catalog minimal to
+# reduce token overhead.
+
+cat <<'CATALOG'
+## Optimus Skills Available
+
+Check if any of these skills apply before responding:
+
+| Skill | Use when... |
+|-------|-------------|
+| `/optimus:init` | Setting up a project for Claude Code (CLAUDE.md, docs, hooks, agents) |
+| `/optimus:tdd` | Implementing a feature or bug fix test-first (Red-Green-Refactor) |
+| `/optimus:unit-test` | Improving unit test coverage for existing code |
+| `/optimus:code-review` | Reviewing local changes, branch diffs, or PRs/MRs |
+| `/optimus:simplify` | Cleaning up code quality drift (duplication, pattern inconsistency) |
+| `/optimus:commit-message` | Generating a conventional commit message from staged changes |
+| `/optimus:permissions` | Configuring Claude Code permissions for safe autonomy |
+
+If the user's task matches a skill, invoke it. Skills provide structured workflows that produce better results than ad-hoc approaches.
+CATALOG
