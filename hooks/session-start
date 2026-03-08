@@ -20,5 +20,5 @@ Check if any of these skills apply before responding:
 | `/optimus:commit-message` | Generating a conventional commit message from staged changes |
 | `/optimus:permissions` | Configuring Claude Code permissions for safe autonomy |
 
-If the user's task matches a skill, invoke it. Skills provide structured workflows that produce better results than ad-hoc approaches.
+If the user's task matches a skill, suggest it (e.g., "You might want to run `/optimus:tdd` for this"). These skills require explicit user invocation — do not attempt to call them programmatically.
 CATALOG
