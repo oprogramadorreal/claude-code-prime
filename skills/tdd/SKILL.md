@@ -360,22 +360,23 @@ If there are commits on the branch:
 2. **Detect the hosting platform** (reuse the pattern from `/optimus:code-review`):
    - Check the `origin` remote URL: contains `gitlab` → **GitLab**; contains `github` → **GitHub**
    - If neither matches, check for CI files: `.gitlab-ci.yml` → GitLab; `.github/` directory → GitHub
-   - If platform is still unknown → skip PR/MR creation, report the push and suggest creating one manually
+   - If platform is still unknown → skip PR/MR creation, report the push and suggest running `/optimus:pr` to create one
 
-3. **Create a PR/MR** with a title and description:
+3. **Create a PR/MR** using the Conventional PR format:
+
+   Read `$CLAUDE_PLUGIN_ROOT/skills/pr/references/pr-template.md` for the Conventional PR format. Generate the PR title and body following this template.
+
+   Write the body to a secure temp file: `TMPFILE=$(mktemp /tmp/pr-body-XXXXXX.md)`. Clean up after the creation attempt: `rm -f "$TMPFILE"`.
 
    **GitHub** (requires `gh` CLI):
-   - Verify `gh` is available: `gh --version`. If not, skip and tell the user to create the PR manually
-   - `gh pr create --title "<conventional title>" --body "<description>" --base <original-branch>`
+   - Verify `gh` is available: `gh --version`. If not, skip and tell the user to run `/optimus:pr` to create the PR (it can install the CLI)
+   - `gh pr create --title "<conventional title>" --body-file "$TMPFILE" --base <original-branch>`
 
    **GitLab** (requires `glab` CLI):
-   - Verify `glab` is available: `glab --version`. If not, skip and tell the user to create the MR manually
-   - `glab mr create --fill --title "<conventional title>" --description "<description>" --target-branch <original-branch>`
+   - Verify `glab` is available: `glab --version`. If not, skip and tell the user to run `/optimus:pr` to create the MR (it can install the CLI)
+   - `glab mr create --title "<conventional title>" --description "$(cat "$TMPFILE")" --target-branch <original-branch>`
 
-   **PR/MR description** should include:
-   - Task description (from Step 2)
-   - List of behaviors implemented (from the summary table)
-   - Test count and coverage delta (if available)
+   Follow the Conventional PR template, incorporating TDD-specific data: include how many behaviors were implemented via TDD in the **Summary**, use `git diff --stat <original-branch>..HEAD` for **Changes**, and list each behavior as a verification item in the **Test plan** with coverage delta if available (e.g., "Coverage: [X]% → [Y]% (+[Z]%)").
 
 4. **Report** to the user:
 
@@ -384,7 +385,7 @@ If there are commits on the branch:
 - Branch: `<branch-name>` (from `<original-branch>`)
 - Commits: [N]
 - Pushed: ✓
-- PR/MR: [URL] (or "Create manually — `gh`/`glab` not available")
+- PR/MR: [URL] (or "Run `/optimus:pr` to create — CLI not available")
 ```
 
 If behaviors remain unfinished, note them and suggest re-running `/optimus:tdd` to continue.
