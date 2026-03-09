@@ -78,6 +78,9 @@ Review ONLY the diff/changed sections of these files:
 
 Focus exclusively on:
 - SQL injection, XSS, path traversal
+- Command injection (os.system, subprocess shell=True, child_process.exec, unsanitized shell args)
+- Arbitrary code execution (eval/exec/Function with user-controlled input)
+- SSRF (user-controlled URLs passed to HTTP clients without allowlist)
 - Hardcoded secrets or credentials
 - Missing input validation on trust boundaries
 - Unsafe deserialization
