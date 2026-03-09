@@ -37,6 +37,8 @@ Check that the required CLI tool is installed and authenticated:
 - **GitHub:** `gh auth status`. If not authenticated → inform the user: "Run `gh auth login` to authenticate."
 - **GitLab:** `glab auth status`. If not authenticated → inform the user: "Run `glab auth login` to authenticate."
 
+> The consuming skill decides whether to stop or continue after an authentication failure.
+
 ## CLI Installation
 
 If the CLI is not installed and the consuming skill offers installation:

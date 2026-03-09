@@ -32,7 +32,8 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/pr/references/platform-detection.md` and use th
 - **Cancel** — "I'll install it manually"
 
 If the user chooses **Cancel** → provide manual installation instructions and stop.
-If installation or authentication fails → stop with instructions.
+If installation fails → provide manual installation instructions and stop.
+If installed but auth fails → inform the user: "CLI installed. Run `[gh/glab] auth login` to authenticate, then re-run `/optimus:pr`." Stop.
 
 ## Step 4: Branch and Existing PR/MR Check
 

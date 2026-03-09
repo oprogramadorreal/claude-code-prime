@@ -411,7 +411,7 @@ If there are commits on the branch:
 
 1. **Push** the feature branch: `git push -u origin <branch-name>`
 
-2. **Detect the hosting platform** — read `$CLAUDE_PLUGIN_ROOT/skills/pr/references/platform-detection.md` and use steps 1 and 3 of the **Platform Detection Algorithm** (origin URL then CI file fallback). Skip multi-remote disambiguation — if ambiguous or unknown, skip PR/MR creation, report the push and suggest running `/optimus:pr` to create one
+2. **Detect the hosting platform** — read `$CLAUDE_PLUGIN_ROOT/skills/pr/references/platform-detection.md` and use the **origin URL check** and **CI file fallback** from the **Platform Detection Algorithm**. Skip multi-remote disambiguation — if ambiguous or unknown, skip PR/MR creation, report the push and suggest running `/optimus:pr` to create one
 
 3. **Create a PR/MR** using the Conventional PR format:
 
