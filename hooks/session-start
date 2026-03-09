@@ -30,14 +30,14 @@ else
     missing_agents+="test-guardian "
   fi
   if [ -n "$missing_agents" ]; then
-    output+="[optimus] Missing agents: ${missing_agents%. }. Run \`/optimus:init\` to install them."$'\n'
+    output+="[optimus] Missing agents: ${missing_agents% }. Run \`/optimus:init\` to install them."$'\n'
   fi
 fi
 
 # 4. Git state (uncommitted changes or unpushed commits)
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   changed=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
-  unpushed=$(git log --oneline '@{u}..HEAD' 2>/dev/null | wc -l | tr -d ' ')
+  unpushed=$(git log --oneline '@{u}..HEAD' 2>/dev/null | wc -l | tr -d ' ') || unpushed=0
 
   state_parts=""
   [ "$changed" -gt 0 ] 2>/dev/null && state_parts+="${changed} files changed"
