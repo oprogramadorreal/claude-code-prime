@@ -11,7 +11,7 @@ What makes a good developer productive in a codebase also makes Claude Code prod
 - **Code Quality** — deploys a [code-simplifier](templates/agents/code-simplifier.md) agent that enforces your project's [coding guidelines](templates/docs/coding-guidelines.md) — clean code, small functions, clear naming, proper abstractions. This isn't about aesthetics: well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). The agent guards new code proactively; for a full project review, see `/optimus:simplify`.
 - **Test Coverage** — installs a [test-guardian](templates/agents/test-guardian.md) agent that monitors coverage gaps when test infrastructure is detected — flagging untested code, verifying that existing tests still pass, and checking that test commands are runnable. It doesn't write tests or install frameworks; it ensures the project maintains its testing standards as it evolves. This directly enables Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices): giving Claude a way to verify its work.
 - **Documentation Freshness** — reviews existing documentation (README, CONTRIBUTING, etc.) for contradictions against the actual source code. Stale docs in context degrade LLM performance — if documentation says one thing and the code says another, you're actively harming output quality.
-- **Audit on re-run** — compares docs against current project state, classifies sections as Outdated / Missing / Accurate, and lets you choose what to update
+- **Audit on re-run** — compares docs against current project state, classifies sections as Outdated / Missing / Accurate, and lets you choose what to update. Tracks plugin version in `.claude/.optimus-version` — when the plugin has been updated, the audit also compares generated docs against current templates to surface plugin-side improvements
 - **Monorepo & multi-repo workspace support** — auto-detects monorepos and multi-repo workspaces (separate git repos under a shared parent); generates fully self-contained `.claude/` per repo
 
 ## Quick Start
@@ -26,9 +26,6 @@ In Claude Code, use any of these:
 
 - `/optimus:init` — full project setup
 - `/optimus:init` "focus on the backend services"
-- "set up this project with optimus"
-- "set up Claude Code for this project"
-- "initialize project documentation and hooks"
 
 ## When to Run
 
@@ -86,6 +83,7 @@ Both agents reference your project's `.claude/CLAUDE.md` and `.claude/docs/` fil
 | `.claude/hooks/` | Auto-format hooks per detected stack |
 | `.claude/agents/code-simplifier.md` | Code quality agent |
 | `.claude/agents/test-guardian.md` | Test coverage agent (when test infrastructure detected) |
+| `.claude/.optimus-version` | Plugin version that last generated these files |
 
 **Monorepo:** each subproject also gets its own `CLAUDE.md` and scoped `docs/`.
 
@@ -97,6 +95,8 @@ Both agents reference your project's `.claude/CLAUDE.md` and `.claude/docs/` fil
 |---|---|
 | `SKILL.md` | Skill definition with step-by-step instructions |
 | `references/claude-md-best-practices.md` | Research-backed guidance for CLAUDE.md authoring |
+| `references/project-detection.md` | Project structure detection algorithm |
+| `references/formatter-setup.md` | Formatter hook installation guidance |
 | `templates/` | CLAUDE.md templates, doc templates, hook scripts, agent definitions |
 
 ## Customization
@@ -112,7 +112,7 @@ To understand or modify how the skill works, start with `SKILL.md`. Key customiz
 
 The coding guidelines file (`.claude/docs/coding-guidelines.md` in your project) is the primary control surface for how the code-simplifier agent, `/optimus:simplify`, and `/optimus:code-review` evaluate your code. Every principle you add, remove, or edit directly changes what these tools flag.
 
-Note: re-running `/optimus:init` always overwrites `coding-guidelines.md`, agents, and hooks from the latest plugin templates — use `git diff` to review changes. To add project-specific rules that survive re-runs, put them in `.claude/CLAUDE.md` instead.
+Note: re-running `/optimus:init` always overwrites `coding-guidelines.md`, agents, and hooks from the latest plugin templates — use `git diff` to review changes. When the plugin version has increased since the last run, the audit also compares generated docs against current templates to detect improvements. To add project-specific rules that survive re-runs, put them in `.claude/CLAUDE.md` instead.
 
 ## Relationship to Other Skills
 
@@ -123,10 +123,11 @@ Note: re-running `/optimus:init` always overwrites `coding-guidelines.md`, agent
 | `/optimus:unit-test` | test-guardian agent, testing.md, CLAUDE.md | Writes test files, provisions coverage tooling |
 | `/optimus:simplify` | coding-guidelines.md, code-simplifier agent | Full-project code review against guidelines |
 | `/optimus:code-review` | All docs + both agents | Pre-commit review with up to 6 parallel agents |
+| `/optimus:tdd` | CLAUDE.md, coding-guidelines.md, testing.md, both agents | Red-Green-Refactor TDD with feature branch workflow |
 | `/optimus:permissions` | Shares `.claude/settings.json` | Permission rules + path-restriction hook |
 | `/optimus:commit-message` | Independent | Conventional commit message suggestion |
 
-All skills work without init (commit-message and permissions are fully independent; the others produce better results with project-specific docs and agents in place).
+commit-message and permissions are fully independent of init. simplify and code-review fall back to generic guidelines when project docs are missing. tdd and unit-test require init — both stop if CLAUDE.md is not found.
 
 ## Requirements
 
