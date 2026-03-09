@@ -24,7 +24,10 @@ else
   # 3. Check quality agents
   missing_agents=""
   [ ! -f .claude/agents/code-simplifier.md ] && missing_agents+="code-simplifier "
-  [ ! -f .claude/agents/test-guardian.md ] && missing_agents+="test-guardian "
+  # test-guardian is only expected when test infrastructure exists (testing.md present)
+  if [ -f .claude/docs/testing.md ] && [ ! -f .claude/agents/test-guardian.md ]; then
+    missing_agents+="test-guardian "
+  fi
   if [ -n "$missing_agents" ]; then
     output+="[optimus] Missing agents: ${missing_agents%. }. Run \`/optimus:init\` to install them."$'\n'
   fi

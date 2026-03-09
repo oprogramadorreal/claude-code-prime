@@ -231,7 +231,7 @@ The skill produces a structured summary after completing:
 
 TDD automatically manages a feature branch for all work:
 
-1. **Branch creation** — Creates `tdd/<slug>` (or `tdd/fix-<slug>`) from the current branch before any code changes. Optionally sets up a git worktree (`.worktrees/<branch-name>`) so the main workspace stays on the original branch
+1. **Branch creation** — Creates `tdd/<slug>` (or `tdd/fix-<slug>`) from the current branch before any code changes. Optionally sets up a git worktree (`.worktrees/<worktree-dir>`, where `<worktree-dir>` is the branch name with `/` replaced by `-`) so the main workspace stays on the original branch
 2. **Auto-commits** — After each completed Red-Green-Refactor cycle, TDD automatically stages and commits with a conventional message
 3. **Final commit** — Any uncommitted work (e.g., stopped mid-cycle) is committed at the end of the session
 4. **Push** — The feature branch is pushed to origin automatically

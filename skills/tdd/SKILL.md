@@ -121,8 +121,10 @@ All TDD work will be committed to this branch.
 
 ### Worktree isolation (optional)
 
-After branch creation, offer git worktree isolation so the user's main workspace stays clean. Use `AskUserQuestion` — header "Workspace", question "Use a git worktree for isolated development? Your main workspace stays on the original branch.":
-- **Use worktree (Recommended)** — "Work in `.worktrees/<branch-name>` — main workspace stays clean, enables parallel work"
+After branch creation, offer git worktree isolation so the user's main workspace stays clean. First, derive a **worktree directory name** by replacing `/` with `-` in the branch name (e.g., `tdd/add-password-reset` → `tdd-add-password-reset`). Use this as `<worktree-dir>` in all worktree paths below.
+
+Use `AskUserQuestion` — header "Workspace", question "Use a git worktree for isolated development? Your main workspace stays on the original branch.":
+- **Use worktree (Recommended)** — "Work in `.worktrees/<worktree-dir>` — main workspace stays clean, enables parallel work"
 - **Stay on branch** — "Work directly on the branch in the current directory (standard git workflow)"
 
 If the user chooses worktree isolation:
@@ -130,7 +132,7 @@ If the user chooses worktree isolation:
 1. **Check for worktree directory**: if `.worktrees/` does not exist, create it: `mkdir -p .worktrees`
 2. **Ensure `.worktrees/` is gitignored**: check if `.gitignore` contains `.worktrees/` or `.worktrees`. If not, append `.worktrees/` to `.gitignore` and stage it: `echo '.worktrees/' >> .gitignore && git add .gitignore`
 3. **Switch branch back**: the branch was already created, so switch the main workspace back: `git checkout <original-branch>`
-4. **Create worktree**: `git worktree add .worktrees/<branch-name> <branch-name>`
+4. **Create worktree**: `git worktree add .worktrees/<worktree-dir> <branch-name>`
 5. **Run project setup** in the worktree (if applicable): detect setup commands from `CLAUDE.md` or manifest files (`npm install`, `pip install -e .`, `cargo build`, etc.) and run them inside the worktree directory
 6. **Verify test baseline**: run the test command inside the worktree to confirm tests pass in the isolated environment
 7. **Report**:
@@ -138,14 +140,14 @@ If the user chooses worktree isolation:
 ```
 ## Worktree
 
-Working in: `.worktrees/<branch-name>`
+Working in: `.worktrees/<worktree-dir>`
 Main workspace: `<original-branch>` (unchanged)
 Tests: passing ✓
 ```
 
 If worktree creation fails (e.g., git version too old, filesystem issues), fall back to the standard branch workflow silently and inform the user.
 
-**Important**: When using a worktree, all subsequent steps (4–9) must run commands inside the worktree directory. Use `cd .worktrees/<branch-name>` before running tests, linting, or git commands. File paths in reports should be relative to the project root for clarity.
+**Important**: When using a worktree, all subsequent steps (4–9) must run commands inside the worktree directory. Use `cd .worktrees/<worktree-dir>` before running tests, linting, or git commands. File paths in reports should be relative to the project root for clarity.
 
 ### Decompose into behaviors
 
@@ -447,9 +449,10 @@ If behaviors remain unfinished, note them and suggest re-running `/optimus:tdd` 
 If a worktree was used (Step 3), offer cleanup after the PR/MR is created:
 
 1. Switch to the main workspace directory (parent of `.worktrees/`)
-2. Remove the worktree: `git worktree remove .worktrees/<branch-name>`
+2. Remove the worktree: `git worktree remove .worktrees/<worktree-dir>`
+   - If removal **fails due to uncommitted changes**, inform the user: "Worktree has uncommitted changes. Commit or discard them first, or use `git worktree remove --force .worktrees/<worktree-dir>` to discard and remove."
 3. If the `.worktrees/` directory is now empty, remove it: `rmdir .worktrees 2>/dev/null`
 
-If the user prefers to keep the worktree (e.g., for further work), skip cleanup and note: "Worktree `.worktrees/<branch-name>` is still active. Remove it manually with `git worktree remove .worktrees/<branch-name>` when done."
+If the user prefers to keep the worktree (e.g., for further work), skip cleanup and note: "Worktree `.worktrees/<worktree-dir>` is still active. Remove it manually with `git worktree remove .worktrees/<worktree-dir>` when done."
 
 Remind the user that the PR/MR should be reviewed before merging, and suggest using `/optimus:code-review` to review it.
