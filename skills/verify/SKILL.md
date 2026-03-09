@@ -144,15 +144,16 @@ Create a git worktree for isolated verification. This keeps all verification wor
 
 ### Worktree setup
 
-1. Derive worktree directory name: replace `/` with `-` in the branch name (e.g., `feature/auth` → `verify-feature-auth`)
+1. Derive slug: replace `/` with `-` in the branch name, then strip any character not in `[a-zA-Z0-9._-]` (e.g., `feature/auth` → `feature-auth`). Always quote the resulting path in shell commands.
 2. Check if `.worktrees/` exists — if not, create it: `mkdir -p .worktrees`
-3. Ensure `.worktrees/` is gitignored: check if `.gitignore` contains `.worktrees/` or `.worktrees`. If not, append `.worktrees/` to `.gitignore` and stage it: `echo '.worktrees/' >> .gitignore && git add .gitignore`
+3. Ensure `.worktrees/` is gitignored: check if `.gitignore` contains `.worktrees/` or `.worktrees`. If not, append `.worktrees/` to `.gitignore`: `echo '.worktrees/' >> .gitignore`
 4. Check if `.worktrees/verify-<slug>` already exists (from a previous run):
    - If exists → use `AskUserQuestion` — header "Existing sandbox", question "A sandbox from a previous run exists at `.worktrees/verify-<slug>`. Reuse it or start fresh?":
      - **Reuse** — "Use the existing sandbox (faster — dependencies already installed)"
      - **Fresh** — "Remove and recreate (clean start)"
-   - If "Fresh" → remove: `git worktree remove --force .worktrees/verify-<slug>`
+   - If "Fresh" → remove: `git worktree remove --force .worktrees/verify-<slug>` then run `git worktree prune` to clear stale metadata
 5. Create worktree: `git worktree add .worktrees/verify-<slug> <current-branch>`
+6. Disable remote push in the sandbox: `git -C ".worktrees/verify-<slug>" remote set-url --push origin no-push-allowed`
 
 ### Install dependencies
 
@@ -352,10 +353,10 @@ If the user chooses "Fix issues":
 2. Re-run the failing verification to confirm the fix works
 3. Follow the verification protocol for every re-verification
 4. Present updated results showing which fixes succeeded
-5. Offer "Apply fixes to branch" — use `git diff` in the sandbox to generate a patch, then apply it to the feature branch:
-   - `cd <sandbox-path> && git diff > /tmp/verify-fixes.patch`
-   - `cd <project-root> && git apply /tmp/verify-fixes.patch`
-   - `rm -f /tmp/verify-fixes.patch`
+5. Offer "Apply fixes to branch" — generate a patch from the sandbox, then apply it to the feature branch. Stage only the actual source fixes (exclude `_mock/`, verification test files, and other agent-generated artifacts):
+   - `cd <sandbox-path> && git add <fixed-source-files-only> && PATCHFILE=$(mktemp /tmp/verify-fixes-XXXXXX.patch) && git diff --cached > "$PATCHFILE"`
+   - `cd <project-root> && git apply "$PATCHFILE"`
+   - `rm -f "$PATCHFILE"`
 6. Never push to remote — the user decides when to push
 
 ### Update PR flow
