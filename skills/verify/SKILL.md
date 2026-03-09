@@ -153,7 +153,9 @@ Create a git worktree for isolated verification. This keeps all verification wor
      - **Fresh** — "Remove and recreate (clean start)"
    - If "Fresh" → remove: `git worktree remove --force .worktrees/verify-<slug>` then run `git worktree prune` to clear stale metadata
 5. Create worktree: `git worktree add --detach .worktrees/verify-<slug> <current-branch>` (the `--detach` flag is required because the current branch is already checked out in the main workspace — without it, git refuses to check out the same branch in two worktrees)
-6. Disable remote push in the sandbox: `git -C ".worktrees/verify-<slug>" remote set-url --push origin no-push-allowed`
+6. Disable remote push in the sandbox (worktree-scoped — does not affect the main repo's git config):
+   - `git config extensions.worktreeConfig true`
+   - `git -C ".worktrees/verify-<slug>" config --worktree remote.origin.pushurl no-push-allowed`
 
 ### Install dependencies
 
@@ -385,8 +387,9 @@ If "Remove":
 1. Switch to the main workspace directory (parent of `.worktrees/`)
 2. Remove the worktree: `git worktree remove .worktrees/verify-<slug>`
    - If removal fails due to changes: `git worktree remove --force .worktrees/verify-<slug>`
-3. If `.worktrees/` is empty, remove it: `rmdir .worktrees 2>/dev/null`
-4. If fallback was used (`.verify-sandbox/`): `rm -rf .verify-sandbox`
+3. If no other worktrees remain (`git worktree list` shows only the main worktree): `git config --unset extensions.worktreeConfig 2>/dev/null`
+4. If `.worktrees/` is empty, remove it: `rmdir .worktrees 2>/dev/null`
+5. If fallback was used (`.verify-sandbox/`): `rm -rf .verify-sandbox`
 
 If "Keep":
 - Note: "Sandbox at `.worktrees/verify-<slug>` is still active. Remove manually with `git worktree remove .worktrees/verify-<slug>` when done."
