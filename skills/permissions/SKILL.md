@@ -94,3 +94,9 @@ Run through this checklist. Fix any issues before reporting.
    ```
    - If any are found and not git-tracked, report them as protected files
    - If the scan discovers unversioned files that look sensitive but do not match built-in patterns (e.g., custom config files like `config.local.yaml`), ask the user if they want to add custom patterns to the `is_precious()` function in `.claude/hooks/restrict-paths.sh`. **Note:** custom edits to this file will be replaced if the user re-runs `/optimus:permissions`. For persistent customizations, edit the template in the plugin source instead.
+
+Recommend the next step based on project state:
+- If `.claude/CLAUDE.md` does not exist → `/optimus:init` to set up coding guidelines and project structure
+- If already initialized → `/optimus:unit-test` to establish test coverage, or `/optimus:tdd` to start developing with test-driven workflow
+
+Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.

@@ -386,16 +386,16 @@ If "Remove":
 If "Keep":
 - Note: "Sandbox at `.worktrees/verify-<slug>` is still active. Remove manually with `git worktree remove .worktrees/verify-<slug>` when done."
 
-### Closing suggestions
-
-Based on the verification results:
-- If **ALL PASSED** → suggest `/optimus:code-review` for static quality review before merging
-- If **ISSUES FOUND** and user fixed them → suggest committing the fixes and re-running `/optimus:verify` to confirm
-- If **PARTIAL** → list the blocked/skipped items and suggest how to verify them
-
 ## Important
 
 - Never push to remote — all sandbox work is strictly local
 - Never modify the main workspace during verification (except when the user explicitly requests "Apply fixes to branch")
 - The sandbox worktree is disposable — treat it as a scratch environment
 - All claims of PASS/FAIL must follow the verification protocol: fresh evidence, not assumptions
+
+Recommend the next step based on the verification outcome:
+- If **ALL PASSED** → `/optimus:code-review` for static quality review before merging
+- If **ISSUES FOUND** and user fixed them → `/optimus:commit-message` to commit the fixes, then re-run `/optimus:verify` to confirm
+- If **PARTIAL** → list the blocked/skipped items and suggest how to verify them
+
+Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
