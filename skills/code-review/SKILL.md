@@ -269,4 +269,4 @@ After the review is complete, recommend the next step based on the outcome:
 - If issues were found and fixed → `/optimus:commit-message` to commit the fixes
 - If no issues or user skipped fixes → `/optimus:pr` to create a pull request (skip this if already reviewing a PR/MR)
 
-For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch.
+Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.

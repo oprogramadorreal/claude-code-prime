@@ -99,4 +99,4 @@ Recommend the next step based on project state:
 - If `.claude/CLAUDE.md` does not exist → `/optimus:init` to set up coding guidelines and project structure
 - If already initialized → `/optimus:unit-test` to establish test coverage, or `/optimus:tdd` to start developing with test-driven workflow
 
-For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch.
+Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.

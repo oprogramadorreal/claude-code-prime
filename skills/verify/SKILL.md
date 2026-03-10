@@ -400,4 +400,4 @@ Based on the verification results:
 - The sandbox worktree is disposable — treat it as a scratch environment
 - All claims of PASS/FAIL must follow the verification protocol: fresh evidence, not assumptions
 
-For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch.
+Recommend running `/optimus:commit-message` to commit the verified changes, or `/optimus:code-review` for a static quality review before merging. **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.

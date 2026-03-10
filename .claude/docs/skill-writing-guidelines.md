@@ -62,7 +62,7 @@ Every skill must end with a recommendation for the next logical optimus skill. T
 
 - Choose the next skill based on the outcome (e.g., after fixing issues → commit; after committing → PR).
 - If multiple paths are possible, present them conditionally (e.g., "if X → skill A; if Y → skill B").
-- Always append: "For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch."
+- Always include the fresh-conversation tip as part of the recommendation to the user — e.g., "Recommend running `/optimus:X` to do Y. **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch." The tip must be clearly scoped under a "Recommend" / "Tell the user" verb so Claude treats it as output, not as an internal instruction.
 
 ## Examples
 
