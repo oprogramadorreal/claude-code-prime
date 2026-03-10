@@ -120,6 +120,31 @@ target_link_libraries(mock_consumer <library-target>)
 
 Create `_mock/main.c` (or `main.cpp`) exercising the changed public APIs.
 
+### Dart / Flutter
+
+**For Dart packages:**
+
+```bash
+dart create -t console _mock
+```
+
+Add path dependency to `_mock/pubspec.yaml`:
+```yaml
+dependencies:
+  <package-name>:
+    path: ../
+```
+
+Create `_mock/bin/_mock.dart` importing and exercising the changed public APIs.
+
+**For Flutter packages/plugins:**
+
+```bash
+flutter create --template=app _mock
+```
+
+Add path dependency to `_mock/pubspec.yaml` under `dependencies:` and create a test or main file exercising the widget/plugin APIs.
+
 ## Mock Project Principles
 
 - **Minimal** — under 50 lines of consumer code per behavior being verified

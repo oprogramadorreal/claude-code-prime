@@ -29,8 +29,11 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 | go.mod | Go | go |
 | CMakeLists.txt, Makefile | C/C++ | cmake, make |
 | Gemfile | Ruby | bundler |
+| pubspec.yaml | Dart/Flutter | pub |
 
 Note: `.sln` files reference `.csproj` projects — they confirm .NET presence but aren't independent project manifests. Don't count a root `.sln` for root-as-project detection. When a single root `.sln` references all `.csproj` files found during detection, treat the entire solution as one project (see .NET solution consolidation in `project-detection.md`). List all solution projects and their roles in the CLAUDE.md Project Structure section.
+
+Note: For Dart/Flutter projects, when `build_runner` is in `dev_dependencies`, document both `build_runner build` and `build_runner watch` commands in CLAUDE.md and note that generated files (`.g.dart`, `.freezed.dart`) must not be edited manually.
 
 **Extract**: Project name, tech stack, build system, available scripts.
 
@@ -45,12 +48,14 @@ Note: `.sln` files reference `.csproj` projects — they confirm .NET presence b
 | Python | `uv.lock` exists OR `[tool.uv]` in pyproject.toml | uv (prefix commands with `uv run`) |
 | Python | `poetry.lock` exists OR `[tool.poetry]` in pyproject.toml | poetry (prefix with `poetry run`) |
 | Python | default | pip (bare commands: `pytest`, `ruff`, etc.) |
+| Dart/Flutter | `pubspec.yaml` has Flutter SDK dependency (`dependencies.flutter.sdk: flutter`) | flutter (prefix commands with `flutter`) |
+| Dart/Flutter | `pubspec.yaml` without Flutter SDK dependency (pure Dart package) | dart (prefix commands with `dart`) |
 
-Use the detected package manager for all commands in CLAUDE.md. For example, if the Node.js project uses pnpm, write `pnpm run build` not `npm run build`. If the Python project uses uv, write `uv run pytest` not just `pytest`.
+Use the detected package manager for all commands in CLAUDE.md. For example, if the Node.js project uses pnpm, write `pnpm run build` not `npm run build`. If the Python project uses uv, write `uv run pytest` not just `pytest`. If the Dart project uses Flutter, write `flutter pub get` not `dart pub get`, and `flutter test` not `dart test`.
 
 **Analyze structure and extract doc insights:**
 - Top-level directories for architecture pattern
-- Entry points (main.ts, index.ts, app.module.ts, etc.)
+- Entry points (main.ts, index.ts, app.module.ts, main.dart, etc.)
 - README.md, CONTRIBUTING.md, ARCHITECTURE.md, docs/ directory files
 - Monorepo: also each subproject's README.md
 
@@ -214,7 +219,7 @@ Add auto-format hooks so files stay consistently formatted after every Edit/Mult
 
 Always overwrite existing hooks — these are verbatim templates, not project-customized content.
 
-Supported stacks: Python (black + isort), Node.js (prettier), Rust (rustfmt), Go (gofmt), C#/.NET (csharpier), Java (google-java-format), C/C++ (clang-format). Templates are in `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
+Supported stacks: Python (black + isort), Node.js (prettier), Rust (rustfmt), Go (gofmt), C#/.NET (csharpier), Java (google-java-format), C/C++ (clang-format), Dart/Flutter (dart format). Templates are in `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
 
 Key rules:
 - External formatters not in deps → ask user before installing
@@ -229,7 +234,7 @@ Always overwrite — this is a verbatim template, not project-customized content
 
 ## Step 5c: Install Test Guardian Agent (conditional)
 
-**Only install when test infrastructure was detected in Step 1** — same condition as `testing.md` creation in Step 6: test framework in dependencies, `test`/`test:*` script in manifest, or `tests/`/`test/`/`spec/`/`__tests__/` directory exists.
+**Only install when test infrastructure was detected in Step 1** — same condition as `testing.md` creation in Step 6: test framework in dependencies, `test`/`test:*` script in manifest, or `tests/`/`test/`/`spec/`/`__tests__/`/`integration_test/` directory exists.
 
 If detected: Copy `$CLAUDE_PLUGIN_ROOT/skills/init/templates/agents/test-guardian.md` to `.claude/agents/test-guardian.md`. Always overwrite — this is a verbatim template, not project-customized content.
 
@@ -244,8 +249,8 @@ If not detected: Skip installation. In Step 7 summary, include: "⚠ No test inf
 
 | File | Template | Create when ANY of these are true |
 |------|----------|-----------------------------------|
-| `testing.md` | `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/testing.md` | Manifest lists a test dependency (jest, vitest, mocha, karma, pytest, unittest, rspec, gtest, catch2, doctest, ctest, etc.) OR a `test`/`test:*` script exists in manifest OR a `tests/`, `test/`, `spec/`, `__tests__/` directory exists |
-| `styling.md` | `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/styling.md` | Manifest lists a UI framework (react, vue, angular, svelte, solid) OR lists CSS tooling (tailwindcss, styled-components, sass, less, postcss) OR `.css`/`.scss`/`.less` files exist in `src/` |
+| `testing.md` | `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/testing.md` | Manifest lists a test dependency (jest, vitest, mocha, karma, pytest, unittest, rspec, gtest, catch2, doctest, ctest, flutter_test, etc.) OR a `test`/`test:*` script exists in manifest OR a `tests/`, `test/`, `spec/`, `__tests__/`, `integration_test/` directory exists |
+| `styling.md` | `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/styling.md` | Manifest lists a UI framework (react, vue, angular, svelte, solid) OR lists CSS tooling (tailwindcss, styled-components, sass, less, postcss) OR `.css`/`.scss`/`.less` files exist in `src/` OR manifest is `pubspec.yaml` with Flutter SDK dependency (Flutter apps are UI applications with theme, widget, and styling conventions) |
 | `architecture.md` | `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/architecture.md` | Project has 3+ top-level source directories (excluding config, tests, docs, build output) OR uses recognized pattern directories (controllers/, services/, repositories/, handlers/, models/) |
 
 Use each template as a skeleton — fill in all placeholders with actual project details (framework names, commands, directory paths, conventions). Don't leave any `[placeholder]` text in the final output.
