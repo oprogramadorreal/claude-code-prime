@@ -16,6 +16,7 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 - **Multi-repo workspace support** — resolves per-repo documentation when opened from a workspace root containing multiple git repos
 - **GitLab support** — PR/MR review via `glab` CLI alongside GitHub `gh` CLI
 - **Submodule exclusion** — automatically skips files inside git submodules
+- **Generated file exclusion** — skips machine-generated files (Dart build_runner output, Visual Studio Designer files, database migration directories)
 
 ## Quick Start
 

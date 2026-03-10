@@ -24,5 +24,5 @@ Recommend the most popular test framework and coverage tooling for each tech sta
 - For Node.js projects using Vite, ESBuild, or SWC, favor Vitest over Jest for native ESM and faster execution.
 - For projects with existing Jest configuration, keep Jest unless migration is explicitly requested.
 - For Go and Rust, use the built-in test tooling — third-party frameworks are rarely needed.
-- For Flutter projects, use `flutter_test` which extends `package:test` with widget testing (`testWidgets`, `pumpWidget`) and golden testing (`matchesGoldenFile`). For pure Dart packages without Flutter, use `package:test`. Coverage: `flutter test --coverage` generates `coverage/lcov.info`. Filter generated files: `lcov -r coverage/lcov.info "*.g.dart" "*.freezed.dart" -o coverage/lcov_filtered.info`. Integration tests go in `integration_test/` (not `test/`) and use `package:integration_test`. Update golden baselines with `flutter test --update-goldens`.
+- For Flutter projects, use `flutter_test`; for pure Dart packages, use `package:test`. Filter generated files (`*.g.dart`, `*.freezed.dart`) from coverage reports. Integration tests go in `integration_test/`.
 - When multiple frameworks are viable, prefer the one with the largest community and best IDE integration for the stack.

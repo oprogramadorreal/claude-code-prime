@@ -33,7 +33,7 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 
 Note: `.sln` files reference `.csproj` projects — they confirm .NET presence but aren't independent project manifests. Don't count a root `.sln` for root-as-project detection. When a single root `.sln` references all `.csproj` files found during detection, treat the entire solution as one project (see .NET solution consolidation in `project-detection.md`). List all solution projects and their roles in the CLAUDE.md Project Structure section.
 
-Note: For Dart/Flutter projects, when `build_runner` is in `dev_dependencies` of `pubspec.yaml`, the project uses code generation (commonly: freezed, json_serializable, retrofit_generator, riverpod_generator). Document both commands in CLAUDE.md: `dart run build_runner build --delete-conflicting-outputs` (one-time) and `dart run build_runner watch --delete-conflicting-outputs` (watch mode). Note that generated files (`.g.dart`, `.freezed.dart`) are machine-generated and must not be edited manually. If multiple entry points exist (e.g., `lib/main.dart`, `lib/main_development.dart`, `lib/main_staging.dart`), document each with its purpose and the `--target` flag used to run it.
+Note: For Dart/Flutter projects, when `build_runner` is in `dev_dependencies`, document both `build_runner build` and `build_runner watch` commands in CLAUDE.md and note that generated files (`.g.dart`, `.freezed.dart`) must not be edited manually.
 
 **Extract**: Project name, tech stack, build system, available scripts.
 
