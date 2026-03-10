@@ -163,6 +163,7 @@ Run project setup inside the worktree (detect from `CLAUDE.md` or manifests):
 | Java (Maven) | `mvn install -DskipTests` |
 | Java (Gradle) | `gradle build -x test` |
 | C/C++ | `cmake -B build && cmake --build build` (or project-specific) |
+| Dart/Flutter | `flutter pub get` / `dart pub get` (match detected manager). If `build_runner` is in dev_dependencies, also run `dart run build_runner build --delete-conflicting-outputs` |
 
 ### Verify sandbox
 

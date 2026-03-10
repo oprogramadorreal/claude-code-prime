@@ -14,6 +14,7 @@ Recommend the most popular test framework and coverage tooling for each tech sta
 | PHP | PHPUnit | built-in coverage (requires Xdebug or PCOV) | Built-in |
 | Ruby | RSpec | SimpleCov | Built-in |
 | C/C++ | Google Test (gtest) or Catch2 | gcov/lcov | genhtml (from lcov) |
+| Dart/Flutter | flutter_test (Flutter) or package:test (Dart) | `flutter test --coverage` (LCOV) | genhtml (from lcov) |
 | Angular (new project) | Vitest | built-in `--coverage` (v8 provider) | Built-in |
 | Angular (existing tests) | Detect and keep existing | Detect existing coverage tooling | Detect existing |
 
@@ -23,4 +24,5 @@ Recommend the most popular test framework and coverage tooling for each tech sta
 - For Node.js projects using Vite, ESBuild, or SWC, favor Vitest over Jest for native ESM and faster execution.
 - For projects with existing Jest configuration, keep Jest unless migration is explicitly requested.
 - For Go and Rust, use the built-in test tooling — third-party frameworks are rarely needed.
+- For Flutter projects, use `flutter_test` which extends `package:test` with widget testing (`testWidgets`, `pumpWidget`) and golden testing (`matchesGoldenFile`). For pure Dart packages without Flutter, use `package:test`. Coverage: `flutter test --coverage` generates `coverage/lcov.info`. Filter generated files: `lcov -r coverage/lcov.info "*.g.dart" "*.freezed.dart" -o coverage/lcov_filtered.info`. Integration tests go in `integration_test/` (not `test/`) and use `package:integration_test`. Update golden baselines with `flutter test --update-goldens`.
 - When multiple frameworks are viable, prefer the one with the largest community and best IDE integration for the stack.
