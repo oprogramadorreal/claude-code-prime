@@ -12,6 +12,7 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 - **Test verification** — runs the test suite after applying changes with evidence-based verification; reverts any change that causes failures
 - **Conservative by default** — only suggests changes justified by the project's own guidelines
 - **Prioritized findings** — High/Medium/Low impact with concrete before/after sketches, capped at 12 per run for actionable output
+- **Deep mode** — iterative cleanup that loops analysis-apply cycles until zero findings remain (max 5 iterations), with explicit user consent and risk warnings
 - **Works without `/optimus:init`** — falls back to generic coding guidelines when project-specific docs aren't available
 - **Multi-repo workspace support** — resolves per-repo documentation when opened from a workspace root containing multiple git repos
 - **Submodule exclusion** — automatically skips files inside git submodules
@@ -27,6 +28,8 @@ In Claude Code, use any of these:
 - `/optimus:simplify` — full project review
 - `/optimus:simplify` "focus on the auth module"
 - `/optimus:simplify` "review changes since last week"
+- `/optimus:simplify deep` — iterative cleanup until zero findings remain
+- `/optimus:simplify deep` "focus on src/auth" — deep mode with a specific scope
 
 ## When to Run
 
@@ -79,6 +82,24 @@ You then choose: **Apply all**, **Selective** (pick by number), or **Skip**.
 4. Analyzes code with emphasis on patterns that span multiple files
 5. Presents findings as a prioritized plan (capped at 12 per run)
 6. Applies only user-approved changes, runs tests with evidence-based verification, reverts any that cause failures
+
+## Deep Mode
+
+By default, the skill caps findings at 12 per run. For exhaustive cleanup, use `deep` to loop automatically:
+
+```
+/optimus:simplify deep
+```
+
+Deep mode runs the same analysis-apply cycle repeatedly (max 5 iterations) until zero findings remain. Before starting, it warns about credit/time consumption and breakage risk with low test coverage, and asks for explicit confirmation.
+
+Each iteration:
+1. Analyzes code (same caps: 12 findings, 5 per area)
+2. Auto-applies all findings (no per-iteration approval)
+3. Runs the test suite — reverts any change that causes failures
+4. Loops back for the next pass, or stops when clean
+
+Deep mode stops when: no findings remain, the iteration cap (5) is reached, or all changes in an iteration fail tests. All changes remain as local modifications — review the full diff and commit when satisfied.
 
 ## Relationship to Code-Simplifier Agent
 

@@ -1,5 +1,5 @@
 ---
-description: This skill analyzes the codebase against project coding guidelines as on-demand code simplification — run after /optimus:init, when code quality drifts, or for periodic cleanup. Surfaces issues that span multiple files (duplication across modules, pattern inconsistency, architectural drift) and presents a simplification plan for approval before changes are applied.
+description: This skill analyzes the codebase against project coding guidelines as on-demand code simplification — run after /optimus:init, when code quality drifts, or for periodic cleanup. Surfaces issues that span multiple files (duplication across modules, pattern inconsistency, architectural drift) and presents a simplification plan for approval before changes are applied. Supports a "deep" parameter for iterative cleanup until zero findings remain.
 disable-model-invocation: true
 ---
 
@@ -33,6 +33,20 @@ Default to **full project** if the user just says "simplify" without specifying.
 For **changed since**: use `git diff --name-only <ref>...HEAD` for commit SHAs, branch names, and tags. For relative dates, use `git log --since="2 weeks ago" --format= --name-only` instead (`--since` is a `git log` flag, not `git diff`). Filter to source files only (apply the exclusion rules from Step 2).
 
 For monorepos with **full project** scope: ask which subprojects to include (default: all). For **directory** scope: auto-detect which subproject the path belongs to.
+
+### Deep mode
+
+If the user invoked with `deep` (e.g., `/optimus:simplify deep` or `/optimus:simplify deep "focus on src/"`), activate deep mode. Deep mode loops analysis-apply cycles (Steps 3–6) until zero findings remain or **5 iterations** are reached.
+
+Before proceeding, warn the user:
+
+> **Deep mode** runs up to 5 iterative simplification passes. Each iteration is a full analysis-apply cycle — credit and time consumption multiplies with iteration count. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net.
+
+Then use `AskUserQuestion` — header "Deep mode", question "Proceed with deep mode?":
+- **Start deep mode** — "Run iterative cleanup until clean (max 5 iterations)"
+- **Normal mode** — "Single pass with manual approval instead"
+
+If the user selects **Normal mode**, continue with the standard single-pass flow. Record the user's choice as a `deep-mode` flag for subsequent steps. If deep mode is confirmed, initialize `iteration-count` to 0.
 
 ## Step 2: Load Project Context and Map Analysis Areas
 
@@ -153,9 +167,13 @@ Prioritize by impact:
 
 Include "Areas with No Findings" to confirm coverage — the user should know those areas were reviewed, not skipped.
 
-**No findings at all:** Report as a positive result ("code follows project guidelines"). Suggest tightening guidelines or broadening scope if the user expected issues.
+**No findings at all:** Report as a positive result ("code follows project guidelines"). **Deep mode:** this is the convergence signal — report "Deep mode complete — no more findings after [N] iteration(s)" with the cumulative summary (see Step 6) and skip Steps 5–6. **Normal mode:** suggest tightening guidelines or broadening scope if the user expected issues.
 
 ## Step 5: Ask User How to Proceed
+
+**Deep mode:** Skip this step — auto-select "Apply all" and proceed directly to Step 6.
+
+**Normal mode:**
 
 Use `AskUserQuestion` — header "Action", question "How would you like to proceed with the simplification findings?":
 - **Apply all** — "Apply every recommendation"
@@ -185,6 +203,24 @@ If no test command is available, warn the user that changes were applied without
 - Any changes reverted due to test failures
 - Remaining findings not shown in this run (if cap was hit)
 
-Recommend running `/optimus:commit-message` to commit the changes.
+### Deep mode loop
 
-Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
+**Normal mode:** Skip this subsection — proceed to the recommendation below.
+
+**Deep mode:** After applying changes and running tests, increment `iteration-count`. Then check termination conditions:
+
+1. **Zero findings in Step 3** → deep mode complete. Report: "Deep mode complete — no more findings after [N] iteration(s)."
+2. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:simplify deep` in a fresh conversation to continue."
+3. **All changes in this iteration were reverted due to test failures** → stop to prevent a loop of failed attempts. Report: "Deep mode stopped — all findings in iteration [N] caused test failures."
+4. **Otherwise** → present a brief iteration summary (iteration number, findings applied, findings reverted due to test failures) and **return to Step 3** for the next analysis pass. Keep the same scope from Step 1.
+
+After the loop ends, present a cumulative summary across all iterations:
+
+- Total iterations: [N]
+- Total findings applied: [N]
+- Total findings reverted (test failures): [N]
+- Test status: pass / fail / not available
+
+**Deep mode recommendation:** Recommend running `/optimus:commit-message` to commit the accumulated changes, then `/optimus:unit-test` to strengthen test coverage — deep simplification benefits from a strong safety net. Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
+
+**Normal mode recommendation:** Recommend running `/optimus:commit-message` to commit the changes. Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
