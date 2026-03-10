@@ -99,6 +99,10 @@ Both agents reference your project's `.claude/CLAUDE.md` and `.claude/docs/` fil
 | `references/multi-repo-detection.md` | Shared multi-repo workspace detection (used by 6 skills) |
 | `references/formatter-setup.md` | Formatter hook installation guidance |
 | `references/verification-protocol.md` | Cross-cutting verification discipline for completion claims |
+| `references/default-branch-detection.md` | Shared default branch detection algorithm (used by verify, pr) |
+| `references/prerequisite-check.md` | Shared prerequisite check with fallbacks (used by simplify, code-review, verify) |
+| `references/constraint-doc-loading.md` | Shared constraint doc loading for single project and monorepo (used by 5 skills) |
+| `references/git-worktree-setup.md` | Shared git worktree lifecycle patterns (used by tdd, verify) |
 | `templates/` | CLAUDE.md templates, doc templates, hook scripts, agent definitions |
 
 ## Customization

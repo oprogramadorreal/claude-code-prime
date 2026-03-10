@@ -29,7 +29,7 @@ Load these documents (they affect quality at every step):
 | `coding-guidelines.md` | Code quality reference | Applied during Refactor step |
 | `testing.md` | Testing conventions | Test file location, naming, framework, mocking patterns |
 
-**Monorepo path note:** `coding-guidelines.md` is shared at root (`.claude/docs/coding-guidelines.md`). `testing.md` is scoped per subproject (`<subproject>/docs/testing.md`). For root-as-project, scoped docs are in `.claude/docs/` alongside the shared guidelines. When running TDD inside a subproject, load that subproject's `testing.md`, not another subproject's.
+**Monorepo path note:** Read the "Monorepo Scoping" section of `$CLAUDE_PLUGIN_ROOT/skills/init/references/constraint-doc-loading.md` for doc layout and scoping rules. When running TDD inside a subproject, load that subproject's `testing.md`, not another subproject's.
 
 ### Verify test infrastructure
 
@@ -121,7 +121,9 @@ All TDD work will be committed to this branch.
 
 ### Worktree isolation (optional)
 
-After branch creation, offer git worktree isolation so the user's main workspace stays clean. First, derive a **worktree directory name** by replacing `/` with `-` in the branch name (e.g., `tdd/add-password-reset` → `tdd-add-password-reset`). Use this as `<worktree-dir>` in all worktree paths below.
+Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/git-worktree-setup.md` for shared worktree patterns (slug derivation, directory/gitignore setup, dependency installation, baseline verification, fallback, cleanup).
+
+After branch creation, offer git worktree isolation so the user's main workspace stays clean. Derive the worktree directory name per the slug derivation algorithm in the reference above (e.g., `tdd/add-password-reset` → `tdd-add-password-reset`). Use this as `<worktree-dir>` in all worktree paths below.
 
 Use `AskUserQuestion` — header "Workspace", question "Use a git worktree for isolated development? Your main workspace stays on the original branch.":
 - **Use worktree (Recommended)** — "Work in `.worktrees/<worktree-dir>` — main workspace stays clean, enables parallel work"
@@ -129,13 +131,12 @@ Use `AskUserQuestion` — header "Workspace", question "Use a git worktree for i
 
 If the user chooses worktree isolation:
 
-1. **Check for worktree directory**: if `.worktrees/` does not exist, create it: `mkdir -p .worktrees`
-2. **Ensure `.worktrees/` is gitignored**: check if `.gitignore` contains `.worktrees/` or `.worktrees`. If not, append `.worktrees/` to `.gitignore` and stage it: `echo '.worktrees/' >> .gitignore && git add .gitignore`
-3. **Switch branch back**: the branch was already created, so switch the main workspace back: `git checkout <original-branch>`
-4. **Create worktree**: `git worktree add .worktrees/<worktree-dir> <branch-name>`
-5. **Run project setup** in the worktree (if applicable): detect setup commands from `CLAUDE.md` or manifest files (`npm install`, `pip install -e .`, `cargo build`, etc.) and run them inside the worktree directory
-6. **Verify test baseline**: run the test command inside the worktree to confirm tests pass in the isolated environment
-7. **Report**:
+1. Set up `.worktrees/` directory and gitignore per the reference above.
+2. **Switch branch back**: the branch was already created, so switch the main workspace back: `git checkout <original-branch>`
+3. **Create worktree**: `git worktree add .worktrees/<worktree-dir> <branch-name>`
+4. **Install dependencies** per the stack-specific table in the reference above.
+5. **Verify test baseline**: run the test command inside the worktree to confirm tests pass in the isolated environment.
+6. **Report**:
 
 ```
 ## Worktree
@@ -145,7 +146,7 @@ Main workspace: `<original-branch>` (unchanged)
 Tests: passing ✓
 ```
 
-If worktree creation fails (e.g., git version too old, filesystem issues), fall back to the standard branch workflow silently and inform the user.
+If worktree creation fails, follow the fallback pattern from the reference above — fall back to the standard branch workflow silently and inform the user.
 
 **Important**: When using a worktree, all subsequent steps (4–9) must run commands inside the worktree directory. Use `cd .worktrees/<worktree-dir>` before running tests, linting, or git commands. File paths in reports should be relative to the project root for clarity.
 
@@ -443,12 +444,7 @@ If behaviors remain unfinished, note them and suggest re-running `/optimus:tdd` 
 
 ### Worktree cleanup
 
-If a worktree was used (Step 3), offer cleanup after the PR/MR is created:
-
-1. Switch to the main workspace directory (parent of `.worktrees/`)
-2. Remove the worktree: `git worktree remove .worktrees/<worktree-dir>`
-   - If removal **fails due to uncommitted changes**, inform the user: "Worktree has uncommitted changes. Commit or discard them first, or use `git worktree remove --force .worktrees/<worktree-dir>` to discard and remove."
-3. If the `.worktrees/` directory is now empty, remove it: `rmdir .worktrees 2>/dev/null`
+If a worktree was used (Step 3), offer cleanup after the PR/MR is created. Follow the cleanup protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/git-worktree-setup.md` for `.worktrees/<worktree-dir>`.
 
 If the user prefers to keep the worktree (e.g., for further work), skip cleanup and note: "Worktree `.worktrees/<worktree-dir>` is still active. Remove it manually with `git worktree remove .worktrees/<worktree-dir>` when done."
 

@@ -16,7 +16,7 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/multi-repo-detection.md` for wo
 ### Verify branch state
 
 1. Confirm the current directory is inside a git repository
-2. Detect the default branch: try `git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'` first. If that fails, check if `origin/main` exists, then `origin/master`. If no default branch can be determined (all methods fail) → inform the user: "Could not detect the default branch. Ensure `origin` is configured and has been fetched." Stop.
+2. Detect the default branch using the algorithm in `$CLAUDE_PLUGIN_ROOT/skills/init/references/default-branch-detection.md`. If no default branch can be determined → stop.
 3. Get the current branch: `git rev-parse --abbrev-ref HEAD`
 4. **If on the default branch** — stop and explain:
 
@@ -44,17 +44,11 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/multi-repo-detection.md` for wo
 
 ### Load project context
 
-Load these documents (same fallback pattern as `/optimus:code-review`):
+Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/prerequisite-check.md` and apply the prerequisite check algorithm (CLAUDE.md + coding-guidelines.md existence, fallback logic).
 
-| Document | Role | Fallback if missing |
-|----------|------|---------------------|
-| `.claude/CLAUDE.md` | Project overview, tech stack, commands | Detect tech stack from manifests |
-| `coding-guidelines.md` | Quality criteria for agents | Read `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/coding-guidelines.md` as generic baseline |
-| `testing.md` | Testing conventions, framework, runner | Detect test runner from manifests |
+Additionally, load `testing.md` — testing conventions, framework, runner. If missing, detect test runner from manifests.
 
-**Monorepo path note:** `coding-guidelines.md` is shared at root (`.claude/docs/coding-guidelines.md`). `testing.md` is scoped per subproject (`<subproject>/docs/testing.md`).
-
-If both `CLAUDE.md` and `coding-guidelines.md` are missing, warn and recommend `/optimus:init`.
+**Monorepo path note:** Read the "Monorepo Scoping" section of `$CLAUDE_PLUGIN_ROOT/skills/init/references/constraint-doc-loading.md` for doc layout and scoping rules.
 
 ### Detect commands
 
@@ -144,48 +138,31 @@ Create a git worktree for isolated verification. This keeps all verification wor
 
 ### Worktree setup
 
-1. Derive slug: replace `/` with `-` in the branch name, then strip any character not in `[a-zA-Z0-9._-]` (e.g., `feature/auth` → `feature-auth`). Always quote the resulting path in shell commands.
-2. Check if `.worktrees/` exists — if not, create it: `mkdir -p .worktrees`
-3. Ensure `.worktrees/` is gitignored: check if `.gitignore` contains `.worktrees/` or `.worktrees`. If not, append on a new line (ensuring a preceding newline so it doesn't merge with the last entry): `printf '\n.worktrees/\n' >> .gitignore`
-4. Check if `.worktrees/verify-<slug>` already exists (from a previous run):
+Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/git-worktree-setup.md` for shared worktree patterns (slug derivation, directory/gitignore setup, dependency installation, baseline verification, fallback, cleanup).
+
+1. Derive slug per the reference above.
+2. Set up `.worktrees/` directory and gitignore per the reference above.
+3. Check if `.worktrees/verify-<slug>` already exists (from a previous run):
    - If exists → use `AskUserQuestion` — header "Existing sandbox", question "A sandbox from a previous run exists at `.worktrees/verify-<slug>`. Reuse it or start fresh?":
      - **Reuse** — "Use the existing sandbox (faster — dependencies already installed)"
      - **Fresh** — "Remove and recreate (clean start)"
    - If "Fresh" → remove: `git worktree remove --force .worktrees/verify-<slug>` then run `git worktree prune` to clear stale metadata
-5. Create worktree: `git worktree add --detach .worktrees/verify-<slug> <current-branch>` (the `--detach` flag is required because the current branch is already checked out in the main workspace — without it, git refuses to check out the same branch in two worktrees)
-6. Disable remote push in the sandbox (worktree-scoped — does not affect the main repo's git config):
+4. Create worktree: `git worktree add --detach .worktrees/verify-<slug> <current-branch>` (the `--detach` flag is required because the current branch is already checked out in the main workspace — without it, git refuses to check out the same branch in two worktrees)
+5. Disable remote push in the sandbox (worktree-scoped — does not affect the main repo's git config):
    - `git config extensions.worktreeConfig true`
    - `git -C ".worktrees/verify-<slug>" config --worktree remote.origin.pushurl no-push-allowed`
 
 ### Install dependencies
 
-Run project setup inside the worktree (detect from `CLAUDE.md` or manifests):
-
-| Stack | Install command |
-|-------|----------------|
-| Node.js | `npm install` / `pnpm install` / `yarn install` / `bun install` (match project's lock file) |
-| Python | `pip install -e .` / `poetry install` / `uv sync` (match project's lock file) |
-| Rust | `cargo build` |
-| Go | `go mod download` |
-| C#/.NET | `dotnet restore` |
-| Java (Maven) | `mvn install -DskipTests` |
-| Java (Gradle) | `gradle build -x test` |
-| C/C++ | `cmake -B build && cmake --build build` (or project-specific) |
+Install dependencies per the stack-specific table in the worktree reference above.
 
 ### Verify sandbox
 
-Run the test suite inside the worktree as a sanity check:
-- **Tests pass** → sandbox is functional, record results as the **feature-branch baseline**
-- **Tests fail** → record failures as the **feature-branch baseline**. These failures may be pre-existing (already present on the target branch) or introduced by the feature branch — Step 4 will determine which
-- **Build fails** → this is a significant finding — record and continue with what is possible
+Run the baseline verification per the reference above. Record results as the **feature-branch baseline** — failures may be pre-existing (already present on the target branch) or introduced by the feature branch. Step 4 will determine which.
 
 ### Worktree fallback
 
-If `git worktree add` fails (git version < 2.15, filesystem issues, etc.):
-1. Warn the user: "Git worktree creation failed. Falling back to running verification directly on the current branch. Verification tests and mock projects will be created in the working tree. Note: push protection is not applied in fallback mode — agents are instruction-constrained only."
-2. Create a temporary directory for verification artifacts: `mkdir -p .verify-sandbox`
-3. Ensure `.verify-sandbox/` is gitignored
-4. Proceed with Steps 4–9 using the current working directory instead of the worktree
+If `git worktree add` fails, follow the fallback pattern from the reference above. Use `.verify-sandbox` as the fallback directory. Note: push protection is not applied in fallback mode — agents are instruction-constrained only.
 
 Report:
 
@@ -383,13 +360,7 @@ Use `AskUserQuestion` — header "Cleanup", question "Remove the sandbox worktre
 - **Remove** — "Clean up `.worktrees/verify-<slug>` (recommended if verification is complete)"
 - **Keep** — "Keep the sandbox for manual inspection or further work"
 
-If "Remove":
-1. Switch to the main workspace directory (parent of `.worktrees/`)
-2. Remove the worktree: `git worktree remove .worktrees/verify-<slug>`
-   - If removal fails due to changes: `git worktree remove --force .worktrees/verify-<slug>`
-3. If no other worktrees remain (`git worktree list` shows only the main worktree): `git config --unset extensions.worktreeConfig 2>/dev/null`
-4. If `.worktrees/` is empty, remove it: `rmdir .worktrees 2>/dev/null`
-5. If fallback was used (`.verify-sandbox/`): `rm -rf .verify-sandbox`
+If "Remove": follow the cleanup protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/git-worktree-setup.md` for `.worktrees/verify-<slug>`. If fallback was used (`.verify-sandbox/`): `rm -rf .verify-sandbox`.
 
 If "Keep":
 - Note: "Sandbox at `.worktrees/verify-<slug>` is still active. Remove manually with `git worktree remove .worktrees/verify-<slug>` when done."
