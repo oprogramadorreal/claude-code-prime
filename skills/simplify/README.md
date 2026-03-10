@@ -91,7 +91,7 @@ By default, the skill caps findings at 12 per run. For exhaustive cleanup, use `
 /optimus:simplify deep
 ```
 
-Deep mode runs the same analysis-apply cycle repeatedly (max 5 iterations) until zero findings remain. Before starting, it warns about credit/time consumption and breakage risk with low test coverage, and asks for explicit confirmation.
+Deep mode runs the same analysis-apply cycle repeatedly (max 5 iterations) until zero findings remain. Deep mode requires a test command — without one, the auto-apply loop has no safety net, so it falls back to normal mode. Before starting, it warns about credit/time consumption and breakage risk with low test coverage, and asks for explicit confirmation.
 
 Each iteration:
 1. Analyzes code (same caps: 12 findings, 5 per area)

@@ -38,7 +38,9 @@ For monorepos with **full project** scope: ask which subprojects to include (def
 
 If the user invoked with `deep` (e.g., `/optimus:simplify deep` or `/optimus:simplify deep "focus on src/"`), activate deep mode. Deep mode loops analysis-apply cycles (Steps 3–6) until zero findings remain or **5 iterations** are reached.
 
-Before proceeding, warn the user:
+Before proceeding, check whether a test command is available (from `.claude/CLAUDE.md`). If no test command exists, deep mode's auto-apply loop has no safety net — fall back to normal mode and warn: "Deep mode requires a test command for safe auto-apply. Falling back to normal mode — run `/optimus:unit-test` first to enable deep mode." Then continue with the standard single-pass flow.
+
+If a test command is available, warn the user:
 
 > **Deep mode** runs up to 5 iterative simplification passes. Each iteration is a full analysis-apply cycle — credit and time consumption multiplies with iteration count. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net.
 
