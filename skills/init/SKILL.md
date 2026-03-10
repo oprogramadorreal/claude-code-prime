@@ -317,4 +317,4 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 
 **Summary:** Report to the user: files created, detected tech stack, and decisions made (monorepo detection rationale, which optional docs were created and why, which were skipped and why). If test infrastructure was not detected, include the Step 5c fallback message as the final item in the summary. For multi-repo workspaces, report per-repo results and remind the user to commit each repo's `.claude/` directory separately.
 
-Recommend running `/optimus:unit-test` to establish test coverage for the project.
+Recommend running `/optimus:unit-test` to establish test coverage for the project. For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch.

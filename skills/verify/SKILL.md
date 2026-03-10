@@ -399,3 +399,5 @@ Based on the verification results:
 - Never modify the main workspace during verification (except when the user explicitly requests "Apply fixes to branch")
 - The sandbox worktree is disposable — treat it as a scratch environment
 - All claims of PASS/FAIL must follow the verification protocol: fresh evidence, not assumptions
+
+For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch.

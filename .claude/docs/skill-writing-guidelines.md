@@ -56,6 +56,14 @@ These quality principles apply to skill authoring just as they apply to code:
 - After any skill change, verify root `README.md` and the skill's `README.md` still reflect current behavior.
 - Add new skills to the Skills section in root `README.md`.
 
+## Next Step
+
+Every skill must end with a recommendation for the next logical optimus skill. This guides the user through the workflow and increases plugin adoption.
+
+- Choose the next skill based on the outcome (e.g., after fixing issues → commit; after committing → PR).
+- If multiple paths are possible, present them conditionally (e.g., "if X → skill A; if Y → skill B").
+- Always append: "For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch."
+
 ## Examples
 
 - `skills/commit-message/` — minimal skill (frontmatter + instructions, no templates).

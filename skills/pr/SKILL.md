@@ -169,6 +169,6 @@ Proceed to Step 7.
 - Title: [title]
 - Target: [default-branch]
 - Status: Ready to merge
-
-Recommend running `/optimus:verify` to prove the feature works, then `/optimus:code-review` for static quality review before merging.
 ```
+
+Recommend running `/optimus:verify` to prove the feature works, then `/optimus:code-review` for static quality review before merging. For best results, run the next skill in a fresh conversation — each skill gathers its own context from scratch.
