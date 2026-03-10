@@ -78,10 +78,11 @@ You then choose: **Apply all**, **Selective** (pick by number), or **Skip**.
 
 1. Verifies project docs exist (falls back to generic guidelines if missing)
 2. Asks you to choose scope: full project, directory, or changed files
-3. Loads all constraint docs and maps source directories, prioritized by git activity
-4. Analyzes code with emphasis on patterns that span multiple files
-5. Presents findings as a prioritized plan (capped at 12 per run)
-6. Applies only user-approved changes, runs tests with evidence-based verification, reverts any that cause failures
+3. Activates deep mode if requested (iterative cleanup with user consent)
+4. Loads all constraint docs and maps source directories, prioritized by git activity
+5. Analyzes code with emphasis on patterns that span multiple files
+6. Presents findings as a prioritized plan (capped at 12 per run)
+7. Applies only user-approved changes, runs tests with evidence-based verification, reverts any that cause failures
 
 ## Deep Mode
 
@@ -95,7 +96,7 @@ Deep mode runs the same analysis-apply cycle repeatedly (max 5 iterations) until
 
 Each iteration:
 1. Analyzes code (same caps: 12 findings, 5 per area)
-2. Auto-applies all findings (no per-iteration approval)
+2. Auto-applies all findings (test suite validates; failures trigger per-change bisect)
 3. Runs the test suite — reverts any change that causes failures
 4. Loops back for the next pass, or stops when clean
 

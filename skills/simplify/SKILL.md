@@ -30,13 +30,13 @@ Use `AskUserQuestion` to let the user choose a scope — header "Scope", questio
 
 Default to **full project** if the user just says "simplify" without specifying.
 
-For **changed since**: use `git diff --name-only <ref>...HEAD` for commit SHAs, branch names, and tags. For relative dates, use `git log --since="2 weeks ago" --format= --name-only` instead (`--since` is a `git log` flag, not `git diff`). Filter to source files only (apply the exclusion rules from Step 2).
+For **changed since**: use `git diff --name-only <ref>...HEAD` for commit SHAs, branch names, and tags. For relative dates, use `git log --since="2 weeks ago" --format= --name-only` instead (`--since` is a `git log` flag, not `git diff`). Filter to source files only (apply the exclusion rules from Step 3).
 
 For monorepos with **full project** scope: ask which subprojects to include (default: all). For **directory** scope: auto-detect which subproject the path belongs to.
 
-### Deep mode
+## Step 2: Deep Mode Activation
 
-If the user invoked with `deep` (e.g., `/optimus:simplify deep` or `/optimus:simplify deep "focus on src/"`), activate deep mode. Deep mode loops analysis-apply cycles (Steps 3–6) until zero findings remain or **5 iterations** are reached.
+If the user invoked with `deep` (e.g., `/optimus:simplify deep` or `/optimus:simplify deep "focus on src/"`), activate deep mode. Deep mode loops analysis-apply cycles (Steps 4–7) until zero findings remain or **5 iterations** are reached.
 
 Before proceeding, check whether a test command is available (from `.claude/CLAUDE.md`). If no test command exists, deep mode's auto-apply loop has no safety net — fall back to normal mode and warn: "Deep mode requires a test command for safe auto-apply. Falling back to normal mode — run `/optimus:unit-test` first to enable deep mode." Then continue with the standard single-pass flow.
 
@@ -48,9 +48,11 @@ Then use `AskUserQuestion` — header "Deep mode", question "Proceed with deep m
 - **Start deep mode** — "Run iterative cleanup until clean (max 5 iterations)"
 - **Normal mode** — "Single pass with manual approval instead"
 
-If the user selects **Normal mode**, continue with the standard single-pass flow. Record the user's choice as a `deep-mode` flag for subsequent steps. If deep mode is confirmed, initialize `iteration-count` to 1.
+If the user did not invoke with `deep`, skip this step.
 
-## Step 2: Load Project Context and Map Analysis Areas
+If the user selects **Normal mode**, continue with the standard single-pass flow. Record the user's choice as a `deep-mode` flag for subsequent steps. If deep mode is confirmed, initialize `iteration-count` to 1, `total-applied` to 0, and `total-reverted` to 0.
+
+## Step 3: Load Project Context and Map Analysis Areas
 
 ### Load constraint docs
 
@@ -86,9 +88,9 @@ Analyze highest-churn directories first. For full-project scope on large codebas
 
 Before proceeding to analysis, present a brief summary: docs loaded (with paths), docs missing (with fallback status), project type (single/monorepo/multi-repo workspace), and analysis areas identified with their git activity rank. Let the user confirm before heavy analysis begins.
 
-## Step 3: Analyze Source Code
+## Step 4: Analyze Source Code
 
-For each area, evaluate source files against the constraints loaded in Step 2.
+For each area, evaluate source files against the constraints loaded in Step 3.
 
 ### Cross-cutting analysis (highest priority)
 
@@ -102,12 +104,12 @@ These findings span multiple files — the unique value of project-wide review t
 
 ### Per-file analysis
 
-These supplement cross-cutting findings with localized improvements. Apply each principle from the project's coding guidelines (loaded in Step 2) as an analysis lens — for each principle the guidelines establish, check whether the code follows it.
+These supplement cross-cutting findings with localized improvements. Apply each principle from the project's coding guidelines (loaded in Step 3) as an analysis lens — for each principle the guidelines establish, check whether the code follows it.
 
 ### Finding quality bar
 
 Only surface findings that meet ALL of these criteria:
-- Justified by a specific guideline from the project's docs (Step 2)
+- Justified by a specific guideline from the project's docs (Step 3)
 - Respects architectural boundaries, test conventions, and styling conventions
 - The fix is concrete and demonstrable (not vague "consider refactoring")
 - The improvement is meaningful enough that a reviewer would approve the change
@@ -120,7 +122,7 @@ When in doubt, don't flag it. Prefer well-justified, low-risk changes over specu
 
 Surface at most **12 findings per run** and **5 per area**, prioritized by impact. If more issues exist, note the count (e.g., "12 of ~25 findings shown") and suggest re-running with a narrower scope — e.g., `/optimus:simplify` "focus on src/auth" or "review only the api module".
 
-## Step 4: Present Simplification Plan
+## Step 5: Present Simplification Plan
 
 Present findings as a structured report:
 
@@ -171,13 +173,13 @@ Include "Areas with No Findings" to confirm coverage — the user should know th
 
 **No findings at all:**
 
-**Deep mode:** this is the convergence signal — report "Deep mode complete — no findings on iteration [N]", then skip to the cumulative summary and recommendation in Step 6 (bypass the apply phase).
+**Deep mode:** this is the convergence signal — report "Deep mode complete — no findings on iteration [N]", then skip to the cumulative summary and recommendation in Step 7 (bypass the apply phase).
 
 **Normal mode:** Report as a positive result ("code follows project guidelines"). Suggest tightening guidelines or broadening scope if the user expected issues.
 
-## Step 5: Ask User How to Proceed
+## Step 6: Ask User How to Proceed
 
-**Deep mode:** Skip this step — auto-select "Apply all" and proceed directly to Step 6.
+**Deep mode:** Skip this step — auto-select "Apply all" and proceed directly to Step 7.
 
 **Normal mode:**
 
@@ -186,13 +188,13 @@ Use `AskUserQuestion` — header "Action", question "How would you like to proce
 - **Selective** — "Choose specific finding numbers to apply"
 - **Skip** — "No changes — keep the report as reference"
 
-If the user selects **Selective**, ask which finding numbers to apply (e.g., "1, 3, 5"). Remember the user's choice and approved finding numbers for Step 6.
+If the user selects **Selective**, ask which finding numbers to apply (e.g., "1, 3, 5"). Remember the user's choice and approved finding numbers for Step 7.
 
-## Step 6: Apply Approved Changes and Report
+## Step 7: Apply Approved Changes and Report
 
 For each approved finding:
 1. Apply the simplification using Edit or MultiEdit
-2. Verify the change matches the suggestion from Step 4
+2. Verify the change matches the suggestion from Step 5
 
 After applying all approved changes, run the project's test command (from `.claude/CLAUDE.md`) if available. Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md` — run tests fresh, read complete output, report actual results with evidence:
 - If tests pass → report success
@@ -213,11 +215,13 @@ If no test command is available, warn the user that changes were applied without
 
 **Normal mode:** Skip this subsection — proceed to the recommendation below.
 
-**Deep mode:** After applying changes and running tests, check termination conditions:
+**Deep mode:** If arriving here from convergence (zero findings in Step 5), skip the termination checks below and go directly to the cumulative summary.
+
+After applying changes and running tests, add this iteration's applied and reverted counts to the `total-applied` and `total-reverted` running totals, then check termination conditions:
 
 1. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:simplify deep` in a fresh conversation to continue."
 2. **All changes in this iteration were reverted due to test failures** → stop to prevent a loop of failed attempts. Report: "Deep mode stopped — all findings in iteration [N] caused test failures."
-3. **Otherwise** → present a brief iteration summary (iteration number, findings applied, findings reverted due to test failures), increment `iteration-count`, and **return to Step 3** for the next analysis pass. Keep the same scope from Step 1.
+3. **Otherwise** → present an iteration progress summary: "Iteration [N] of up to 5 — [total-applied] findings applied so far, [total-reverted] reverted. Starting next pass..." Increment `iteration-count` and **return to Step 4** for the next analysis pass. Keep the same scope from Step 1.
 
 After the loop ends, present a cumulative summary across all iterations:
 
