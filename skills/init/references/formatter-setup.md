@@ -16,6 +16,9 @@ All templates are in `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
 | Java | `format-java.sh` | google-java-format | Bash | `google-java-format` is on PATH, or user approves (suggest installing from github.com/google/google-java-format) |
 | C/C++ | `format-cpp.sh` | clang-format | Bash | `clang-format` is on PATH, or user approves (bundled with LLVM/Clang; available via system package manager) |
 | Dart/Flutter | `format-dart.sh` | dart format | Bash | Always (dart format is built-in with the Dart/Flutter SDK) |
+| (other) | — | Search web for "[language] most popular formatter" | Bash | Formatter is on PATH, or user approves installation |
+
+**Unsupported stacks:** Apply the fallback procedure from `unsupported-stack-fallback.md` (loaded by the parent skill) to find the standard formatter via web search. If no formatter is found, inform the user: **"Could not determine a formatter for [detected stack] — skipping formatter hook."** Do not create a hook. If the user approves the proposed formatter, create a custom shell hook (`.claude/hooks/format-<language>.sh`) following the full pattern of existing shell-based hooks (`format-rust.sh`, `format-go.sh`): shebang, JSON stdin parsing into `$file_path`, file-extension guard for the language's source extensions, then formatter invocation with `"$file_path"`.
 
 > **No import organizers:** Tools that remove unused imports (e.g., `prettier-plugin-organize-imports`, `goimports`) are intentionally excluded from PostToolUse hooks. They remove imports that appear unused mid-edit, causing a destructive loop when Claude adds an import before writing the code that uses it.
 
@@ -25,9 +28,9 @@ Only when the Python formatter hook will be installed: Run `python3 --version`. 
 
 ## Installation Steps
 
-1. Copy applicable template(s) from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/` to `.claude/hooks/`.
-2. External formatters not in deps → ask user "Add [formatter] as dev dependency and install format hook?" If declined, skip that stack's hook entirely. If approved, install the formatter using the stack-specific commands in "Formatter Installation Commands" below, then proceed to copy the hook template.
-3. If any hooks were installed, create `.claude/settings.json` using the template from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#, Java, C/C++, Dart/Flutter) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
+1. Copy applicable template(s) from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/` to `.claude/hooks/`. For unsupported stacks, create a custom `format-<language>.sh` in `.claude/hooks/` following existing shell hook patterns (e.g., `format-rust.sh`, `format-go.sh`).
+2. External formatters not in deps → ask user "Add [formatter] as dev dependency and install format hook?" If declined, skip that stack's hook entirely. If approved, install the formatter using the stack-specific commands in "Formatter Installation Commands" below (for unsupported stacks, use the installation command identified via web search — present the exact command to the user for approval before executing), then proceed to copy/create the hook.
+3. If any hooks were installed, create `.claude/settings.json` using the template from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/settings.json` as reference. Keep only entries for hooks actually installed. For Python, replace `<python-cmd>` with the detected command (`python3` or `python`). For Node.js use `node "..."`, for Bash-based hooks (Rust, Go, C#, Java, C/C++, Dart/Flutter, and custom unsupported-stack hooks) use `bash "..."`. Monorepos: install all applicable hooks (each filters by file extension internally).
 
 **If no hooks were installed**, do not create settings.json (unless it already exists with other content).
 

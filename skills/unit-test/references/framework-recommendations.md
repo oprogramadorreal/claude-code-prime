@@ -17,6 +17,9 @@ Recommend the most popular test framework and coverage tooling for each tech sta
 | Dart/Flutter | flutter_test (Flutter) or package:test (Dart) | `flutter test --coverage` (LCOV) | genhtml (from lcov) |
 | Angular (new project) | Vitest | built-in `--coverage` (v8 provider) | Built-in |
 | Angular (existing tests) | Detect and keep existing | Detect existing coverage tooling | Detect existing |
+| (other) | Search web for "[language] most popular test framework" | Search web for "[language] code coverage tool" | Search web for "[language] coverage report tool" |
+
+**Unsupported stacks:** Search the web for the most popular test framework and coverage tooling for the detected language. Apply the command validation and approval rules from `unsupported-stack-fallback.md` (loaded by the parent skill) to all proposed install commands.
 
 ## Selection Guidelines
 
