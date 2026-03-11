@@ -32,7 +32,7 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 | pubspec.yaml | Dart/Flutter | pub |
 | (other manifest file) | Detect language from file contents | Search web for "[language] package manager" |
 
-If a manifest file is found that doesn't match any row above, read and apply `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md`.
+If a manifest file is found that doesn't match any row above, first detect the programming language by reading the manifest and nearby source files, then read and apply `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md` with the detected language.
 
 Note: `.sln` files reference `.csproj` projects — they confirm .NET presence but aren't independent project manifests. Don't count a root `.sln` for root-as-project detection. When a single root `.sln` references all `.csproj` files found during detection, treat the entire solution as one project (see .NET solution consolidation in `project-detection.md`). List all solution projects and their roles in the CLAUDE.md Project Structure section.
 
@@ -154,7 +154,7 @@ Remember the user's choice and approved findings. Steps 2–6 will reference the
 
 ## Step 2: Handle Existing Files
 
-**Audit-aware rule (applies to Steps 2–6, not Step 6b):** If user chose "Fresh start", treat all files as Missing. Otherwise: if Step 1b marked a file as Accurate, skip it. If Outdated, apply only user-approved changes — preserve everything else. If Missing or no audit was run, create normally. For "Selective" updates, only act on approved findings. **Exception:** agents, hooks, and `coding-guidelines.md` are verbatim templates — always overwrite regardless of audit status.
+**Audit-aware rule (applies to Steps 2–6, not Step 6b):** If user chose "Fresh start", treat all files as Missing. Otherwise: if Step 1b marked a file as Accurate, skip it. If Outdated, apply only user-approved changes — preserve everything else. If Missing or no audit was run, create normally. For "Selective" updates, only act on approved findings. **Exception:** agents, hooks, and `coding-guidelines.md` are generated content (verbatim templates or fallback hooks) — always overwrite regardless of audit status.
 
 **Before creating any file**, check if it already exists. If so, read it first. Inform the user what was preserved vs changed.
 
@@ -220,9 +220,9 @@ For each detected subproject (except root-as-project/root-as-member — the root
 
 ## Step 5: Install Formatter Hooks
 
-Add auto-format hooks so files stay consistently formatted after every Edit/MultiEdit/Write. Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/formatter-setup.md` for the full hook template table, Python command detection, installation steps, and settings.json creation rules.
+Add auto-format hooks so files stay consistently formatted after every Edit/MultiEdit/Write. Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/formatter-setup.md` for the full hook template table, Python command detection, installation steps, and settings.json creation rules. For stacks without a built-in formatter template, also read `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md`.
 
-Always overwrite existing template-based hooks — these are verbatim templates, not project-customized content.
+Always overwrite existing hooks (both template-based and custom fallback hooks) — these are generated content, not project-customized.
 
 Supported stacks: Python (black + isort), Node.js (prettier), Rust (rustfmt), Go (gofmt), C#/.NET (csharpier), Java (google-java-format), C/C++ (clang-format), Dart/Flutter (dart format). Other stacks are handled via best-effort fallback (see formatter-setup.md). Templates are in `$CLAUDE_PLUGIN_ROOT/skills/init/templates/hooks/`.
 
@@ -310,7 +310,7 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 - `.claude/docs/coding-guidelines.md`: `[PROJECT NAME]` replaced with actual name.
 - Each `testing.md`, `styling.md`, `architecture.md`: References the project's actual frameworks, tooling, and directory names.
 - Monorepo: each subproject's `CLAUDE.md` exists, mentions subproject name, and is <= 60 lines.
-- `.claude/hooks/*`: Each template-based hook matches its template.
+- `.claude/hooks/*`: Each template-based hook matches its template. Each custom hook (unsupported stack) follows the pattern of existing shell-based hooks (e.g., `format-rust.sh`) and satisfies `unsupported-stack-fallback.md` step 3 validation rules.
 - `.claude/agents/code-simplifier.md`: File exists and matches template.
 - `.claude/agents/test-guardian.md` (if test infrastructure was detected): File exists and matches template.
 - **Sync changes (Step 6b)**: If sync changes were applied, verify each modified file still has valid markdown and no truncated content.

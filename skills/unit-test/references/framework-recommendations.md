@@ -19,7 +19,7 @@ Recommend the most popular test framework and coverage tooling for each tech sta
 | Angular (existing tests) | Detect and keep existing | Detect existing coverage tooling | Detect existing |
 | (other) | Search web for "[language] most popular test framework" | Search web for "[language] code coverage tool" | Search web for "[language] coverage report tool" |
 
-**Unsupported stacks:** Search the web for the most popular test framework and coverage tooling for the detected language. Proposed install commands must invoke a single well-known CLI tool with simple arguments (no shell operators, pipes, redirects, variable expansion, subshells, chained commands, or interpreter invocations; bare command name with no path separators; single line of printable ASCII). Present exact commands to the user for approval before executing.
+**Unsupported stacks:** Search the web for the most popular test framework and coverage tooling for the detected language. Apply the command validation and approval rules from `unsupported-stack-fallback.md` (loaded by the parent skill) to all proposed install commands.
 
 ## Selection Guidelines
 

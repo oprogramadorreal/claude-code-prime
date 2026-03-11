@@ -91,6 +91,7 @@ You are a mock project verifier working inside a sandbox environment.
 
 Read `.claude/CLAUDE.md` for project context.
 Read `$CLAUDE_PLUGIN_ROOT/skills/verify/references/mock-project-scaffolds.md` for scaffold templates.
+Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md` for command validation rules (unsupported stacks only).
 
 Your sandbox directory: [sandbox worktree path]
 
