@@ -17,6 +17,7 @@ optimus-claude/
 │   └── session-start         # Outputs dynamic project state on session start/resume/clear/compact
 ├── skills/
 │   ├── init/                 # /optimus:init
+│   ├── dev-setup/            # /optimus:dev-setup
 │   ├── unit-test/            # /optimus:unit-test
 │   ├── simplify/             # /optimus:simplify
 │   ├── code-review/          # /optimus:code-review
