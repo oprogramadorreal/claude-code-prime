@@ -75,12 +75,13 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 1. **Initial setup** — `/optimus:init` to generate project context (audits and updates if already present)
 2. **Test coverage** — `/optimus:unit-test` to establish or improve unit tests
-3. **After major changes** — re-run `/optimus:init` to audit and refresh docs
-4. **Code quality** — `/optimus:simplify` for full codebase analysis against your coding guidelines
+3. **Code quality** — `/optimus:simplify` for full codebase analysis against your coding guidelines
 
 **During development** — `/optimus:tdd` to build features test-first, `/optimus:commit-message` for conventional commits.
 
 **Before merging** — `/optimus:pr` to create or update pull requests, `/optimus:verify` to prove the feature branch works in an isolated sandbox, `/optimus:code-review` for pre-merge code quality review.
+
+**After major changes** — re-run `/optimus:init` to audit and refresh guidelines.
 
 **New to a codebase?** — `/optimus:dev-setup` ensures the README has accurate development setup instructions for onboarding.
 
