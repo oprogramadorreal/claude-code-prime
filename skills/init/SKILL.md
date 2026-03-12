@@ -16,47 +16,9 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 
 ## Step 1: Detect Project Context
 
-**Identify project type** from manifest files:
-
-| Manifest | Type | Package Manager |
-|----------|------|-----------------|
-| package.json | Node.js | npm, yarn, pnpm, bun |
-| Cargo.toml | Rust | cargo |
-| pyproject.toml, setup.py, requirements.txt | Python | pip, poetry, uv |
-| *.csproj, *.sln | C#/.NET | dotnet |
-| pom.xml | Java | maven |
-| build.gradle | Java | gradle |
-| go.mod | Go | go |
-| CMakeLists.txt, Makefile | C/C++ | cmake, make |
-| Gemfile | Ruby | bundler |
-| pubspec.yaml | Dart/Flutter | pub |
-| (other manifest file) | Detect language from file contents | Search web for "[language] package manager" |
-
-If a manifest file is found that doesn't match any row above, first detect the programming language by reading the manifest and nearby source files, then read and apply `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md` with the detected language.
-
-Note: `.sln` files reference `.csproj` projects — they confirm .NET presence but aren't independent project manifests. Don't count a root `.sln` for root-as-project detection. When a single root `.sln` references all `.csproj` files found during detection, treat the entire solution as one project (see .NET solution consolidation in `project-detection.md`). List all solution projects and their roles in the CLAUDE.md Project Structure section.
-
-Note: For Dart/Flutter projects, when `build_runner` is in `dev_dependencies`, document both `build_runner build` and `build_runner watch` commands in CLAUDE.md and note that generated files (`.g.dart`, `.freezed.dart`) must not be edited manually.
+**Identify project type and package manager:** Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/tech-stack-detection.md` for the manifest-to-type table, package manager detection table, and command prefix rules. Apply those tables to the current project. For the .NET note in that reference, list all solution projects and their roles in the CLAUDE.md Project Structure section. For the Dart/Flutter note, document the commands in CLAUDE.md.
 
 **Extract**: Project name, tech stack, build system, available scripts.
-
-**Detect active package manager** (this determines command prefixes for CLAUDE.md):
-
-| Type | Check (in priority order) | Result |
-|------|---------------------------|--------|
-| Node.js | `pnpm-lock.yaml` exists | pnpm |
-| Node.js | `yarn.lock` exists | yarn |
-| Node.js | `bun.lockb` exists | bun |
-| Node.js | default / `package-lock.json` | npm |
-| Python | `uv.lock` exists OR `[tool.uv]` in pyproject.toml | uv (prefix commands with `uv run`) |
-| Python | `poetry.lock` exists OR `[tool.poetry]` in pyproject.toml | poetry (prefix with `poetry run`) |
-| Python | default | pip (bare commands: `pytest`, `ruff`, etc.) |
-| Dart/Flutter | `pubspec.yaml` has Flutter SDK dependency (`dependencies.flutter.sdk: flutter`) | flutter (prefix commands with `flutter`) |
-| Dart/Flutter | `pubspec.yaml` without Flutter SDK dependency (pure Dart package) | dart (prefix commands with `dart`) |
-
-If a lock file doesn't match any row above and the package manager was not already determined by manifest detection, read and apply `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md` to identify the package manager via web search.
-
-Use the detected package manager for all commands in CLAUDE.md. For example, if the Node.js project uses pnpm, write `pnpm run build` not `npm run build`. If the Python project uses uv, write `uv run pytest` not just `pytest`. If the Dart project uses Flutter, write `flutter pub get` not `dart pub get`, and `flutter test` not `dart test`.
 
 **Analyze structure and extract doc insights:**
 - Top-level directories for architecture pattern
@@ -327,6 +289,6 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 
 **Summary:** Report to the user: files created, detected tech stack, and decisions made (monorepo detection rationale, which optional docs were created and why, which were skipped and why). If test infrastructure was not detected, include the Step 5c fallback message as the final item in the summary. For multi-repo workspaces, report per-repo results and remind the user to commit each repo's `.claude/` directory separately.
 
-Recommend running `/optimus:unit-test` to establish test coverage for the project.
+If the project's root `README.md` lacks a development setup section (no heading matching the patterns defined in `$CLAUDE_PLUGIN_ROOT/skills/init/references/readme-section-detection.md`), recommend running `/optimus:dev-setup` first to ensure the project has comprehensive human-readable setup instructions, then `/optimus:unit-test`. Otherwise, recommend `/optimus:unit-test` directly.
 
 Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.

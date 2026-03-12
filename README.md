@@ -66,6 +66,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 | Skill | Description |
 |-------|-------------|
+| [`/optimus:dev-setup`](skills/dev-setup/README.md) | Ensures the project README has comprehensive, accurate "how to run in dev mode" instructions — detects tech stack, external services (docker-compose), environment config, and generates step-by-step setup sections. Audits existing instructions against actual project state. Works standalone or after init. |
 | [`/optimus:pr`](skills/pr/README.md) | Creates or updates PR/MR with [Conventional PR](skills/pr/references/pr-template.md) format — structured summary, changes, rationale, test plan. Offers CLI installation. Shared template used by TDD. |
 | [`/optimus:permissions`](skills/permissions/README.md) | Allow/deny rules + PreToolUse hook for tiered path security and branch-aware git protection. Feature branches work freely; protected branches require PRs. Useful on native Windows. |
 | [`/optimus:commit-message`](skills/commit-message/README.md) | [Conventional commit](https://www.conventionalcommits.org/) suggestions from local git changes. Splits multi-concern diffs. Multi-repo aware. |
@@ -73,9 +74,10 @@ The result: consistent patterns, meaningful names, and lean context across every
 ## Recommended Workflow
 
 1. **Initial setup** — `/optimus:init` to generate project context (audits and updates if already present)
-2. **Test coverage** — `/optimus:unit-test` to establish or improve unit tests
-3. **After major changes** — re-run `/optimus:init` to audit and refresh docs
-4. **Code quality** — `/optimus:simplify` for full codebase analysis against your coding guidelines
+2. **Dev instructions** — `/optimus:dev-setup` to ensure the README has accurate setup instructions for humans
+3. **Test coverage** — `/optimus:unit-test` to establish or improve unit tests
+4. **After major changes** — re-run `/optimus:init` to audit and refresh docs
+5. **Code quality** — `/optimus:simplify` for full codebase analysis against your coding guidelines
 
 **During development** — `/optimus:tdd` to build features test-first, `/optimus:commit-message` for conventional commits.
 
