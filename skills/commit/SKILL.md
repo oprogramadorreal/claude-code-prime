@@ -82,7 +82,7 @@ If the current branch is protected, generate a feature branch name. Read `$CLAUD
 Present a summary for each repo (in multi-repo, use a heading per repo — e.g., `## repo-name`):
 
 - **Branch**: current branch name
-- **Commit message**: the generated conventional commit message
+- **Commit message**: the full generated conventional commit message (subject line + body when the body is present — never truncate to subject-only)
 - **Files**: list of files that will be staged
 
 Then use `AskUserQuestion` — header "Action", question "How would you like to proceed?":
@@ -119,10 +119,13 @@ git add <specific files>
 
 Prefer `git add <specific files>` over `git add -A`. Never stage files that look like secrets.
 
-Commit with the confirmed message:
+Commit with the confirmed message. Use a heredoc to preserve multi-line messages (subject + body):
 
 ```bash
-git commit -m "<message>"
+git commit -m "$(cat <<'EOF'
+<message>
+EOF
+)"
 ```
 
 If the commit fails for any reason, report the error to the user and stop — do not proceed to the push step.
