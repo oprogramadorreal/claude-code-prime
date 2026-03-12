@@ -62,9 +62,16 @@ Get the current branch:
 git rev-parse --abbrev-ref HEAD
 ```
 
-Check if `.claude/hooks/restrict-paths.sh` exists in the project. If it does, read the file and extract the `PROTECTED_BRANCHES` array to determine whether the current branch is protected. Remember this result for step 5.
+Check if `.claude/hooks/restrict-paths.sh` exists. In a multi-repo workspace, check two locations (child repo level first, then workspace root):
 
-If the hook file does not exist, assume the branch is safe for all operations.
+1. `<child-repo>/.claude/hooks/restrict-paths.sh`
+2. `<workspace-root>/.claude/hooks/restrict-paths.sh`
+
+Use the first one found (child repo level takes precedence). In a single-repo project, check `.claude/hooks/restrict-paths.sh` at the project root.
+
+If found, read the file and extract the `PROTECTED_BRANCHES` array to determine whether the current branch is protected. Remember this result for step 5.
+
+If the hook file does not exist at any checked location, assume the branch is safe for all operations.
 
 #### Generate feature branch name (protected branches only)
 
