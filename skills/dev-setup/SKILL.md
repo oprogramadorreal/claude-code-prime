@@ -59,10 +59,12 @@ Give the user a chance to correct misdetections before proceeding.
 
 Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/readme-section-detection.md` for the detection algorithm.
 
-**Scan locations** in priority order:
+**Read the following documentation files** (skip any that don't exist):
 - Root `README.md`
 - `CONTRIBUTING.md`
 - `docs/development.md`, `docs/setup.md`, `docs/getting-started.md`
+
+For each file that exists, read its full content, then apply the detection algorithm from the reference above.
 
 For monorepos: focus on the root README (whole-project scope). Individual subproject READMEs are NOT the target — the goal is instructions to run everything together.
 
