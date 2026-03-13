@@ -16,6 +16,20 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 
 ## Step 1: Detect Project Context
 
+### Empty-directory detection
+
+Before any project detection, check if the current directory is empty or near-empty. A directory is **near-empty** when it contains at most `.git/`, `.gitignore`, `LICENSE`, and/or a stub `README.md` (under 5 lines of non-empty content) — and **no manifest files** from the `tech-stack-detection.md` table exist at any depth, and **no source code directories** are present.
+
+If the directory is empty or near-empty, use `AskUserQuestion` — header "Empty Project", question "This directory appears to be empty. Would you like to scaffold a new project?":
+- **Scaffold new project** — "Set up a new project from scratch (choose stack, generate hello-world app, then continue with full init setup)"
+- **Continue anyway** — "Proceed with init as-is (I'll add code myself later)"
+
+If the user chooses **Scaffold new project**: read and execute `$CLAUDE_PLUGIN_ROOT/skills/init/references/new-project-scaffolding.md`. After scaffolding completes, discard all prior detection state and restart Step 1 from "Project detection" below — re-detect the now-populated project from scratch.
+
+If the user chooses **Continue anyway**: proceed with normal Step 1 detection below.
+
+### Project detection
+
 **Identify project type and package manager:** Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/tech-stack-detection.md` for the manifest-to-type table, package manager detection table, and command prefix rules. Apply those tables to the current project. For the .NET note in that reference, list all solution projects and their roles in the CLAUDE.md Project Structure section. For the Dart/Flutter note, document the commands in CLAUDE.md.
 
 **Extract**: Project name, tech stack, build system, available scripts.
