@@ -99,10 +99,8 @@ The project must have a `README.md` that tells a human developer how to build an
 
 Run the build or dev command to confirm the scaffolded project compiles/starts successfully. If it fails, diagnose and fix before proceeding. The project must be in a buildable, runnable state. For dev servers, start the command, verify it begins serving (check for the expected output like "listening on port" or "ready"), then stop it.
 
-### Git init and initial commit
+### Git init
 
 1. If `.git/` does not exist, run `git init`.
-2. Run `git add -A && git commit -m "chore: scaffold <stack> project"`.
-3. All files should be clean — the `.gitignore` must prevent build artifacts from being committed.
 
-After the initial commit, print: **"Scaffolding complete. Resuming project detection..."** and return control to init Step 1 at the "Project detection" subsection to re-detect the now-populated project from scratch.
+After git init, print: **"Scaffolding complete. Files are ready — use `/optimus:commit` when you want to make your first commit. Resuming project detection..."** and return control to init Step 1 at the "Project detection" subsection to re-detect the now-populated project from scratch.
