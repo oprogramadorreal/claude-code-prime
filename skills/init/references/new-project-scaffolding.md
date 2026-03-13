@@ -39,9 +39,9 @@ Use the official scaffolding CLI for each stack. Do NOT manually generate boiler
 | Framework | Scaffold Command | Notes |
 |-----------|-----------------|-------|
 | Node.js / Express | `mkdir <name> && cd <name> && npm init -y` | After init: `npm install express` + create minimal `index.js` with hello-world route and `start` script in package.json |
-| Python / FastAPI | `uv init <name>` | After init: `cd <name> && uv add fastapi` + create minimal `main.py` with hello-world endpoint. If uv not available: `mkdir <name> && cd <name> && python3 -m venv .venv && .venv/bin/pip install fastapi uvicorn` + create `main.py` (use `.venv/bin/pip` directly to avoid platform-specific activation) |
+| Python / FastAPI | `uv init <name>` | After init: `cd <name> && uv add fastapi` + create minimal `main.py` with hello-world endpoint. If uv not available: `mkdir <name> && cd <name> && python3 -m venv .venv` then install with `.venv/bin/pip` (Unix/macOS) or `.venv/Scripts/pip` (Windows): `pip install fastapi uvicorn` + create `main.py` |
 | Rust / Axum | `cargo init <name>` | After init: add `axum` and `tokio` to `Cargo.toml` + replace `main.rs` with minimal hello-world server |
-| Go | `mkdir <name> && cd <name> && go mod init <name>` | Create minimal `main.go` with hello-world HTTP server |
+| Go | `mkdir <name> && cd <name> && go mod init <name>` | Create minimal `main.go` with hello-world HTTP server. Module path uses bare name as starter — ask the user if they prefer a URL-like path (e.g., `github.com/user/<name>`) |
 | C# / .NET Web API | `dotnet new webapi -o <name>` | Generates a complete hello-world API |
 | Java / Spring Boot | `mkdir -p <name> && curl --fail -sSL https://start.spring.io/starter.tgz -d type=maven-project -d language=java -d name=<name> -d artifactId=<name> -d baseDir= \| tar -xzf - -C <name>` | If curl/Spring Initializr unavailable, search web for current alternative |
 
@@ -52,7 +52,7 @@ Use the official scaffolding CLI for each stack. Do NOT manually generate boiler
 | Node.js | `mkdir <name> && cd <name> && npm init -y` | Create `bin/<name>.js` with shebang + `bin` field in package.json |
 | Python | `uv init <name>` | Create `<name>/__main__.py` with hello-world print. If uv not available: manual venv setup |
 | Rust | `cargo init <name>` | Generates a complete hello-world CLI |
-| Go | `mkdir <name> && cd <name> && go mod init <name>` | Create `main.go` with hello-world print |
+| Go | `mkdir <name> && cd <name> && go mod init <name>` | Create `main.go` with hello-world print. Module path uses bare name as starter — ask the user if they prefer a URL-like path |
 
 ### Other stacks
 
@@ -76,17 +76,9 @@ If the required CLI tool (e.g., `cargo`, `flutter`, `dotnet`, `uv`) is not insta
 
 If the user selects "Other" and specifies a stack not in the tables above: return an **unsupported-stack signal** to the caller (SKILL.md) with the user's chosen stack name, so the caller can apply the unsupported-stack fallback procedure directly.
 
-## Section 2.5: Enter Project Directory
-
-All scaffold commands create a `<name>/` subdirectory. Before post-scaffold steps, `cd` into it so all subsequent operations (and init re-detection) run from the project root:
-
-```
-cd <name>
-```
-
-If the scaffold tool placed files directly in the CWD (rare — e.g., manual setup), skip this step.
-
 ## Section 3: Post-Scaffold
+
+All scaffold commands create a `<name>/` subdirectory. Before post-scaffold steps, `cd` into it so all subsequent operations (and init re-detection) run from the project root: `cd <name>`. If the scaffold tool placed files directly in the CWD (rare — e.g., manual setup), skip the `cd`.
 
 ### .gitignore
 
@@ -107,7 +99,7 @@ The project must have a `README.md` that tells a human developer how to build an
 
 ### Verify project works
 
-Run the build or dev command to confirm the scaffolded project compiles/starts successfully. If it fails, diagnose and fix before proceeding. The project must be in a buildable, runnable state. For dev servers, start the command, verify it begins serving (check for the expected output like "listening on port" or "ready"), then stop it.
+Run the build or dev command to confirm the scaffolded project compiles/starts successfully. If it fails, diagnose and fix before proceeding. The project must be in a buildable, runnable state. For dev servers, start the command with a 30-second timeout, verify it begins serving (check for the expected output like "listening on port" or "ready"), then stop it. If no ready signal appears within the timeout, stop the process and report the issue for diagnosis.
 
 ### Git init
 
