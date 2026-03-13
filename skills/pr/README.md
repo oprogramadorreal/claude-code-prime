@@ -16,7 +16,7 @@ The **Conventional PR** format mirrors [Conventional Commits](https://www.conven
 - **Create flow** — generates a Conventional PR from branch changes (commits, diff, file list) and previews before creating
 - **Update flow** — regenerates title and/or description for an existing PR/MR with current branch state
 - **Conventional PR format** — structured sections: Summary, Changes, Rationale (optional), Test plan
-- **Default branch targeting** — always targets the repo's default branch (main/master)
+- **Default branch targeting** — new PRs target the repo's default branch (main/master); updates preserve the PR's existing target branch
 - **Ready to merge** — PRs/MRs are created as ready (not draft)
 - **User preview** — shows generated content before creating or updating, with option to adjust
 - **Shared template** — the Conventional PR template is reusable by other skills (e.g., `/optimus:tdd`)
@@ -115,7 +115,7 @@ A PR/MR already exists for this branch. What would you like to do?
 
 - URL: https://github.com/owner/repo/pull/42
 - Title: feat(auth): add password reset endpoint
-- Target: main
+- Target: develop
 - Status: Ready to merge
 ```
 

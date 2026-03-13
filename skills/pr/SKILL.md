@@ -5,7 +5,7 @@ disable-model-invocation: true
 
 # Pull Request / Merge Request
 
-Create or update a PR (GitHub) or MR (GitLab) for the current branch using the Conventional PR format. Detects the hosting platform, checks for an existing PR/MR, and either creates a new one or offers to update the existing one. Always targets the repository's default branch. PRs/MRs are created as ready to merge (not draft).
+Create or update a PR (GitHub) or MR (GitLab) for the current branch using the Conventional PR format. Detects the hosting platform, checks for an existing PR/MR, and either creates a new one or offers to update the existing one. New PRs target the repository's default branch; updates to existing PRs use the PR's current target branch. PRs/MRs are created as ready to merge (not draft).
 
 ## Step 1: Pre-flight
 
@@ -63,13 +63,13 @@ If the branch is on the remote but has unpushed commits (`git log origin/<branch
 
 ### Check for existing PR/MR
 
-- **GitHub:** `gh pr view --json number,state,title,body,url 2>/dev/null`
-  - If a PR exists and is **open** → go to Step 6 (Update Flow)
+- **GitHub:** `gh pr view --json number,state,title,body,url,baseRefName 2>/dev/null`
+  - If a PR exists and is **open** → save the `baseRefName` as the PR's **target branch**, then go to Step 6 (Update Flow)
   - If a PR exists but is **closed/merged** → treat as no PR (create a new one)
   - If no PR exists → go to Step 5 (Create Flow)
 
 - **GitLab:** `glab mr view --output json 2>/dev/null`
-  - If an MR exists and is **opened** → go to Step 6 (Update Flow)
+  - If an MR exists and is **opened** → save the `target_branch` from the JSON as the MR's **target branch**, then go to Step 6 (Update Flow)
   - If an MR exists but is **closed/merged** → treat as no MR
   - If no MR exists → go to Step 5 (Create Flow)
 
@@ -163,7 +163,7 @@ If the user chooses **Cancel** → report the existing PR/MR URL and stop.
 
 ### Regenerate content
 
-Gather change data (same as Step 5) and generate new content following the Conventional PR template.
+Gather change data using the existing PR/MR's **target branch** (saved in Step 4) as the base for diffs — use it in place of `<default-branch>` in the `git log`, `git diff --stat`, and `git diff` commands from Step 5. Generate new content following the Conventional PR template.
 
 Present the updated content for preview. Use `AskUserQuestion` — header "Update preview", question "Review the updated PR/MR. Proceed or adjust?":
 - **Update** — "Apply changes to the PR/MR"
@@ -185,7 +185,7 @@ Proceed to Step 7.
 
 - URL: [PR/MR URL]
 - Title: [title]
-- Target: [default-branch]
+- Target: [target-branch]
 - Status: Ready to merge
 ```
 
