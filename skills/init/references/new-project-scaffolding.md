@@ -16,7 +16,7 @@ Use `AskUserQuestion` — header "New Project", question "What would you like to
 
 Based on the answer, ask a follow-up `AskUserQuestion` — header "Tech Stack", question "Which stack would you like to use?" with options appropriate to the category (see Scaffold Commands Table below for the full list of built-in options). Always include an "Other" option for unlisted stacks.
 
-Then ask for the **project name** if not already clear from context. The name should be a valid directory/package name for the chosen stack (lowercase, hyphens for Node.js; underscores for Python/Rust; PascalCase for .NET; etc.).
+Then ask for the **project name** if not already clear from context. Validate it before use: it must match `^[a-zA-Z][a-zA-Z0-9._-]*$` (1–100 chars, no spaces or shell metacharacters). If invalid, ask again with guidance on valid naming for the chosen stack (lowercase with hyphens for Node.js; underscores for Python/Rust; PascalCase for .NET; etc.).
 
 ## Section 2: Scaffold Commands Table
 
@@ -43,7 +43,7 @@ Use the official scaffolding CLI for each stack. Do NOT manually generate boiler
 | Rust / Axum | `cargo init <name>` | After init: add `axum` and `tokio` to `Cargo.toml` + replace `main.rs` with minimal hello-world server |
 | Go | `mkdir <name> && cd <name> && go mod init <name>` | Create minimal `main.go` with hello-world HTTP server |
 | C# / .NET Web API | `dotnet new webapi -o <name>` | Generates a complete hello-world API |
-| Java / Spring Boot | `curl https://start.spring.io/starter.tgz -d type=maven-project -d language=java -d name=<name> -d artifactId=<name> \| tar -xzf - -C <name>` | If curl/Spring Initializr unavailable, search web for current alternative |
+| Java / Spring Boot | `curl --fail -sSL https://start.spring.io/starter.tgz -d type=maven-project -d language=java -d name=<name> -d artifactId=<name> \| tar -xzf - -C <name>` | If curl/Spring Initializr unavailable, search web for current alternative |
 
 ### CLI tool stacks
 
