@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # SessionStart hook — outputs dynamic project state so Claude knows what's
