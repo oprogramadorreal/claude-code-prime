@@ -2,4 +2,5 @@ optimus-claude-workspace/
 benchmark-workspace/
 workspace/
 evals/
+test/fixtures/
 __pycache__/

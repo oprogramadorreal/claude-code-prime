@@ -27,5 +27,5 @@ Feature branch testing uses a two-level fetch — see CONTRIBUTING.md for the fu
 
 - Do not run `/optimus:init` on this repo — it is the plugin itself, not a target project
 - Never leave a `ref` field in `marketplace.json` on the master branch
-- Bump the version in `.claude-plugin/plugin.json` for meaningful changes
+- Bump the version in `.claude-plugin/plugin.json` for meaningful changes, and update the version badge in `README.md` to match
 - Only `/optimus:init` writes `.claude/.optimus-version` in user projects — other skills that install template files must NOT update this file (it tracks init's full template audit, not individual file freshness)
