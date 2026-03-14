@@ -12,7 +12,7 @@ What makes a good developer productive in a codebase also makes Claude Code prod
 - **Code Quality** — deploys a [code-simplifier](templates/agents/code-simplifier.md) agent that enforces your project's [coding guidelines](templates/docs/coding-guidelines.md) — clean code, small functions, clear naming, proper abstractions. This isn't about aesthetics: well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). The agent guards new code proactively; for a full project review, see `/optimus:simplify`.
 - **Test Coverage** — installs a [test-guardian](templates/agents/test-guardian.md) agent that monitors coverage gaps when test infrastructure is detected — flagging untested code, verifying that existing tests still pass, and checking that test commands are runnable. It doesn't write tests or install frameworks; it ensures the project maintains its testing standards as it evolves. This directly enables Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices): giving Claude a way to verify its work.
 - **Documentation Freshness** — reviews existing documentation (README, CONTRIBUTING, etc.) for contradictions against the actual source code. Stale docs in context degrade LLM performance — if documentation says one thing and the code says another, you're actively harming output quality.
-- **Audit on re-run** — compares docs against current project state, classifies sections as Outdated / Missing / Accurate, and lets you choose what to update. Tracks plugin version in `.claude/.optimus-version` — when the plugin has been updated, the audit also compares generated docs against current templates to surface plugin-side improvements
+- **Audit on re-run** — compares docs against current project state, classifies sections as Outdated / Missing / Accurate / User-added (always preserved), and lets you choose what to update. User-added content (custom conventions, workflow rules, architecture decisions not derivable from the codebase) is never discarded — even on "Fresh start". Tracks plugin version in `.claude/.optimus-version` — when the plugin has been updated, the audit also compares generated docs against current templates to surface plugin-side improvements
 - **Monorepo & multi-repo workspace support** — auto-detects monorepos and multi-repo workspaces (separate git repos under a shared parent); generates fully self-contained `.claude/` per repo
 
 ## Quick Start
@@ -39,9 +39,9 @@ In Claude Code, use any of these:
 ## How It Works
 
 1. **Detects project context** — tech stack, package manager, project structure (single / monorepo / multi-repo workspace), existing docs, test infrastructure
-2. **Audits existing documentation** (if present) — classifies as Outdated / Missing / Accurate; you choose what to update
+2. **Audits existing documentation** (if present) — classifies as Outdated / Missing / Accurate / User-added; you choose what to update
 3. **Creates directory structure** — `.claude/docs/`, `.claude/hooks/`, `.claude/agents/`
-4. **Generates CLAUDE.md** — WHAT/WHY/HOW structure, progressive disclosure, <=60 lines
+4. **Generates CLAUDE.md** — WHAT/WHY/HOW structure, progressive disclosure, <=60 lines (soft limit when preserving user content)
 5. **Installs formatter hooks** — per detected stack; deploys code-quality agents
 6. **Creates scoped documentation** — coding guidelines (always), testing, styling, architecture (when detected)
 7. **Syncs existing project docs** — cross-checks README, CONTRIBUTING, etc. against source code for factual contradictions

@@ -13,6 +13,7 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 - Every CLAUDE.md <= 60 lines
 - Use file:line references, not code snippets
 - Only universally-applicable instructions
+- Preserve user content: when re-running on an existing project, never silently drop content from CLAUDE.md that cannot be derived from the codebase. When unsure whether content is outdated, preserve it. Only mark content as outdated when source code directly contradicts it — and confirm with the user before removing user-added items.
 
 ## Step 1: Detect Project Context
 
@@ -45,7 +46,7 @@ If the user chooses **Continue anyway**: proceed with normal Step 1 detection be
    - Architecture rationale and design decisions ("why" content for CLAUDE.md)
    - Contributor workflow conventions (branching strategy, PR process, commit format)
    - Coding conventions not enforced by linters (naming schemes, architectural boundaries)
-2. **Discard** any insight that directly contradicts source code (e.g., doc says "we use Redux" but only Zustand is in dependencies). Keep insights that are neither confirmed nor contradicted — non-code conventions and rationale are inherently unverifiable from source alone.
+2. **Discard** any insight **from project docs (README, CONTRIBUTING, etc.)** that directly contradicts source code (e.g., doc says "we use Redux" but only Zustand is in dependencies). Keep insights that are neither confirmed nor contradicted — non-code conventions and rationale are inherently unverifiable from source alone. This discard rule applies only to insight extraction from project documentation — content in existing CLAUDE.md files is handled separately by the Step 1b audit, where the standard of proof is stricter.
 
 Factual contradictions in existing docs (wrong commands, outdated tech references, etc.) are detected and addressed in Step 6b.
 
@@ -118,24 +119,32 @@ If existing docs were found, analyze them to identify what needs updating:
 | **Structure** | Do folder names, entry points, and architecture references in docs match the actual filesystem? |
 | **Doc coverage** | Are there detected project aspects (test framework, UI deps, complex architecture) with no corresponding doc? Are there docs for aspects no longer present? |
 | **Monorepo** | Do subproject tables match current workspace members? Any added/removed subprojects? |
+| **Custom content** | Does CLAUDE.md contain sections, bullets, or instructions not matching any template section or detected project aspect (e.g., deployment notes, workflow conventions, known gotchas)? Classify as **User-added**. |
 
 3. **Present an Audit Report** to the user, organized as:
    - **Outdated** — items in docs that no longer match the project (with specific before/after)
    - **Missing** — project aspects that should have docs but don't
    - **Accurate** — items that are still correct (brief summary, no action needed)
+   - **User-added** — content not derivable from the codebase (custom conventions, workflow rules, architecture decisions). Preserved by default. If source code **directly contradicts** a user-added item (e.g., user wrote "deploy with Docker" but no Dockerfile or Docker dependency exists), classify it as Outdated instead — but flag it in the audit report as "previously user-added" so the user can confirm before removal.
+
+**Standard of proof:** Only classify content as Outdated when source code **directly contradicts** a specific claim. Content that is neither confirmed nor contradicted is **not outdated** — classify it as Accurate or User-added as appropriate. When a user-added item appears outdated, use `AskUserQuestion` to confirm before discarding — the user may have context that isn't visible in the codebase.
 
 4. Use `AskUserQuestion` — header "Audit", question "How would you like to handle the documentation audit findings?":
    - **Update all** — "Apply all recommended changes"
    - **Selective** — "Pick which findings to apply by number"
-   - **Fresh start** — "Ignore existing docs and regenerate from scratch"
+   - **Fresh start** — "Regenerate template content from scratch, but carry forward user-added sections"
 
    If the user selects **Selective**, ask which finding numbers to apply. Unapproved findings are left as-is (existing content preserved).
 
 Remember the user's choice and approved findings. Steps 2–6 will reference them to make targeted updates rather than full overwrites. (Step 6b runs independently — see Step 6b.)
 
+**Fresh start preservation:** Before regenerating, extract all User-added content from existing CLAUDE.md. After generating from template, re-insert user-added content in the most appropriate section. Present the merged result to the user before writing.
+
 ## Step 2: Handle Existing Files
 
-**Audit-aware rule (applies to Steps 2–6, not Step 6b):** If user chose "Fresh start", treat all files as Missing. Otherwise: if Step 1b marked a file as Accurate, skip it. If Outdated, apply only user-approved changes — preserve everything else. If Missing or no audit was run, create normally. For "Selective" updates, only act on approved findings. **Exception:** agents, hooks, and `coding-guidelines.md` are generated content (verbatim templates or fallback hooks) — always overwrite regardless of audit status.
+**Audit-aware rule (applies to Steps 2–6, not Step 6b):** If user chose "Fresh start", regenerate all template-based content from scratch — but always carry forward items classified as **User-added** in the audit report, re-inserting them into the appropriate sections. Otherwise: if Step 1b marked a file as Accurate, skip it. If Outdated, apply only user-approved changes — preserve everything else. If Missing or no audit was run, create normally. For "Selective" updates, only act on approved findings. **Exception:** agents, hooks, and `coding-guidelines.md` are generated content (verbatim templates or fallback hooks) — always overwrite regardless of audit status.
+
+**Default for ambiguous content:** When unsure whether content is outdated or user-intentional, preserve it. Only update or remove user-added content when source code provides clear contradicting evidence **and** the user has confirmed via the audit report or `AskUserQuestion`. Information that cannot be re-derived from the codebase must not be discarded to meet formatting or size targets.
 
 **Before creating any file**, check if it already exists. If so, read it first. Inform the user what was preserved vs changed.
 
@@ -166,7 +175,9 @@ Use template from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/single-project-clau
 - In the Documentation section, list only non-guideline docs that were actually created (testing.md, styling.md, architecture.md) using `.claude/docs/` prefix. The coding-guidelines.md reference is in the "Before Writing Code" section.
 - In the Agents section, list only agents that were actually installed: code-simplifier is always listed; test-guardian only if test infrastructure was detected (Step 1)
 
-The template follows WHAT/WHY/HOW structure. Keep total file under 60 lines. If no manifest was detected, use generic placeholders and inform user that manual customization is recommended.
+**When updating an existing CLAUDE.md** (not Fresh start): edit the existing file in-place — do not regenerate from template. Update only sections where the audit found approved Outdated changes. Preserve all user-added content verbatim unless the audit classified specific user-added items as Outdated and the user approved their removal.
+
+The template follows WHAT/WHY/HOW structure. Target 60 lines. If preserving user-added content would exceed this, first try to condense template-generated content (shorter descriptions, abbreviate stacks). If still over 60 lines, the limit may be exceeded — never discard user content to meet the line count. Note the overage in Step 7 summary. If no manifest was detected, use generic placeholders and inform user that manual customization is recommended.
 
 ### Monorepo
 
@@ -181,7 +192,7 @@ Keep the "Before Writing Code" section exactly as templated — do not modify or
 
 In the Agents section, list only agents that were actually installed: code-simplifier is always listed; test-guardian only if test infrastructure was detected (Step 1).
 
-If more than 6 subprojects, group by category (apps, libs, services) in the root CLAUDE.md and move the full subproject table to `.claude/docs/architecture.md`. Keep descriptions concise (abbreviate stacks, e.g., "TS/React" not "TypeScript, React, Vite, Tailwind") to stay under 60 lines.
+If more than 6 subprojects, group by category (apps, libs, services) in the root CLAUDE.md and move the full subproject table to `.claude/docs/architecture.md`. Keep descriptions concise (abbreviate stacks, e.g., "TS/React" not "TypeScript, React, Vite, Tailwind") to stay under 60 lines (same user-content preservation rule as single-project applies).
 
 ### Multi-repo workspace
 
@@ -198,7 +209,7 @@ For each detected subproject (except root-as-project/root-as-member — the root
 - Include only commands specific to this subproject (run from its directory)
 - Reference its local `docs/` folder for detailed documentation
 - Mention parent monorepo name in the opening line
-- Keep under 60 lines
+- Keep under 60 lines (same user-content preservation rule as single-project applies)
 
 ## Step 5: Install Formatter Hooks
 
@@ -287,11 +298,11 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 **File existence** — verify every expected file was created. List all files in `.claude/` matching `*.md`, `*.json`, or `hooks/*`, and for monorepos also check each subproject path from Step 1 for `CLAUDE.md` and `docs/*.md`.
 
 **Content checks** — verify each file has real content, not placeholders:
-- `.claude/CLAUDE.md`: Actual project name, real commands, Conventions section (single project), Documentation section. Line count <= 60.
+- `.claude/CLAUDE.md`: Actual project name, real commands, Conventions section (single project), Documentation section. Line count <= 60 (soft limit — may exceed if user-added content requires it; verify overage is not caused by template bloat).
 - `.claude/settings.json` (if created): `hooks.PostToolUse` references every installed hook file and vice versa. If file had custom sections (permissions, etc.), verify they're preserved.
 - `.claude/docs/coding-guidelines.md`: `[PROJECT NAME]` replaced with actual name.
 - Each `testing.md`, `styling.md`, `architecture.md`: References the project's actual frameworks, tooling, and directory names.
-- Monorepo: each subproject's `CLAUDE.md` exists, mentions subproject name, and is <= 60 lines.
+- Monorepo: each subproject's `CLAUDE.md` exists, mentions subproject name, and is <= 60 lines (soft limit — same user-content preservation rule applies).
 - `.claude/hooks/*`: Each template-based hook matches its template. Each custom hook (unsupported stack) follows the pattern of existing shell-based hooks (e.g., `format-rust.sh`) and satisfies `unsupported-stack-fallback.md` step 3 validation rules.
 - `.claude/agents/code-simplifier.md`: File exists and matches template.
 - `.claude/agents/test-guardian.md` (if test infrastructure was detected): File exists and matches template.
