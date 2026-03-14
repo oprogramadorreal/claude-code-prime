@@ -22,6 +22,8 @@ generate_node_project() {
   mkdir -p "$dir"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
 
   cat > package.json <<'EOF'
 {
@@ -60,6 +62,8 @@ generate_python_project() {
   mkdir -p "$dir/src"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
 
   cat > pyproject.toml <<'EOF'
 [project]
@@ -105,6 +109,8 @@ generate_go_project() {
   mkdir -p "$dir"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
 
   cat > go.mod <<'EOF'
 module example.com/hello-go
@@ -140,6 +146,8 @@ generate_rust_project() {
   mkdir -p "$dir/src"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
 
   cat > Cargo.toml <<'EOF'
 [package]
@@ -173,6 +181,8 @@ generate_csharp_project() {
   mkdir -p "$dir"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
 
   cat > HelloCsharp.csproj <<'EOF'
 <Project Sdk="Microsoft.NET.Sdk">
@@ -213,6 +223,8 @@ generate_monorepo_project() {
   mkdir -p "$dir/packages/api/src" "$dir/packages/web/src"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
 
   # Root package.json with workspaces
   cat > package.json <<'EOF'
@@ -280,6 +292,8 @@ generate_empty_project() {
   mkdir -p "$dir"
   cd "$dir"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
   git commit --allow-empty -q -m "initial: empty project"
   echo "  Created: empty-project"
 }
@@ -292,6 +306,8 @@ generate_multi_repo_workspace() {
   # Backend repo
   cd "$dir/backend"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
   cat > package.json <<'EOF'
 {
   "name": "backend",
@@ -309,6 +325,8 @@ EOF
   # Frontend repo
   cd "$dir/frontend"
   git init -q .
+  git config user.email "test@test.com"
+  git config user.name "Test"
   cat > package.json <<'EOF'
 {
   "name": "frontend",

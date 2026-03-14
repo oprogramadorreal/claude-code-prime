@@ -191,7 +191,7 @@ elif python --version &>/dev/null; then
 fi
 if [ -n "$py_cmd" ]; then
   while IFS= read -r f; do
-    if ! "$py_cmd" -c "import py_compile; py_compile.compile('$f', doraise=True)" 2>/dev/null; then
+    if ! "$py_cmd" -c "import py_compile, sys; py_compile.compile(sys.argv[1], doraise=True)" "$f" 2>/dev/null; then
       syntax_errors+="  $f: python syntax error\n"
     fi
   done < <(find ./skills -path '*/templates/*.py' -o -path '*/templates/**/*.py' 2>/dev/null | sort)
@@ -308,4 +308,4 @@ fi
 # --- Summary ---
 echo
 echo "=== Results: $pass passed, $errors failed ==="
-exit "$errors"
+if [ "$errors" -gt 0 ]; then exit 1; else exit 0; fi
