@@ -2,9 +2,25 @@
   <img src="assets/banner.png" alt="optimus-claude" width="600">
 </div>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.35.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
+  <img src="https://img.shields.io/badge/Claude_Code-1.0.33+-blueviolet" alt="Claude Code">
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
+</p>
+
 **A Claude Code plugin that sets up your project for effective AI-assisted development** — optimized CLAUDE.md files, effective coding guidelines, formatter hooks, quality agents, TDD and test coverage, all tailored to your actual codebase.
 
 *Use it regularly and your project stays clean, consistent, tested, and well-documented — exactly the conditions where Claude Code performs at its prime.*
+
+### Highlights
+
+- **Consistency by design** — Every skill enforces your project's naming conventions, patterns, and architecture
+- **No surprise behavior** — Install and keep using Claude Code exactly as before. Skills only run when you call them
+- **Safe by default** — Skills confirm before acting, warn about risks, and respect your autonomy
+- **Team force multiplier** — All output goes into `.claude/` and travels with git — teammates get consistent behavior even without the plugin installed
+- **Auto-formatting on every edit** — Consistent code means less context noise — [fewer re-prompts and more accurate generation](https://code.claude.com/docs/en/best-practices)
+- **Persistent quality agents** — code-simplifier and test-guardian enforce your guidelines continuously, not just when you run a skill
 
 ## Quick Start
 
@@ -38,6 +54,8 @@ Every skill operates on the same shared foundation: **your project's coding guid
 `/optimus:init` analyzes your codebase and generates constraint docs — coding guidelines, CLAUDE.md, quality agents, and formatter hooks — into your `.claude/` directory. From that point on, every optimus skill loads and enforces those same guidelines.
 
 `/optimus:code-review` doesn't run a generic review — its agents check *your* naming conventions, *your* architectural patterns, and *your* DRY principles alongside bugs and security. `/optimus:tdd` applies them during the Refactor step. `/optimus:simplify` uses them as its quality lens. `/optimus:unit-test` follows them for test naming and structure.
+
+Every skill is also conservative by default — `/optimus:unit-test` never refactors source code, `/optimus:verify` runs in an isolated sandbox and never pushes to remote, and `/optimus:commit` warns about secret files before proceeding.
 
 The result: consistent patterns, meaningful names, and lean context across every operation — exactly the signals that keep Claude Code accurate and productive.
 
@@ -89,7 +107,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 ## Complementary Tools
 
-Anthropic's official [code-review](https://github.com/anthropics/claude-code/tree/main/plugins/code-review) plugin for post-push PR review, [claude-md-management](https://claude.com/plugins/claude-md-management) for CLAUDE.md scoring and revision, the builtin `/simplify` for per-change cleanup, and Claude Code's [built-in sandboxing](https://code.claude.com/docs/en/sandboxing) or [Docker containers](https://www.docker.com/blog/docker-sandboxes-run-claude-code-and-other-coding-agents-unsupervised-but-safely/) for fully autonomous agent execution with OS-level isolation.
+optimus-claude is designed to work alongside official tools, not replace them. Use Anthropic's official [code-review](https://github.com/anthropics/claude-code/tree/main/plugins/code-review) plugin for post-push PR review, [claude-md-management](https://claude.com/plugins/claude-md-management) for CLAUDE.md scoring and revision, the builtin `/simplify` for per-change cleanup, and Claude Code's [built-in sandboxing](https://code.claude.com/docs/en/sandboxing) or [Docker containers](https://www.docker.com/blog/docker-sandboxes-run-claude-code-and-other-coding-agents-unsupervised-but-safely/) for fully autonomous agent execution with OS-level isolation.
 
 ## Troubleshooting
 
