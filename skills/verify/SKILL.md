@@ -354,7 +354,7 @@ If the user chooses "Fix issues":
 3. Follow the verification protocol for every re-verification
 4. Present updated results showing which fixes succeeded
 5. Offer "Apply fixes to branch" — generate a patch from the sandbox, then apply it to the feature branch. Stage only the actual source fixes (exclude `_mock/`, verification test files, and other agent-generated artifacts):
-   - `cd <sandbox-path> && git add <fixed-source-files-only> && PATCHFILE=$(mktemp /tmp/verify-fixes-XXXXXX) && git diff --cached > "$PATCHFILE"`
+   - `cd <sandbox-path> && git add <fixed-source-files-only> && PATCHFILE=$(mktemp "${TMPDIR:-/tmp}/verify-fixes-XXXXXX") && git diff --cached > "$PATCHFILE"`
    - `cd <project-root> && git apply "$PATCHFILE"`
    - `rm -f "$PATCHFILE"`
 6. Never push to remote — the user decides when to push
@@ -362,7 +362,7 @@ If the user chooses "Fix issues":
 ### Update PR flow
 
 If the user chooses "Update PR":
-1. Write the Verification Report to a temp file: `TMPFILE=$(mktemp /tmp/verify-report-XXXXXX)`
+1. Write the Verification Report to a temp file: `TMPFILE=$(mktemp "${TMPDIR:-/tmp}/verify-report-XXXXXX")`
 2. Post as a PR/MR comment:
    - **GitHub:** `gh pr comment <N> --body-file "$TMPFILE"`
    - **GitLab:** `glab api -X POST "projects/:id/merge_requests/<N>/notes" -F body=@"$TMPFILE"`

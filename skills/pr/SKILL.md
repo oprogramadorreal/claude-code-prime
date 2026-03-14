@@ -128,7 +128,7 @@ If the user chooses **Adjust**, ask what to change, apply modifications, and pre
 
 ### Create PR/MR
 
-Write the body to a secure temp file: `TMPFILE=$(mktemp /tmp/pr-body-XXXXXX.md)`. Clean up after the creation attempt: `rm -f "$TMPFILE"`.
+Write the body to a secure temp file: `TMPFILE=$(mktemp "${TMPDIR:-/tmp}/pr-body-XXXXXX.md")`. Clean up after the creation attempt: `rm -f "$TMPFILE"`.
 
 - **GitHub:** `gh pr create --title "<title>" --body-file "$TMPFILE" --base <default-branch>`
 - **GitLab:** `glab mr create --title "<title>" --description "$(cat "$TMPFILE")" --target-branch <default-branch>`
