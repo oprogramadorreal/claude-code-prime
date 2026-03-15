@@ -53,6 +53,7 @@ node_modules/
 EOF
 
   git add -A && git commit -q -m "initial: node project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: node-project"
 }
 
@@ -100,6 +101,7 @@ __pycache__/
 EOF
 
   git add -A && git commit -q -m "initial: python project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: python-project"
 }
 
@@ -137,6 +139,7 @@ EOF
 EOF
 
   git add -A && git commit -q -m "initial: go project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: go-project"
 }
 
@@ -172,6 +175,7 @@ target/
 EOF
 
   git add -A && git commit -q -m "initial: rust project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: rust-project"
 }
 
@@ -214,6 +218,7 @@ obj/
 EOF
 
   git add -A && git commit -q -m "initial: csharp project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: csharp-project"
 }
 
@@ -283,6 +288,7 @@ node_modules/
 EOF
 
   git add -A && git commit -q -m "initial: monorepo project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: monorepo-project"
 }
 
@@ -295,6 +301,7 @@ generate_empty_project() {
   git config user.email "test@test.com"
   git config user.name "Test"
   git commit --allow-empty -q -m "initial: empty project"
+  cd "$PLUGIN_ROOT"
   echo "  Created: empty-project"
 }
 
@@ -341,6 +348,7 @@ node_modules/
 EOF
   git add -A && git commit -q -m "initial: frontend"
 
+  cd "$PLUGIN_ROOT"
   echo "  Created: multi-repo-workspace"
 }
 

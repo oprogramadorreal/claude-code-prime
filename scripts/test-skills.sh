@@ -139,6 +139,7 @@ run_skill_test() {
     *)
       echo "  ERROR  No prompt defined for skill: $skill"
       ((errors++)) || true
+      cd "$PLUGIN_ROOT"
       rm -rf "$work_dir"
       return
       ;;
@@ -148,6 +149,7 @@ run_skill_test() {
     echo "  DRY   $skill:$fixture"
     echo "        dir: $work_dir"
     echo "        prompt: $prompt"
+    cd "$PLUGIN_ROOT"
     rm -rf "$work_dir"
     return
   fi
@@ -165,18 +167,24 @@ run_skill_test() {
     --output-format text \
     2>&1) || exit_code=$?
 
-  if [ $exit_code -ne 0 ] && [ $exit_code -ne 1 ]; then
-    echo "  FAIL  $skill:$fixture (claude exited with code $exit_code)"
-    echo "        Output: $(echo "$claude_output" | head -5)"
-    ((errors++)) || true
-    rm -rf "$work_dir"
-    return
+  if [ $exit_code -ne 0 ]; then
+    if [ $exit_code -gt 1 ]; then
+      echo "  FAIL  $skill:$fixture (claude exited with code $exit_code)"
+      echo "        Output: $(echo "$claude_output" | head -5)"
+      ((errors++)) || true
+      cd "$PLUGIN_ROOT"
+      rm -rf "$work_dir"
+      return
+    else
+      echo "  WARN  $skill:$fixture (claude exited with code $exit_code)"
+    fi
   fi
 
   # Validate expected outputs
   validate_outputs "$skill" "$fixture" "$work_dir" "$claude_output"
 
   # Cleanup
+  cd "$PLUGIN_ROOT"
   rm -rf "$work_dir"
 }
 
@@ -278,7 +286,7 @@ validate_outputs() {
           ;;
         files_contain)
           if [ -n "$current_file" ] && [ -f "$current_file" ]; then
-            if ! grep -q "$value" "$current_file" 2>/dev/null; then
+            if ! grep -qF "$value" "$current_file" 2>/dev/null; then
               echo "        FAIL  files_contain: $current_file should contain '$value'"
               test_failed=true
             fi

@@ -173,7 +173,7 @@ echo "fn main() {}" > test.rs
 exit_code=0
 output=$(echo '{"tool_input":{"file_path":"test.rs"}}' | bash "$PLUGIN_ROOT/skills/init/templates/hooks/format-rust.sh" 2>&1) || exit_code=$?
 # Hook should exit 0 (no error output) for a .rs file
-if [ $exit_code -eq 0 ] || [ -z "$output" ]; then
+if [ $exit_code -eq 0 ] && [ -z "$output" ]; then
   printf "  PASS  Rust hook processes .rs file without error\n"
   ((pass++)) || true
 else
