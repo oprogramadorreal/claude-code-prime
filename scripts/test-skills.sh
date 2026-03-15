@@ -10,7 +10,6 @@
 #   bash scripts/test-skills.sh --skill init --fixture node  # test one skill + one fixture
 #   bash scripts/test-skills.sh --all                        # test all testable skills
 #   bash scripts/test-skills.sh --dry-run                    # show what would run
-#   bash scripts/test-skills.sh --budget 2.00                # set max budget per skill
 
 set -euo pipefail
 
@@ -20,7 +19,6 @@ FIXTURES_DIR="$PLUGIN_ROOT/test/fixtures"
 EXPECTED_FILE="$PLUGIN_ROOT/test/expected-outputs.yaml"
 
 # --- Defaults ---
-MAX_BUDGET="1.00"
 MAX_TURNS=30
 DRY_RUN=false
 SKILL_FILTER=""
@@ -32,7 +30,6 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --skill)    SKILL_FILTER="$2"; shift 2 ;;
     --fixture)  FIXTURE_FILTER="$2"; shift 2 ;;
-    --budget)   MAX_BUDGET="$2"; shift 2 ;;
     --turns)    MAX_TURNS="$2"; shift 2 ;;
     --all)      ALL_MODE=true; shift ;;
     --dry-run)  DRY_RUN=true; shift ;;
@@ -42,7 +39,6 @@ while [[ $# -gt 0 ]]; do
       echo "  --skill <name>     Test specific skill (init, permissions, commit-message, dev-setup)"
       echo "  --fixture <name>   Test against specific fixture (node, python, go, rust, csharp, monorepo, empty)"
       echo "  --all              Test all skill/fixture combinations"
-      echo "  --budget <usd>     Max budget per skill invocation (default: 1.00)"
       echo "  --turns <n>        Max agentic turns (default: 30)"
       echo "  --dry-run          Show what would run without executing"
       echo "  --help             Show this help"
@@ -154,7 +150,7 @@ run_skill_test() {
     return
   fi
 
-  echo "  RUN   $skill:$fixture (budget: \$$MAX_BUDGET, turns: $MAX_TURNS)"
+  echo "  RUN   $skill:$fixture (turns: $MAX_TURNS)"
 
   # Snapshot git dirty count before claude runs (for files_not_modified checks)
   local git_dirty_before
@@ -166,7 +162,6 @@ run_skill_test() {
   claude_output=$(claude -p "$prompt" \
     --append-system-prompt "$NONINTERACTIVE_PROMPT" \
     --dangerously-skip-permissions \
-    --max-budget-usd "$MAX_BUDGET" \
     --max-turns "$MAX_TURNS" \
     --output-format text \
     2>&1) || exit_code=$?

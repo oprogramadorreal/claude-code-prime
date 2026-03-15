@@ -175,7 +175,6 @@ bash scripts/test-skills.sh --skill init                 # test one skill
 bash scripts/test-skills.sh --skill init --fixture node  # test one skill + one fixture
 bash scripts/test-skills.sh --all                        # test all skill/fixture combinations
 bash scripts/test-skills.sh --dry-run                    # show what would run without executing
-bash scripts/test-skills.sh --budget 2.00                # set max budget per skill invocation
 ```
 
 Skills use `AskUserQuestion` for interactive decisions, which doesn't work in headless mode. The test script works around this by using `--append-system-prompt` to instruct Claude to make default choices automatically.
