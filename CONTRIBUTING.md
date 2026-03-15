@@ -121,6 +121,14 @@ The `source` object supports an optional `"ref"` field to pin plugin code to a s
 
 This plugin is markdown-based — traditional unit tests don't apply. Instead, testing is split into layers: fast structural checks that run in CI, and slower skill execution tests that run locally.
 
+**Before merging significant changes**, run the full skill test suite from a clean slate:
+
+```shell
+bash scripts/test-skills.sh --fresh --all
+```
+
+This removes existing fixtures, regenerates them, and runs all skill/fixture combinations end-to-end via `claude -p`. See the subsections below for individual test layers and finer-grained options.
+
 ### Structural validation (CI)
 
 Runs on every push and PR to master. Catches broken cross-references, syntax errors in templates, stale README entries, and other invariants.
@@ -174,6 +182,7 @@ bash scripts/test-skills.sh                              # default: init + commi
 bash scripts/test-skills.sh --skill init                 # test one skill
 bash scripts/test-skills.sh --skill init --fixture node  # test one skill + one fixture
 bash scripts/test-skills.sh --all                        # test all skill/fixture combinations
+bash scripts/test-skills.sh --fresh --all                # clean + regenerate fixtures + test all
 bash scripts/test-skills.sh --dry-run                    # show what would run without executing
 ```
 

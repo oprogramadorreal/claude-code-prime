@@ -24,6 +24,7 @@ DRY_RUN=false
 SKILL_FILTER=""
 FIXTURE_FILTER=""
 ALL_MODE=false
+FRESH=false
 
 # --- Parse args ---
 while [[ $# -gt 0 ]]; do
@@ -32,6 +33,7 @@ while [[ $# -gt 0 ]]; do
     --fixture)  FIXTURE_FILTER="$2"; shift 2 ;;
     --turns)    MAX_TURNS="$2"; shift 2 ;;
     --all)      ALL_MODE=true; shift ;;
+    --fresh)    FRESH=true; shift ;;
     --dry-run)  DRY_RUN=true; shift ;;
     --help|-h)
       echo "Usage: bash scripts/test-skills.sh [options]"
@@ -39,6 +41,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --skill <name>     Test specific skill (init, permissions, commit-message, dev-setup)"
       echo "  --fixture <name>   Test against specific fixture (node, python, go, rust, csharp, monorepo, empty)"
       echo "  --all              Test all skill/fixture combinations"
+      echo "  --fresh            Remove and regenerate all fixtures before testing"
       echo "  --turns <n>        Max agentic turns (default: 30)"
       echo "  --dry-run          Show what would run without executing"
       echo "  --help             Show this help"
@@ -322,6 +325,12 @@ if ! command -v claude &>/dev/null; then
   echo "ERROR: claude CLI not found. Install it first: https://docs.anthropic.com/en/docs/claude-code"
   echo "       These tests require the claude CLI installed and authenticated."
   exit 1
+fi
+
+# Remove fixtures if --fresh
+if $FRESH && [ -d "$FIXTURES_DIR" ]; then
+  echo "Removing existing fixtures (--fresh)..."
+  rm -rf "$FIXTURES_DIR"
 fi
 
 # Check fixtures exist
