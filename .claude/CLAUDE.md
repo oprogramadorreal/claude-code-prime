@@ -13,6 +13,8 @@ Read the root README.md to understand the plugin's full capabilities — skills,
 - `.claude-plugin/` — plugin manifests (plugin.json, marketplace.json)
 - `hooks/` — plugin-level hooks (SessionStart for project state awareness)
 - `skills/<name>/` — one directory per skill (SKILL.md + README.md + optional templates/ and references/)
+- `scripts/` — validation and test scripts (CI and local)
+- `test/` — expected outputs and generated fixtures for skill tests
 - `.claude/` — project-level Claude Code settings and hooks
 
 ## Skill-writing guidelines
@@ -21,7 +23,7 @@ See `.claude/docs/skill-writing-guidelines.md` for skill structure, design princ
 
 ## Testing changes
 
-Feature branch testing uses a two-level fetch — see CONTRIBUTING.md for the full workflow. For faster iteration, use local marketplace: `/plugin marketplace add ./path/to/optimus-claude`.
+Run `bash scripts/test-skills.sh --fresh --all` before merging significant changes. See CONTRIBUTING.md for all test layers (validation, hooks, fixtures, skill execution) and the feature branch testing workflow. For faster iteration, use local marketplace: `/plugin marketplace add ./path/to/optimus-claude`.
 
 ## Key rules
 

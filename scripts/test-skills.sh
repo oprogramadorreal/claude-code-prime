@@ -29,9 +29,9 @@ FRESH=false
 # --- Parse args ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --skill)    SKILL_FILTER="$2"; shift 2 ;;
-    --fixture)  FIXTURE_FILTER="$2"; shift 2 ;;
-    --turns)    MAX_TURNS="$2"; shift 2 ;;
+    --skill)    [[ $# -ge 2 ]] || { echo "Error: --skill requires a value"; exit 1; }; SKILL_FILTER="$2"; shift 2 ;;
+    --fixture)  [[ $# -ge 2 ]] || { echo "Error: --fixture requires a value"; exit 1; }; FIXTURE_FILTER="$2"; shift 2 ;;
+    --turns)    [[ $# -ge 2 ]] || { echo "Error: --turns requires a value"; exit 1; }; MAX_TURNS="$2"; shift 2 ;;
     --all)      ALL_MODE=true; shift ;;
     --fresh)    FRESH=true; shift ;;
     --dry-run)  DRY_RUN=true; shift ;;
@@ -212,7 +212,7 @@ validate_outputs() {
     [[ -z "$line" ]] && continue
 
     # Skill level (no indentation)
-    if [[ "$line" =~ ^([a-z-]+):$ ]]; then
+    if [[ "$line" =~ ^([a-z0-9_-]+):$ ]]; then
       if [[ "${BASH_REMATCH[1]}" == "$skill" ]]; then
         in_skill=true
       else
@@ -226,7 +226,7 @@ validate_outputs() {
     $in_skill || continue
 
     # Fixture level (2-space indent)
-    if [[ "$line" =~ ^[[:space:]]{2}([a-z-]+):$ ]]; then
+    if [[ "$line" =~ ^[[:space:]]{2}([a-z0-9_-]+):$ ]]; then
       if [[ "${BASH_REMATCH[1]}" == "$fixture" ]]; then
         in_fixture=true
       else
@@ -297,7 +297,7 @@ validate_outputs() {
           fi
           ;;
         output_contains)
-          if ! echo "$claude_output" | grep -qi "$value"; then
+          if ! echo "$claude_output" | grep -qFi "$value"; then
             echo "        FAIL  output_contains: '$value' not in output"
             test_failed=true
           fi

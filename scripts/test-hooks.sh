@@ -12,6 +12,7 @@ SESSION_START="$PLUGIN_ROOT/hooks/session-start"
 errors=0
 pass=0
 tmpdir=""
+trap 'if [ -n "$tmpdir" ] && [ -d "$tmpdir" ]; then rm -rf "$tmpdir"; fi' EXIT
 
 # --- Helpers ---
 
