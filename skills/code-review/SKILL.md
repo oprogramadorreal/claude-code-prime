@@ -111,8 +111,8 @@ Check that these files exist:
 - `.claude/agents/test-guardian.md`
 
 **If either is missing**, warn the user and recommend running `/optimus:init` to install them. Use these fallbacks so the skill can still run:
-- `code-simplifier.md` missing → Agent 5 (Code Simplifier) will be skipped in Step 3; the review still covers bugs, security, and guidelines via Agents 1–4
-- `test-guardian.md` missing → Agent 6 (Test Guardian) will be skipped in Step 3; test coverage gaps will not be analyzed
+- `code-simplifier.md` missing → Agent 5 (Code Simplifier) will be skipped in Step 4; the review still covers bugs, security, and guidelines via Agents 1–4
+- `test-guardian.md` missing → Agent 6 (Test Guardian) will be skipped in Step 4; test coverage gaps will not be analyzed
 - Both missing → both agents skipped; only Agents 1–4 run (still provides bug, security, and guideline coverage); strongly recommend `/optimus:init` for full 6-agent review
 
 ### Load constraint docs
@@ -133,11 +133,11 @@ Before proceeding to the review, present a brief summary:
 - Agents available (with skip status for missing ones)
 - Project type (single project / monorepo / multi-repo workspace)
 
-Proceed immediately to Step 3 — do not wait for user confirmation.
+Proceed immediately to Step 3 (or Step 4 if the user did not invoke with `deep`) — do not wait for user confirmation.
 
-## Step 2.5: Deep Mode Activation
+## Step 3: Deep Mode Activation
 
-If the user invoked with `deep` (e.g., `/optimus:code-review deep` or `/optimus:code-review deep "focus on src/auth"`), activate deep mode. Deep mode loops review-fix cycles (Steps 3–5) until zero new findings remain or **5 iterations** are reached, then presents a single consolidated report with all fixes already applied as local changes.
+If the user invoked with `deep` (e.g., `/optimus:code-review deep` or `/optimus:code-review deep "focus on src/auth"`), activate deep mode. Deep mode loops review-fix cycles (Steps 4–7) until zero new findings remain or **5 iterations** are reached, then presents a single consolidated report with all fixes already applied as local changes.
 
 ### PR/MR mode guard
 
@@ -151,7 +151,7 @@ Before proceeding, check whether a test command is available (from `.claude/CLAU
 
 If a test command is available, warn the user:
 
-> **Deep mode** runs up to 5 iterative review-fix passes. Each iteration is a full multi-agent analysis-fix cycle — credit and time consumption multiplies with iteration count. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net.
+> **Deep mode** runs up to 5 iterative review-fix passes. Each iteration is a full multi-agent analysis-fix cycle — credit and time consumption multiplies with iteration count. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net. Test command: `<resolved-test-command>`. Fixes will be applied automatically to files in scope without per-change approval. Review all local modifications with `git diff` before committing.
 
 Then use `AskUserQuestion` — header "Deep mode", question "Proceed with deep mode?":
 - **Start deep mode** — "Run iterative review-fix until clean (max 5 iterations)"
@@ -161,7 +161,7 @@ If the user did not invoke with `deep`, skip this step entirely.
 
 If the user selects **Normal mode**, continue with the standard single-pass flow. Record the user's choice as a `deep-mode` flag for subsequent steps. If deep mode is confirmed, initialize `iteration-count` to 1, `total-fixed` to 0, `total-reverted` to 0, and `accumulated-findings` to an empty list.
 
-## Step 3: Parallel Multi-Agent Review (up to 6 agents)
+## Step 4: Parallel Multi-Agent Review (up to 6 agents)
 
 4 core review agents + 2 project-level agents, all launched in parallel for maximum coverage.
 
@@ -186,15 +186,15 @@ Each agent: max 8 findings, structured list format. Guideline agents (3–4) are
 
 ### Execution
 
-Launch all available agents simultaneously (parallel, not sequential). Wait for all launched agents to complete before proceeding to Step 4.
+Launch all available agents simultaneously (parallel, not sequential). Wait for all launched agents to complete before proceeding to Step 5.
 
 **Agent availability summary**: Agents 1–4 always run (no project dependencies). Agents 5–6 depend on installed project agents. If neither project agent exists, note in the summary and recommend `/optimus:init` for full 6-agent review.
 
-## Step 4: Validate Findings
+## Step 5: Validate Findings
 
 Independently verify each finding to filter false positives. Apply the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md` — treat agent-reported findings as claims that require independent evidence, not as ground truth.
 
-For each finding from Step 3:
+For each finding from Step 4:
 1. **Context check** — read ±30 lines around the flagged location to verify the issue exists in context
 2. **Intent check** — look for comments, test assertions, or established patterns that explain the code's behavior (what looks like a bug may be intentional)
 3. **Pre-existing check** — verify the issue was introduced by the changes, not pre-existing in unchanged code
@@ -205,11 +205,11 @@ Assign confidence:
 - **Medium** — plausible issue, some evidence → keep with note
 - **Low** — uncertain, likely false positive → drop
 
-Only findings with High or Medium confidence proceed to Step 5.
+Only findings with High or Medium confidence proceed to Step 6.
 
-## Step 5: Consolidate and Present Findings
+## Step 6: Consolidate and Present Findings
 
-Merge validated findings from Steps 3–4. Deduplicate: if two agents flagged the same file and line range for the same category, keep the more detailed version. For guideline findings flagged by both Agents 3 and 4, merge into one finding and note "confirmed by independent review".
+Merge validated findings from Steps 4–5 (agents and validation). Deduplicate: if two agents flagged the same file and line range for the same category, keep the more detailed version. For guideline findings flagged by both Agents 3 and 4, merge into one finding and note "confirmed by independent review".
 
 ### Contradiction resolution
 
@@ -229,7 +229,7 @@ Before presenting findings, write a concise summary (2–4 sentences) of what th
 
 **Normal mode:** Maximum **15 findings** across all sources, prioritized by severity then confidence. If more issues exist, note the count (e.g., "15 of ~22 findings shown") and suggest re-running with `deep` for exhaustive review, or narrowing scope — e.g., `/optimus:code-review` "focus on src/auth".
 
-**Deep mode:** Maximum **15 findings per iteration**, prioritized by severity then confidence. Findings are accumulated across iterations into `accumulated-findings` — do not present them yet (the consolidated report comes after the loop ends). Instead of presenting the output format below, append this iteration's validated findings to `accumulated-findings`. Deduplicate against findings from previous iterations (same file, same line range, same category = duplicate). Then proceed to Step 6.
+**Deep mode:** Maximum **15 findings per iteration**, prioritized by severity then confidence. Findings are accumulated across iterations into `accumulated-findings` — do not present them yet (the consolidated report comes after the loop ends). Instead of presenting the output format below, append this iteration's validated findings to `accumulated-findings`. Deduplicate against findings from previous iterations (same file, same line range, same category = duplicate), excluding findings marked "(reverted — test failure)" — if the same issue reappears after a failed fix, keep it and annotate as "(persistent — fix failed)". If more than 15 findings are detected, note the overflow count in the iteration progress so the user understands exhaustive coverage may require additional runs. Then proceed to Step 7.
 
 ### Output format
 
@@ -274,7 +274,7 @@ For PR mode, include full-SHA code links:
 - **GitHub:** `https://github.com/owner/repo/blob/[full-sha]/path#L[start]-L[end]`
 - **GitLab:** Extract the instance URL from `git remote get-url origin` (e.g., `https://gitlab.company.com`), then use: `https://[gitlab-host]/owner/repo/-/blob/[full-sha]/path#L[start]-L[end]`
 
-## Step 6: Apply and Iterate (deep mode) / Offer Actions (normal mode)
+## Step 7: Apply and Iterate (deep mode) / Offer Actions (normal mode)
 
 ### Normal mode
 
@@ -302,7 +302,7 @@ For GitLab MRs: `glab api -X POST "projects/:id/merge_requests/<N>/notes" -F bod
 
 ### Deep mode
 
-If zero findings this iteration → convergence reached. Skip to the deep mode consolidated report below.
+If zero findings this iteration → convergence reached. Print "Iteration [N] of up to 5 — converged with zero findings." Then skip to the deep mode consolidated report below.
 
 Otherwise, apply all findings from this iteration:
 
@@ -310,19 +310,19 @@ Otherwise, apply all findings from this iteration:
 2. After applying all fixes for this iteration, run the project's test command (from `.claude/CLAUDE.md`)
 3. Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md`:
    - If tests pass → add this iteration's fixed count to `total-fixed`
-   - If tests fail → revert all changes from this iteration, then re-apply one at a time with a test run after each. Keep changes that pass, skip those that fail. Add passing count to `total-fixed`, failing count to `total-reverted`. Mark reverted findings in `accumulated-findings` as "(reverted — test failure)"
+   - If tests fail → revert all changes from this iteration, then re-apply one at a time (in the same order they were originally applied) with a test run after each. Keep changes that pass, skip those that fail. After bisect completes, run the full test suite once more on the combined retained changes — if this combined run fails, revert all retained fixes from this iteration. Add passing count to `total-fixed`, failing count to `total-reverted`. Mark reverted findings in `accumulated-findings` as "(reverted — test failure)"
 
 Print iteration progress: "Iteration [N] of up to 5 — [total-fixed] issues fixed so far, [total-reverted] reverted."
 
 Check termination conditions:
 
-1. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:code-review deep` in a fresh conversation to continue."
-2. **All fixes in this iteration were reverted due to test failures** → stop. Report: "Deep mode stopped — all fixes in iteration [N] caused test failures."
-3. **Otherwise** → increment `iteration-count` and **return to Step 3** for the next analysis pass. Re-gather the diff using the same git commands from Step 1 (the diff now reflects applied fixes).
+1. **All fixes in this iteration were reverted due to test failures** → stop. Report: "Deep mode stopped — all fixes in iteration [N] caused test failures."
+2. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:code-review deep` in a fresh conversation to continue."
+3. **Otherwise** → increment `iteration-count` and **return to Step 4** for the next analysis pass. Re-gather the diff using only the local diff commands from Step 1 (`git diff --cached`, `git diff`, `git status --short`) — do not re-run scope detection or mode selection.
 
 ### Deep mode consolidated report
 
-After the loop ends (convergence, cap, or failure stop), present the full consolidated report using the same output format from Step 5, but with ALL `accumulated-findings` across all iterations. Add these fields to the Summary block:
+After the loop ends (convergence, cap, or failure stop), present the full consolidated report using the same output format from Step 6, but with ALL `accumulated-findings` across all iterations. Add these fields to the Summary block:
 
 ```
 - Iterations: [N]
@@ -334,7 +334,7 @@ All fixes are already applied as local changes (never committed or pushed). The 
 
 ## Important
 
-- Never modify files, commit, push, or post comments without explicit user approval (deep mode has explicit approval via the confirmation in Step 2.5)
+- Never modify files, commit, push, or post comments without explicit user approval (deep mode has explicit approval via the confirmation in Step 3)
 - In normal mode, this skill is read-only by default — it only analyzes and reports
 - In deep mode, it applies fixes automatically at each iteration — all changes remain as local modifications
 - When changes are too broad for effective review, recommend narrowing scope

@@ -102,13 +102,13 @@ You then choose: **Fix issues**, **Post comment** (PR mode), or **Skip**.
 2. Loads project docs (CLAUDE.md, coding-guidelines.md, testing.md, etc.) with fallbacks for missing docs
 3. Launches up to 6 parallel review agents (bug detection, security/logic, guideline compliance ×2, code-simplifier, test-guardian)
 4. Validates each finding using the verification protocol (context check, intent check, pre-existing check, cross-agent consensus — agent findings are treated as claims requiring independent evidence)
-5. Consolidates, deduplicates, and presents structured report (capped at 15 findings)
+5. Consolidates, deduplicates, and presents structured report (capped at 15 per pass; deep mode accumulates across iterations)
 6. Offers actions: fix issues, post PR comment, or skip
-7. Deep mode: loops steps 3–6 automatically, fixing issues at each iteration until clean
+7. Deep mode: loops the multi-agent analysis-validate-consolidate-fix cycle automatically until clean
 
 ## Deep Mode
 
-By default, the skill caps findings at 15 per run. For exhaustive review, use `deep` to loop automatically:
+Normal mode reports up to 15 findings per run. Deep mode loops analysis-fix cycles automatically until zero findings remain — catching issues that earlier fixes expose:
 
 ```
 /optimus:code-review deep
