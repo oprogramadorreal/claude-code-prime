@@ -62,10 +62,19 @@ if [ -z "$SKILL_FILTER" ] && [ -n "$FIXTURE_FILTER" ]; then
 fi
 
 # --- Worktree isolation ---
-# Creates a temporary detached worktree and re-invokes the script from there,
-# so the user can keep working (switch branches, edit files) in the main tree.
+# Creates a detached worktree inside .worktrees/skill-tests and re-invokes the
+# script from there, so the user can keep working (switch branches, edit files)
+# in the main tree while the worktree stays visible in the project directory.
 if $WORKTREE; then
-  WORKTREE_DIR=$(mktemp -d)
+  WORKTREE_DIR="$PLUGIN_ROOT/.worktrees/skill-tests"
+  mkdir -p "$PLUGIN_ROOT/.worktrees"
+
+  # Remove stale worktree from previous run
+  if [ -d "$WORKTREE_DIR" ]; then
+    git -C "$PLUGIN_ROOT" worktree remove "$WORKTREE_DIR" --force 2>/dev/null || true
+    rm -rf "$WORKTREE_DIR" 2>/dev/null || true
+  fi
+
   cleanup_worktree() {
     echo
     echo "Cleaning up worktree..."
@@ -75,7 +84,7 @@ if $WORKTREE; then
   trap cleanup_worktree EXIT
 
   COMMIT_SHORT=$(git -C "$PLUGIN_ROOT" rev-parse --short HEAD)
-  echo "Creating worktree at $WORKTREE_DIR (from $COMMIT_SHORT)..."
+  echo "Creating worktree at .worktrees/skill-tests (from $COMMIT_SHORT)..."
   git -C "$PLUGIN_ROOT" worktree add --detach "$WORKTREE_DIR" HEAD -q
 
   # Forward all args except --worktree

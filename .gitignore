@@ -3,5 +3,6 @@ benchmark-workspace/
 workspace/
 evals/
 test/fixtures/
+.worktrees/
 __pycache__/
 *.stackdump
