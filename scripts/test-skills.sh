@@ -69,17 +69,26 @@ if $WORKTREE; then
   WORKTREE_DIR="$PLUGIN_ROOT/.worktrees/skill-tests"
   mkdir -p "$PLUGIN_ROOT/.worktrees"
 
-  # Remove stale worktree from previous run
+  # Remove stale worktree from previous run (may have been preserved for debugging)
   if [ -d "$WORKTREE_DIR" ]; then
+    echo "Removing stale worktree (possibly from a previous failed run)..."
     git -C "$PLUGIN_ROOT" worktree remove "$WORKTREE_DIR" --force 2>/dev/null || true
     rm -rf "$WORKTREE_DIR" 2>/dev/null || true
   fi
 
   cleanup_worktree() {
-    echo
-    echo "Cleaning up worktree..."
-    git -C "$PLUGIN_ROOT" worktree remove "$WORKTREE_DIR" --force 2>/dev/null || true
-    rm -rf "$WORKTREE_DIR" 2>/dev/null || true
+    local rc=$?
+    if [ "$rc" -ne 0 ]; then
+      echo
+      echo "Tests failed — worktree preserved at: .worktrees/skill-tests"
+      echo "  To inspect: cd .worktrees/skill-tests/test/fixtures/"
+      echo "  To clean up: git worktree remove .worktrees/skill-tests --force"
+    else
+      echo
+      echo "Cleaning up worktree..."
+      git -C "$PLUGIN_ROOT" worktree remove "$WORKTREE_DIR" --force 2>/dev/null || true
+      rm -rf "$WORKTREE_DIR" 2>/dev/null || true
+    fi
   }
   trap cleanup_worktree EXIT
 
