@@ -229,7 +229,13 @@ Before presenting findings, write a concise summary (2–4 sentences) of what th
 
 **Normal mode:** Maximum **15 findings** across all sources, prioritized by severity then confidence. If more issues exist, note the count (e.g., "15 of ~22 findings shown") and suggest re-running with `deep` for exhaustive review, or narrowing scope — e.g., `/optimus:code-review` "focus on src/auth".
 
-**Deep mode:** Maximum **15 findings per iteration**, prioritized by severity then confidence. Findings are accumulated across iterations into `accumulated-findings` — do not present them yet (the consolidated report comes after the loop ends). Instead of presenting the output format below, append this iteration's validated findings to `accumulated-findings`. Deduplicate against findings from previous iterations (same file, same line range, same category = duplicate), excluding findings marked "(reverted — test failure)" — if the same issue reappears after a failed fix, keep it and annotate as "(persistent — fix failed)". If more than 15 findings are detected, note the overflow count in the iteration progress so the user understands exhaustive coverage may require additional runs. Then proceed to Step 7.
+**Deep mode:** Maximum **15 findings per iteration**, prioritized by severity then confidence. Do not present the output format below — the consolidated report comes after the loop ends. Instead:
+
+1. Append this iteration's validated findings to `accumulated-findings`
+2. Deduplicate against previous iterations (same file, same line range, same category = duplicate), excluding "(reverted — test failure)" entries
+3. If the same issue reappears after a failed fix, keep it and annotate as "(persistent — fix failed)"
+4. If more than 15 findings detected, note the overflow count in iteration progress
+5. Proceed to Step 7
 
 ### Output format
 
@@ -302,18 +308,11 @@ For GitLab MRs: `glab api -X POST "projects/:id/merge_requests/<N>/notes" -F bod
 
 ### Deep mode
 
-On the first iteration, initialize `iteration-count` to 1, `total-fixed` to 0, `total-reverted` to 0, and `accumulated-findings` to an empty list.
+Initialize loop state (first iteration only): `iteration-count` to 1, `total-fixed` to 0, `total-reverted` to 0, and `accumulated-findings` to an empty list.
 
 If zero findings this iteration → convergence reached. Print "Iteration [N] of up to 5 — converged with zero findings." Then skip to the deep mode consolidated report below.
 
-Otherwise, apply all findings from this iteration:
-
-1. Before applying fixes, snapshot the current state: `git stash push -m "pre-iteration-N"`
-2. For each finding, apply the suggested fix
-3. After applying all fixes for this iteration, run the project's test command (from `.claude/CLAUDE.md`)
-4. Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md`:
-   - If tests pass → `git stash drop` the snapshot, add this iteration's fixed count to `total-fixed`
-   - If tests fail → restore pre-iteration state (`git stash pop`), then re-apply one at a time (in the same order they were originally applied) with a test run after each. Keep changes that pass, skip those that fail. If a fix fails to apply cleanly after an earlier fix was skipped, treat it as failed. After bisect completes, run the full test suite once more on the combined retained changes — if this combined run fails, revert all retained fixes from this iteration by restoring from `git stash pop`. Add passing count to `total-fixed`, failing count to `total-reverted`. Mark reverted findings in `accumulated-findings` as "(reverted — test failure)"
+Otherwise, apply all findings from this iteration following `$CLAUDE_PLUGIN_ROOT/skills/code-review/references/deep-mode-bisect.md` (snapshot, apply, test, bisect on failure). Apply the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md` to validate test results.
 
 Print iteration progress: "Iteration [N] of up to 5 — [total-fixed] issues fixed so far, [total-reverted] reverted."
 
@@ -336,6 +335,8 @@ After the loop ends (convergence, cap, or failure stop), present the full consol
 
 All fixes are already applied as local changes (never committed or pushed). The user can review the full diff before committing.
 
+After presenting the consolidated report, clean up the baseline stash: check `git stash list` for an entry with message `deep-mode-baseline`. If found, drop it by its `stash@{N}` reference. If not found, skip cleanup. Inform the user whether the baseline was cleaned up or was already absent.
+
 ## Important
 
 - Never modify files, commit, push, or post comments without explicit user approval (deep mode has explicit approval via the confirmation in Step 3)
@@ -344,8 +345,8 @@ All fixes are already applied as local changes (never committed or pushed). The 
 - When changes are too broad for effective review, recommend narrowing scope
 
 After the review is complete, recommend the next step based on the outcome:
-- If deep mode completed → `/optimus:commit` to commit the accumulated fixes, then `/optimus:unit-test` to strengthen test coverage
-- If issues were found and fixed (normal mode) → `/optimus:commit` to commit the fixes
-- If no issues or user skipped fixes → `/optimus:pr` to create a pull request (skip this if already reviewing a PR/MR)
+- If deep mode completed → Recommend `/optimus:commit` to commit the accumulated fixes. After committing, recommend `/optimus:unit-test` to strengthen test coverage.
+- If issues were found and fixed (normal mode) → Recommend `/optimus:commit` to commit the fixes
+- If no issues or user skipped fixes → Recommend `/optimus:pr` to create a pull request (skip this if already reviewing a PR/MR)
 
 Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
