@@ -342,7 +342,7 @@ After presenting the consolidated report, clean up the baseline stash: check `gi
 ## Important
 
 - Never modify files, commit, push, or post comments without explicit user approval (deep mode has explicit approval via the confirmation in Step 3)
-- In normal mode, this skill is read-only by default — it only analyzes and reports
+- In normal mode, it analyzes and reports first, then offers to apply fixes after user approval — all changes remain as local modifications
 - In deep mode, it applies fixes automatically at each iteration — all changes remain as local modifications
 - When changes are too broad for effective review, recommend narrowing scope
 
