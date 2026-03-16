@@ -65,7 +65,7 @@ For each finding report in this exact format:
 - **Fix:** [suggested fix — max 5 lines]
 
 Do NOT modify any files. Do NOT flag style, guidelines, security, or test coverage — other agents handle those.
-Maximum 5 findings.
+Maximum 8 findings.
 ```
 
 ## Agent 2 — Security & Logic Reviewer (always runs)
@@ -105,7 +105,7 @@ For each finding report in this exact format:
 - **Fix:** [suggested fix — max 5 lines]
 
 Do NOT modify any files. Do NOT flag bugs (Agent 1 handles that), guidelines (Agents 3–4), or code quality/test gaps (Agents 5–6).
-Maximum 5 findings.
+Maximum 8 findings.
 ```
 
 ## Agent 3 — Guideline Compliance Reviewer A (always runs)
@@ -148,7 +148,7 @@ For each finding report in this exact format:
 - **Fix:** [suggested fix — max 5 lines]
 
 Do NOT modify any files. Do NOT flag bugs/logic/security (Agents 1–2 handle those) or code quality/test gaps (Agents 5–6).
-Maximum 5 findings.
+Maximum 8 findings.
 ```
 
 ## Agent 5 — Code Simplifier (only if `.claude/agents/code-simplifier.md` exists)
@@ -171,7 +171,7 @@ For each finding report in this exact format:
 - **Suggested:** [improvement — max 5 lines]
 
 Do NOT modify any files. Do NOT suggest changes outside the changed files. Do NOT flag style/formatting, bugs, security, or guidelines.
-Maximum 5 findings.
+Maximum 8 findings.
 ```
 
 ## Agent 6 — Test Guardian (only if `.claude/agents/test-guardian.md` exists)
@@ -193,5 +193,5 @@ For each finding report in this exact format:
 - **Test file:** [recommended test file path, if applicable]
 
 Do NOT modify any files. Do NOT write test code. Only identify gaps.
-Maximum 5 findings.
+Maximum 8 findings.
 ```

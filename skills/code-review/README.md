@@ -18,6 +18,7 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 - **GitLab support** — PR/MR review via `glab` CLI alongside GitHub `gh` CLI
 - **Submodule exclusion** — automatically skips files inside git submodules
 - **Generated file exclusion** — skips machine-generated files (Dart build_runner output, Visual Studio Designer files, database migration directories)
+- **Deep mode** — iterative review-fix that loops multi-agent analysis until zero findings remain (max 5 iterations), with explicit user consent and risk warnings
 
 ## Quick Start
 
@@ -31,6 +32,8 @@ In Claude Code, use any of these:
 - `/optimus:code-review` "review PR #42"
 - `/optimus:code-review` "review changes since main"
 - `/optimus:code-review` "focus on src/auth"
+- `/optimus:code-review deep` — iterative review-fix until zero findings remain
+- `/optimus:code-review deep` "focus on src/auth" — deep mode with a specific scope
 
 ## When to Run
 
@@ -99,8 +102,33 @@ You then choose: **Fix issues**, **Post comment** (PR mode), or **Skip**.
 2. Loads project docs (CLAUDE.md, coding-guidelines.md, testing.md, etc.) with fallbacks for missing docs
 3. Launches up to 6 parallel review agents (bug detection, security/logic, guideline compliance ×2, code-simplifier, test-guardian)
 4. Validates each finding using the verification protocol (context check, intent check, pre-existing check, cross-agent consensus — agent findings are treated as claims requiring independent evidence)
-5. Consolidates, deduplicates, and presents structured report (capped at 10 findings)
+5. Consolidates, deduplicates, and presents structured report (capped at 15 findings)
 6. Offers actions: fix issues, post PR comment, or skip
+7. Deep mode: loops steps 3–6 automatically, fixing issues at each iteration until clean
+
+## Deep Mode
+
+By default, the skill caps findings at 15 per run. For exhaustive review, use `deep` to loop automatically:
+
+```
+/optimus:code-review deep
+```
+
+**Key differences from normal mode:** Deep mode **applies fixes automatically** at each iteration — it modifies your code, not just reports findings. It **requires a test command** (from `.claude/CLAUDE.md`) as its safety net; without one, it falls back to normal mode. All changes remain as local modifications — nothing is committed or pushed. Deep mode is not available for PR/MR review (only local changes and branch diff).
+
+Deep mode runs the same multi-agent analysis-fix cycle repeatedly (max 5 iterations) until zero findings remain. Before starting, it warns about credit/time consumption and asks for explicit confirmation.
+
+Each iteration:
+1. Launches up to 6 parallel review agents (same as normal mode)
+2. Validates and consolidates findings
+3. Auto-applies fixes (test suite validates; failures trigger per-change bisect and revert)
+4. Loops back for the next pass, or stops when clean
+
+After all iterations complete, presents a single consolidated report with all findings across all passes.
+
+Deep mode stops when: no findings remain, the iteration cap (5) is reached, or all fixes in an iteration fail tests.
+
+Research confirms iterative multi-agent analysis catches issues that single-pass review misses, with most value in the first 2–3 iterations ([LLMLOOP, ICSME 2025](https://valerio-terragni.github.io/assets/pdf/ravi-icsme-2025.pdf)).
 
 ## Relationship to Official /code-review
 
@@ -126,6 +154,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | Focus | Bugs, security, guideline compliance | Cross-file patterns, duplication, drift |
 | Trigger | Before commit/PR | Periodic or after major milestones |
 | Action | Report + optional fix | Plan + apply on approval |
+| Deep mode | Iterative review-fix loop (max 5 iterations) | Iterative analysis-apply loop (max 5 iterations) |
 | Agents | Up to 6 parallel (bug, security, guidelines ×2, simplifier, test-guardian) | None (direct analysis) |
 
 | | `/optimus:code-review` | `/optimus:commit-message` |

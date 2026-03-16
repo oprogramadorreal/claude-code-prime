@@ -1,5 +1,5 @@
 ---
-description: This skill performs local-first code review — analyzes uncommitted changes (or PRs/MRs) against project coding guidelines using up to 6 parallel review agents (bug detection, security/logic, guideline compliance ×2, code simplification, test coverage). HIGH SIGNAL only: real bugs, logic errors, security concerns, and guideline violations.
+description: This skill performs local-first code review — analyzes uncommitted changes (or PRs/MRs) against project coding guidelines using up to 6 parallel review agents (bug detection, security/logic, guideline compliance ×2, code simplification, test coverage). HIGH SIGNAL only: real bugs, logic errors, security concerns, and guideline violations. Supports a "deep" parameter for iterative review-fix until zero findings remain.
 disable-model-invocation: true
 ---
 
@@ -135,6 +135,32 @@ Before proceeding to the review, present a brief summary:
 
 Proceed immediately to Step 3 — do not wait for user confirmation.
 
+## Step 2.5: Deep Mode Activation
+
+If the user invoked with `deep` (e.g., `/optimus:code-review deep` or `/optimus:code-review deep "focus on src/auth"`), activate deep mode. Deep mode loops review-fix cycles (Steps 3–5) until zero new findings remain or **5 iterations** are reached, then presents a single consolidated report with all fixes already applied as local changes.
+
+### PR/MR mode guard
+
+If the review mode is PR/MR (from Step 1), deep mode is not available — it auto-applies fixes locally, which does not apply to someone else's PR. Warn: "Deep mode is not available for PR/MR review — it auto-applies fixes locally. Falling back to normal mode." Then continue with the standard single-pass flow.
+
+### Test command guard
+
+Before proceeding, check whether a test command is available (from `.claude/CLAUDE.md`). If no test command exists, deep mode's auto-fix loop has no safety net — fall back to normal mode and warn: "Deep mode requires a test command for safe auto-fix. Falling back to normal mode — run `/optimus:unit-test` first to enable deep mode." Then continue with the standard single-pass flow.
+
+### User confirmation
+
+If a test command is available, warn the user:
+
+> **Deep mode** runs up to 5 iterative review-fix passes. Each iteration is a full multi-agent analysis-fix cycle — credit and time consumption multiplies with iteration count. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net.
+
+Then use `AskUserQuestion` — header "Deep mode", question "Proceed with deep mode?":
+- **Start deep mode** — "Run iterative review-fix until clean (max 5 iterations)"
+- **Normal mode** — "Single pass with manual fix option instead"
+
+If the user did not invoke with `deep`, skip this step entirely.
+
+If the user selects **Normal mode**, continue with the standard single-pass flow. Record the user's choice as a `deep-mode` flag for subsequent steps. If deep mode is confirmed, initialize `iteration-count` to 1, `total-fixed` to 0, `total-reverted` to 0, and `accumulated-findings` to an empty list.
+
 ## Step 3: Parallel Multi-Agent Review (up to 6 agents)
 
 4 core review agents + 2 project-level agents, all launched in parallel for maximum coverage.
@@ -156,7 +182,7 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/code-review/references/agent-prompts.md` for th
 | 5 — Code Simplifier | Unnecessary complexity, naming, dead code, pattern violations | `.claude/agents/code-simplifier.md` exists |
 | 6 — Test Guardian | Test coverage gaps, structural barriers to testability | `.claude/agents/test-guardian.md` exists |
 
-Each agent: max 5 findings, structured list format. Guideline agents (3–4) are constructed dynamically based on Step 2's doc loading results (single project vs monorepo paths).
+Each agent: max 8 findings, structured list format. Guideline agents (3–4) are constructed dynamically based on Step 2's doc loading results (single project vs monorepo paths).
 
 ### Execution
 
@@ -201,7 +227,9 @@ Before presenting findings, write a concise summary (2–4 sentences) of what th
 
 ### Finding cap
 
-Maximum **10 findings** across all sources, prioritized by severity then confidence. If more issues exist, note the count (e.g., "10 of ~18 findings shown") and suggest re-running with a narrower scope — e.g., `/optimus:code-review` "focus on src/auth".
+**Normal mode:** Maximum **15 findings** across all sources, prioritized by severity then confidence. If more issues exist, note the count (e.g., "15 of ~22 findings shown") and suggest re-running with `deep` for exhaustive review, or narrowing scope — e.g., `/optimus:code-review` "focus on src/auth".
+
+**Deep mode:** Maximum **15 findings per iteration**, prioritized by severity then confidence. Findings are accumulated across iterations into `accumulated-findings` — do not present them yet (the consolidated report comes after the loop ends). Instead of presenting the output format below, append this iteration's validated findings to `accumulated-findings`. Deduplicate against findings from previous iterations (same file, same line range, same category = duplicate). Then proceed to Step 6.
 
 ### Output format
 
@@ -246,19 +274,21 @@ For PR mode, include full-SHA code links:
 - **GitHub:** `https://github.com/owner/repo/blob/[full-sha]/path#L[start]-L[end]`
 - **GitLab:** Extract the instance URL from `git remote get-url origin` (e.g., `https://gitlab.company.com`), then use: `https://[gitlab-host]/owner/repo/-/blob/[full-sha]/path#L[start]-L[end]`
 
-## Step 6: Offer Actions
+## Step 6: Apply and Iterate (deep mode) / Offer Actions (normal mode)
+
+### Normal mode
 
 If the verdict is **CHANGES LOOK GOOD** (no findings), skip this step — do not present any action prompt. Go directly to the recommendation in the "Important" section below.
 
 If the verdict is **ISSUES FOUND**, use `AskUserQuestion` to present actions. The options depend on the review mode determined in Step 1:
 
-### Local changes / branch diff mode
+#### Local changes / branch diff mode
 
 Use `AskUserQuestion` — header "Action", question "How would you like to proceed with the review findings?":
 - **Fix issues** — "Apply suggested fixes directly, then run tests to verify"
 - **Skip** — "Keep the report as reference only"
 
-### PR/MR review mode
+#### PR/MR review mode
 
 Use `AskUserQuestion` — header "Action", question "How would you like to proceed with the review findings?":
 - **Fix issues** — "Apply suggested fixes directly, then run tests to verify"
@@ -270,14 +300,48 @@ Write the review summary to a secure temp file: `TMPFILE=$(mktemp "${TMPDIR:-/tm
 For GitHub PRs: `gh pr comment <N> --body-file "$TMPFILE"`
 For GitLab MRs: `glab api -X POST "projects/:id/merge_requests/<N>/notes" -F body=@"$TMPFILE"` — this avoids shell metacharacter issues that `glab mr note --message "$(cat ...)"` would have with code snippets in the summary
 
+### Deep mode
+
+If zero findings this iteration → convergence reached. Skip to the deep mode consolidated report below.
+
+Otherwise, apply all findings from this iteration:
+
+1. For each finding, apply the suggested fix using Edit or MultiEdit
+2. After applying all fixes for this iteration, run the project's test command (from `.claude/CLAUDE.md`)
+3. Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md`:
+   - If tests pass → add this iteration's fixed count to `total-fixed`
+   - If tests fail → revert all changes from this iteration, then re-apply one at a time with a test run after each. Keep changes that pass, skip those that fail. Add passing count to `total-fixed`, failing count to `total-reverted`. Mark reverted findings in `accumulated-findings` as "(reverted — test failure)"
+
+Print iteration progress: "Iteration [N] of up to 5 — [total-fixed] issues fixed so far, [total-reverted] reverted."
+
+Check termination conditions:
+
+1. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:code-review deep` in a fresh conversation to continue."
+2. **All fixes in this iteration were reverted due to test failures** → stop. Report: "Deep mode stopped — all fixes in iteration [N] caused test failures."
+3. **Otherwise** → increment `iteration-count` and **return to Step 3** for the next analysis pass. Re-gather the diff using the same git commands from Step 1 (the diff now reflects applied fixes).
+
+### Deep mode consolidated report
+
+After the loop ends (convergence, cap, or failure stop), present the full consolidated report using the same output format from Step 5, but with ALL `accumulated-findings` across all iterations. Add these fields to the Summary block:
+
+```
+- Iterations: [N]
+- Total fixed: [N]
+- Total reverted: [N]
+```
+
+All fixes are already applied as local changes (never committed or pushed). The user can review the full diff before committing.
+
 ## Important
 
-- Never modify files, commit, push, or post comments without explicit user approval
-- This skill is read-only by default — it only analyzes and reports
+- Never modify files, commit, push, or post comments without explicit user approval (deep mode has explicit approval via the confirmation in Step 2.5)
+- In normal mode, this skill is read-only by default — it only analyzes and reports
+- In deep mode, it applies fixes automatically at each iteration — all changes remain as local modifications
 - When changes are too broad for effective review, recommend narrowing scope
 
 After the review is complete, recommend the next step based on the outcome:
-- If issues were found and fixed → `/optimus:commit` to commit the fixes
+- If deep mode completed → `/optimus:commit` to commit the accumulated fixes, then `/optimus:unit-test` to strengthen test coverage
+- If issues were found and fixed (normal mode) → `/optimus:commit` to commit the fixes
 - If no issues or user skipped fixes → `/optimus:pr` to create a pull request (skip this if already reviewing a PR/MR)
 
 Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
