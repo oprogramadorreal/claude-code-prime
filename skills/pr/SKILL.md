@@ -163,9 +163,23 @@ If the user chooses **Cancel** → report the existing PR/MR URL and stop.
 
 ### Regenerate content
 
-Gather change data using the existing PR/MR's **target branch** (saved in Step 4) as the base for diffs — use it in place of `<default-branch>` in the `git log`, `git diff --stat`, and `git diff` commands from Step 5. Generate new content following the Conventional PR template.
+#### Phase 1 — Generate fresh content
 
-Present the updated content for preview. Use `AskUserQuestion` — header "Update preview", question "Review the updated PR/MR. Proceed or adjust?":
+Gather change data using the existing PR/MR's **target branch** (saved in Step 4) as the base for diffs — use it in place of `<default-branch>` in the `git log`, `git diff --stat`, and `git diff` commands from Step 5. Generate new content following the Conventional PR template. This is the authoritative content. Do not present yet.
+
+#### Phase 2 — Scan existing content for non-diff information
+
+Review the existing PR/MR title and body (saved from Step 4) for information that **cannot be derived from code changes**. Examples: issue/ticket references (`#45`, `JIRA-123`), deployment instructions, external links, reviewer-directed notes, or follow-up tasks. Discard anything that is outdated, factually wrong based on current diffs, or already covered by the freshly generated content. If useful non-diff information is found:
+
+1. **Standard sections**: Integrate at a natural position within the matching section of the new content (e.g., issue references in Summary, manual verification steps in Test plan).
+2. **Non-standard sections**: If the existing body has sections outside the four standard ones (e.g., `## Deployment notes`, `## Related issues`) that contain non-diff information still relevant, preserve them after `## Test plan`.
+3. **Title**: Only when regenerating the title — if the existing title contains an issue reference or similar non-diff context, incorporate it into the new title while keeping Conventional Commit format.
+
+#### Phase 3 — Preview
+
+Present the final content for preview. If any non-diff information was carried over from the existing PR/MR, add a brief note above the preview: "Note: some manually-added content from the existing PR/MR was carried over (issue references, deployment notes, etc.)."
+
+Use `AskUserQuestion` — header "Update preview", question "Review the updated PR/MR. Proceed or adjust?":
 - **Update** — "Apply changes to the PR/MR"
 - **Adjust** — "I want to modify before updating"
 

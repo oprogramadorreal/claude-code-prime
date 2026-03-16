@@ -14,7 +14,7 @@ The **Conventional PR** format mirrors [Conventional Commits](https://www.conven
 - **CLI installation** — offers to install `gh` (GitHub CLI) or `glab` (GitLab CLI) if not present, with authentication verification
 - **Existing PR/MR detection** — checks if the current branch already has an open PR/MR before creating a duplicate
 - **Create flow** — generates a Conventional PR from branch changes (commits, diff, file list) and previews before creating
-- **Update flow** — regenerates title and/or description for an existing PR/MR with current branch state
+- **Update flow** — regenerates title and/or description for an existing PR/MR with current branch state, preserving manually-added content (issue references, deployment notes, etc.) that can't be derived from code changes
 - **Conventional PR format** — structured sections: Summary, Changes, Rationale (optional), Test plan
 - **Default branch targeting** — new PRs target the repo's default branch (main/master); updates preserve the PR's existing target branch
 - **Ready to merge** — PRs/MRs are created as ready (not draft)
@@ -139,7 +139,7 @@ A PR/MR already exists for this branch. What would you like to do?
 3. Verifies the CLI (`gh`/`glab`) is installed and authenticated — offers installation if missing
 4. Checks if the current branch already has an open PR/MR
 5. **Create flow:** gathers branch changes (commits, diff), generates a Conventional PR (title + structured body), previews, and creates
-6. **Update flow:** shows the existing PR/MR, asks what to regenerate, previews, and updates
+6. **Update flow:** shows the existing PR/MR, asks what to regenerate, generates fresh content from diffs, scans the existing PR for manually-added information (issue references, deployment notes, etc.) to preserve, previews, and updates
 7. Reports the PR/MR URL and recommends `/optimus:verify` then `/optimus:code-review`
 
 ## Conventional PR Format
@@ -181,7 +181,7 @@ The template is shared with `/optimus:tdd` via `references/pr-template.md`.
 
 | File | Purpose |
 |---|---|
-| `SKILL.md` | Skill definition with 7-step workflow (pre-flight, platform detection, CLI check, PR check, create/update, report) |
+| `SKILL.md` | Skill definition with 8-step workflow (pre-flight, platform detection, CLI check, PR check, create/update, per-repo report, final summary) |
 | `references/pr-template.md` | Shared Conventional PR format template (used by this skill and `/optimus:tdd`) |
 | `references/platform-detection.md` | Shared platform detection and CLI management reference (used by this skill, `/optimus:tdd`, and `/optimus:code-review`) |
 | `references/default-branch-detection.md` | Shared default branch detection algorithm (used by this skill and `/optimus:verify`) |
