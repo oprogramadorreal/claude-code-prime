@@ -1,5 +1,5 @@
 ---
-description: Guides test-driven development — decompose a feature or bug fix into behaviors, then cycle through Red (failing test) → Green (minimal implementation) → Refactor for each one. Requires /optimus:init and working test infrastructure.
+description: Guides test-driven development — decompose a feature or bug fix into behaviors, then cycle through Red (failing test) → Green (minimal implementation) → Refactor for each one. Use when building a new feature or fixing a bug with test-first discipline. Requires /optimus:init and working test infrastructure.
 disable-model-invocation: true
 ---
 

@@ -137,7 +137,7 @@ Proceed immediately to Step 3 — do not wait for user confirmation.
 
 ## Step 3: Deep Mode Activation
 
-If the user invoked with `deep` (e.g., `/optimus:code-review deep` or `/optimus:code-review deep "focus on src/auth"`), activate deep mode. Deep mode loops review-fix cycles (Steps 4–7) until zero new findings remain or **5 iterations** are reached, then presents a single consolidated report with all fixes already applied as local changes.
+If the user invoked with `deep` (e.g., `/optimus:code-review deep` or `/optimus:code-review deep "focus on src/auth"`), activate deep mode. Deep mode loops review-fix cycles (Steps 4–8) until zero new findings remain or **5 iterations** are reached, then presents a single consolidated report with all fixes already applied as local changes.
 
 ### PR/MR mode guard
 
@@ -235,7 +235,7 @@ Before presenting findings, write a concise summary (2–4 sentences) of what th
 2. Deduplicate against previous iterations (same file, same line range, same category = duplicate), excluding "(reverted — test failure)" entries
 3. If the same issue reappears after a failed fix, keep it and annotate as "(persistent — fix failed)"
 4. If more than 15 findings detected, note the overflow count in iteration progress
-5. Proceed to Step 7
+5. Proceed to Step 8
 
 ### Output format
 
@@ -280,21 +280,19 @@ For PR mode, include full-SHA code links:
 - **GitHub:** `https://github.com/owner/repo/blob/[full-sha]/path#L[start]-L[end]`
 - **GitLab:** Extract the instance URL from `git remote get-url origin` (e.g., `https://gitlab.company.com`), then use: `https://[gitlab-host]/owner/repo/-/blob/[full-sha]/path#L[start]-L[end]`
 
-## Step 7: Apply and Iterate (deep mode) / Offer Actions (normal mode)
-
-### Normal mode
+## Step 7: Offer Actions (normal mode)
 
 If the verdict is **CHANGES LOOK GOOD** (no findings), skip this step — do not present any action prompt. Go directly to the recommendation in the "Important" section below.
 
 If the verdict is **ISSUES FOUND**, use `AskUserQuestion` to present actions. The options depend on the review mode determined in Step 1:
 
-#### Local changes / branch diff mode
+### Local changes / branch diff mode
 
 Use `AskUserQuestion` — header "Action", question "How would you like to proceed with the review findings?":
 - **Fix issues** — "Apply suggested fixes directly, then run tests to verify"
 - **Skip** — "Keep the report as reference only"
 
-#### PR/MR review mode
+### PR/MR review mode
 
 Use `AskUserQuestion` — header "Action", question "How would you like to proceed with the review findings?":
 - **Fix issues** — "Apply suggested fixes directly, then run tests to verify"
@@ -306,7 +304,9 @@ Write the review summary to a secure temp file: `TMPFILE=$(mktemp "${TMPDIR:-/tm
 For GitHub PRs: `gh pr comment <N> --body-file "$TMPFILE"`
 For GitLab MRs: `glab api -X POST "projects/:id/merge_requests/<N>/notes" -F body=@"$TMPFILE"` — this avoids shell metacharacter issues that `glab mr note --message "$(cat ...)"` would have with code snippets in the summary
 
-### Deep mode
+## Step 8: Apply and Iterate (deep mode)
+
+If deep mode is not active, skip this step entirely.
 
 Loop state (`iteration-count`, `total-fixed`, `total-reverted`, `accumulated-findings`) was initialized in Step 3.
 
@@ -321,7 +321,7 @@ Check termination conditions:
 1. **All fixes in this iteration were reverted due to test failures** → stop. Report: "Deep mode stopped — all fixes in iteration [N] caused test failures."
 2. **No fixes were applied this iteration** (all findings lacked actionable edits) → stop. Report: "Deep mode stopped — no actionable fixes in iteration [N]. Remaining findings require manual review."
 3. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:code-review deep` in a fresh conversation to continue."
-4. **Otherwise** → increment `iteration-count` and **return to Step 4** for the next analysis pass. Re-gather the diff using `git diff` and `git status --short` only (fixes are unstaged working tree changes — `git diff --cached` shows the original staged state, not the post-fix state). Do not re-run scope detection or mode selection. On subsequent iterations, instruct agents to focus only on files that had findings in the previous iteration, not the entire working tree diff.
+4. **Otherwise** → increment `iteration-count` and **return to Step 4** for the next analysis pass. Re-gather the diff using `git diff` and `git status --short` only (fixes are unstaged working tree changes — `git diff --cached` shows the original staged state, not the post-fix state). For untracked files shown by `git status`, read their full content so agents can review them (untracked files do not appear in `git diff`). Do not re-run scope detection or mode selection. On subsequent iterations, instruct agents to focus only on files that had findings in the previous iteration, not the entire working tree diff.
 
 ### Deep mode consolidated report
 
@@ -335,7 +335,7 @@ After the loop ends (convergence, cap, or failure stop), present the full consol
 
 All fixes are already applied as local changes (never committed or pushed). The user can review the full diff before committing.
 
-After presenting the consolidated report, clean up the baseline stash: check `git stash list` for an entry with message `deep-mode-baseline`. If found, drop it by its `stash@{N}` reference. If not found, skip cleanup. Inform the user whether the baseline was cleaned up or was already absent.
+After presenting the consolidated report, clean up the baseline stash: check `git stash list` for an entry matching the recorded baseline message. If found, drop it by its `stash@{N}` reference. If not found, skip cleanup. Inform the user: if fixes were applied, report cleanup result; if zero-iteration convergence (no fixes applied), report "No baseline stash needed (converged without fixes)."
 
 ## Important
 

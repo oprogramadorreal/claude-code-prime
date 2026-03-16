@@ -100,11 +100,11 @@ You then choose: **Fix issues**, **Post comment** (PR mode), or **Skip**.
 
 1. Gathers local changes (or PR diff) via git commands
 2. Loads project docs (CLAUDE.md, coding-guidelines.md, testing.md, etc.) with fallbacks for missing docs
-3. Launches up to 6 parallel review agents (bug detection, security/logic, guideline compliance ×2, code-simplifier, test-guardian)
-4. Validates each finding using the verification protocol (context check, intent check, pre-existing check, cross-agent consensus — agent findings are treated as claims requiring independent evidence)
-5. Consolidates, deduplicates, and presents structured report (capped at 15 per pass; deep mode accumulates across iterations)
-6. Offers actions: fix issues, post PR comment, or skip
-7. Deep mode: loops the multi-agent analysis-validate-consolidate-fix cycle automatically until clean
+3. Deep mode activation — guard checks (PR/MR not supported, test command required), user confirmation with credit/time warning (skipped in normal mode)
+4. Launches up to 6 parallel review agents (bug detection, security/logic, guideline compliance ×2, code-simplifier, test-guardian)
+5. Validates each finding using the verification protocol (context check, intent check, pre-existing check, cross-agent consensus — agent findings are treated as claims requiring independent evidence)
+6. Consolidates, deduplicates, and presents structured report (capped at 15 per pass; deep mode accumulates across iterations)
+7. Offers actions (normal mode) or applies fixes and loops back to step 4 until clean (deep mode, max 5 iterations)
 
 ## Deep Mode
 
@@ -167,7 +167,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 
 | File | Purpose |
 |---|---|
-| `SKILL.md` | Skill definition with 7-step review workflow |
+| `SKILL.md` | Skill definition with 8-step review workflow |
 | `references/agent-prompts.md` | Prompt templates for parallel review agents |
 | `references/deep-mode-bisect.md` | Stash-based snapshot/restore and bisect protocol for deep mode |
 | *(shared)* `init/references/multi-repo-detection.md` | Multi-repo workspace detection algorithm |

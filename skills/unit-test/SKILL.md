@@ -1,5 +1,5 @@
 ---
-description: Improves unit test coverage on demand — discovers testing gaps, provisions test infrastructure, and generates tests that follow project conventions. Conservative: only adds new test files, never refactors existing source code.
+description: Improves unit test coverage on demand — discovers testing gaps, provisions test infrastructure, and generates tests that follow project conventions. Use when test coverage is low or after adding new source files. Conservative: only adds new test files, never refactors existing source code.
 disable-model-invocation: true
 ---
 
