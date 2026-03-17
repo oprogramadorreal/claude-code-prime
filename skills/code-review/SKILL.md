@@ -37,14 +37,15 @@ git status --short
 ```
 
 - **If local changes found** → review them (staged + unstaged + untracked)
-- **If no local changes** → check for commits ahead of the default branch:
-  - Run `git log --oneline origin/main..HEAD` (try `main`, then `master` if no remote)
-  - If commits found → offer to review the branch diff
-  - Also check for a PR/MR (use the same platform detection as PR mode below):
-    - If GitLab: `glab mr view --output json` (ignore errors if `glab` is not installed) — if it fails, check stderr: "no open merge request" or "404" means no MR; auth or network errors → inform the user
-    - If GitHub: `gh pr view --json number,state,title` (ignore errors if `gh` is not installed)
-    - If platform unknown: try both, ignore all errors
-  - If PR/MR found → offer to review it
+- **If no local changes** → detect the comparison base and check for commits ahead:
+  1. **Detect PR/MR target branch** — check if an open PR/MR exists for the current branch and extract its target branch:
+     - If GitHub: `gh pr view --json number,state,baseRefName 2>/dev/null` — if open, use `baseRefName`
+     - If GitLab: `glab mr view --output json 2>/dev/null` — if opened, use `target_branch`
+     - If platform unknown: try both, ignore all errors — use the first successful result
+     - If no open PR/MR found or CLI unavailable → detect the default branch using `$CLAUDE_PLUGIN_ROOT/skills/pr/references/default-branch-detection.md`
+  2. Use the detected branch as `<base-branch>`. Run `git log --oneline origin/<base-branch>..HEAD`
+  3. If commits found → offer to review the branch diff (if the base came from an open PR/MR, mention that the review uses the PR's target branch)
+  4. If an open PR/MR was found in step 1 → also offer to review it directly (PR mode)
 - **If nothing at all** → inform the user there are no changes to review and suggest staging changes or specifying a PR
 
 ### PR mode (explicit request)
