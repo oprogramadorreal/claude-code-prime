@@ -385,4 +385,7 @@ After the review is complete, recommend the next step based on the outcome:
 - If deep mode was used → `/optimus:commit` to commit the accumulated fixes, then consider `/optimus:unit-test` to strengthen test coverage
 - If no issues or user skipped fixes → `/optimus:pr` to create a pull request (skip this if already reviewing a PR/MR)
 
-Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
+Tell the user:
+
+- **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
+- **Tip (normal mode only):** Single-pass review can miss issues due to LLM attention limits. Run `/optimus:code-review deep` to iterate automatically — it fixes, tests, and repeats until clean (max 5 passes). Requires a test command in `.claude/CLAUDE.md`.
