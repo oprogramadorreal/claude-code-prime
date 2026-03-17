@@ -350,7 +350,7 @@ Apply all validated findings from this iteration using Edit or MultiEdit, skippi
 
 Run the project's test command (from `.claude/CLAUDE.md`). Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md` — run tests fresh, read complete output, report actual results with evidence.
 
-- **If tests pass** → all fixes are valid. Add the count of applied fixes to `total-fixed`.
+- **If tests pass** → all fixes are valid. Annotate each applied finding as "(fixed)" in `accumulated-findings`. Add the count of applied fixes to `total-fixed`.
 - **If tests fail** → revert all changes from this iteration, then re-apply fixes one at a time with a test run after each. Keep fixes that pass, skip those that fail, and record each failure as "(reverted — test failure)" in `accumulated-findings`. Add kept fixes to `total-fixed` and failed fixes to `total-reverted`.
 
 ### Termination check
