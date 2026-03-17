@@ -56,12 +56,14 @@ When the user says "review PR #42", passes `--pr`, `#123`, or a PR URL:
 **GitHub projects:**
 - Verify `gh` is available by running `gh --version`. If not available, inform the user that PR review requires the GitHub CLI (`gh`) and offer to review the branch diff instead
 - Use `gh pr view <N> --json state,isDraft,title,body,baseRefName,headRefName` to get PR metadata
+- Store the `title` and `body` fields as `pr-description` for use in Steps 4 and 5 (author intent context)
 - Use `gh pr diff <N>` to get the actual diff
 - If the PR is closed or merged → warn and stop
 
 **GitLab projects:**
 - Verify `glab` is available by running `glab --version`. If not available, inform the user: "This project uses GitLab. PR/MR review requires the GitLab CLI (`glab`). You can use branch diff mode instead: `/optimus:code-review changes since origin/main`." Offer to review the branch diff as a fallback.
 - Use `glab mr view <N> --output json` to get MR metadata
+- Store the `title` and `description` fields as `pr-description` for use in Steps 4 and 5 (author intent context)
 - Use `glab mr diff <N>` to get the actual diff
 - If the MR is closed or merged → warn and stop
 
@@ -165,9 +167,13 @@ Each agent receives the list of changed file paths from Step 1.
 
 Read `$CLAUDE_PLUGIN_ROOT/skills/code-review/references/agent-prompts.md` for the full prompt templates, quality bar, exclusion rules, and false positive guidance for all 6 agents.
 
+### PR/MR context injection (PR/MR mode only)
+
+If a `pr-description` was captured in Step 1 and its body is non-empty, prepend the PR/MR context block to every agent prompt before the file list. Read the **PR/MR Context Block** section in `$CLAUDE_PLUGIN_ROOT/skills/code-review/references/agent-prompts.md` for the template, truncation rule, and guardrail language.
+
 ### Iteration context injection (deep mode, iterations 2+)
 
-If deep mode is active and `iteration-count` > 1, prepend the iteration context block to every agent prompt before the file list. Read the **Iteration Context Block** section in `$CLAUDE_PLUGIN_ROOT/skills/code-review/references/agent-prompts.md` for the template and format.
+If deep mode is active and `iteration-count` > 1, prepend the iteration context block to every agent prompt before the file list (after the PR/MR context block, if present). Read the **Iteration Context Block** section in `$CLAUDE_PLUGIN_ROOT/skills/code-review/references/agent-prompts.md` for the template and format.
 
 ### Agent overview
 
@@ -210,7 +216,15 @@ If a recent commit message clearly indicates deliberate code introduction (e.g.,
 
 For uninformative commit messages (fewer than 15 characters, or generic like "fix", "update", "changes"), run `git show <sha> -- <file>` to examine the actual diff for intent patterns: added null checks, validation logic, error handling, or security measures. Apply the same confidence reduction if the diff shows deliberate defensive code that a finding wants to remove.
 
-This is a **soft adjustment only** — it never hard-filters a finding. It reduces the chance of undoing deliberate previous work while still allowing genuinely problematic code to be flagged.
+### PR/MR description as intent signal
+
+If a `pr-description` was captured in Step 1 (PR/MR mode), use it as an additional intent signal during validation:
+
+- If the PR/MR description explicitly explains **why** a flagged change was made (e.g., "moved validation to middleware" explains removed validation) **and** git history corroborates it → apply one confidence reduction (same as change-intent above)
+- If the PR/MR description claims intent but git history contradicts it or shows no supporting evidence → trust git history over the description (code over claims)
+- If the PR/MR description is silent about a finding → no adjustment (absence of explanation is not evidence of intent)
+
+This is a **soft adjustment only** — it never hard-filters a finding. It reduces the chance of undoing deliberate previous work while still allowing genuinely problematic code to be flagged. The PR/MR description and git history are complementary signals — neither alone can suppress a finding.
 
 Skip gracefully if `git log` fails or returns no results (e.g., shallow clone, newly created file, or file outside the repository).
 

@@ -10,7 +10,8 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 - **Up to 6 parallel agents** — bug detection, security/logic, guideline compliance (x2 for cross-validation), plus code-simplifier and test-guardian when project agents are available
 - **Project-aware** — evaluates against your coding-guidelines.md, testing.md, architecture.md, and styling.md
 - **High signal only** — bugs, security issues, logic errors, explicit guideline violations; excludes style concerns and subjective suggestions
-- **Change-intent awareness** — checks recent git history to avoid flagging code that was deliberately introduced (e.g., a null check added for a bug fix), reducing false positives
+- **Change-intent awareness** — checks recent git history and PR/MR descriptions to avoid flagging code that was deliberately introduced (e.g., a null check added for a bug fix), reducing false positives
+- **PR/MR context awareness** — in PR/MR mode, agents receive the author's description as an intent signal (with explicit guardrails against bias) so they understand the "why" behind changes without suppressing genuine findings
 - **Validation step** — each finding is independently verified (context check, intent check, pre-existing check, cross-agent consensus) using an evidence-based verification protocol before reporting
 - **Contradiction resolution** — cross-agent contradictions (e.g., "add more validation" vs. "simplify this validation") are detected and resolved by severity to prevent circular fix loops
 - **Deep mode** — iterative review-fix loop (max 5 iterations) with automatic fix application and test verification; catches issues that single-pass review misses due to LLM attention limitations
@@ -148,11 +149,11 @@ In deep mode, the consolidated report includes iteration stats:
 
 ## How It Works
 
-1. Gathers local changes (or PR diff) via git commands
+1. Gathers local changes (or PR diff) via git commands; in PR/MR mode, captures the author's description for intent context
 2. Loads project docs (CLAUDE.md, coding-guidelines.md, testing.md, etc.) with fallbacks for missing docs
 3. Activates deep mode if requested (requires test command, confirms with user)
 4. Launches up to 6 parallel review agents (bug detection, security/logic, guideline compliance x2, code-simplifier, test-guardian)
-5. Validates each finding using the verification protocol (context check, intent check, change-intent awareness, pre-existing check, cross-agent consensus)
+5. Validates each finding using the verification protocol (context check, intent check, change-intent awareness, PR/MR context, pre-existing check, cross-agent consensus)
 6. Consolidates, deduplicates, and presents structured report (capped at 15 findings)
 7. Offers actions: fix issues, post PR comment, or skip (normal mode)
 8. In deep mode: auto-applies fixes, runs tests, reverts failures via bisect, repeats up to 5 iterations, then presents a consolidated report
@@ -167,7 +168,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | Guidelines | CLAUDE.md only | coding-guidelines.md, testing.md, styling.md, architecture.md |
 | Agents | 4 (parallel review agents) | Up to 6 (parallel review agents) |
 | Agent types | 2 CLAUDE.md compliance + 1 bug + 1 security | 2 guideline compliance + 1 bug + 1 security + code-simplifier + test-guardian |
-| Validation | Sub-agent validation + confidence scoring | Inline validation (context, intent, change-intent, pre-existing, consensus) |
+| Validation | Sub-agent validation + confidence scoring | Inline validation (context, intent, change-intent, PR/MR context, pre-existing, consensus) |
 | Deep mode | No | Yes — iterative auto-fix (max 5 iterations) |
 | Output | Terminal + inline PR comments | Terminal + optional PR comment or fix-in-place |
 | Install | `claude plugin add code-review` | Part of optimus plugin |
@@ -196,7 +197,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 8-step review workflow |
-| `references/agent-prompts.md` | Prompt templates for parallel review agents (including iteration context block for deep mode) |
+| `references/agent-prompts.md` | Prompt templates for parallel review agents (including PR/MR context block and iteration context block for deep mode) |
 | *(shared)* `init/references/multi-repo-detection.md` | Multi-repo workspace detection algorithm |
 | *(shared)* `init/references/prerequisite-check.md` | Shared prerequisite check with fallbacks |
 | *(shared)* `init/references/constraint-doc-loading.md` | Constraint doc loading (single project, monorepo) |
