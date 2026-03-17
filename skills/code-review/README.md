@@ -53,7 +53,7 @@ Deep mode addresses a fundamental limitation of single-pass LLM review: attentio
 1. Confirms with the user (warns about credit/time cost)
 2. Runs the full multi-agent review (same 6 agents as normal mode)
 3. Auto-applies all validated fixes (no per-change approval)
-4. Runs tests — if failures occur, reverts all fixes and re-applies one at a time to isolate the breaking fix
+4. Runs tests — if failures occur, reverts all fixes and re-applies one at a time, keeping those that pass
 5. Checks termination: converged (zero findings), all reverted, cap reached (5), or continues
 6. Repeats from step 2 with awareness of prior findings
 

@@ -330,7 +330,7 @@ If zero findings were added to `accumulated-findings` in this iteration (Step 6 
 
 ### Apply fixes
 
-Apply all validated findings from this iteration using Edit or MultiEdit. For each fix, record which file was modified and what the pre-edit content was (you will need this for revert if tests fail).
+Apply all validated findings from this iteration using Edit or MultiEdit, skipping any annotated "(persistent — fix failed)" (these have already failed in a prior iteration). For each fix, record which file was modified and what the pre-edit content was (you will need this for revert if tests fail).
 
 ### Test and verify
 
