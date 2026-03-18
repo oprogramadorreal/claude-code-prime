@@ -15,6 +15,8 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/claude-md-best-practices.md`. K
 - Only universally-applicable instructions
 - Preserve user content: when re-running on an existing project, never silently drop content from CLAUDE.md that cannot be derived from the codebase. When unsure whether content is outdated, preserve it. Only mark content as outdated when source code directly contradicts it — and confirm with the user before removing user-added items.
 
+**Write generated files directly.** Files under `.claude/` (docs, hooks, agents, CLAUDE.md) are plugin-generated content. Write new files immediately without asking for permission or confirming with the user — do not use `AskUserQuestion` for file writes. Only pause to confirm when **replacing** a file that contains user-customized content (identified as "User-added" in the audit). Generated content (agents, hooks, `coding-guidelines.md`, templates) is always overwritten silently — these are not user-authored files. Exception: `settings.json` must always be merged, never overwritten — see Step 5. The same rule applies to subproject docs in monorepos and per-repo `.claude/` files in multi-repo workspaces.
+
 ## Step 1: Detect Project Context
 
 ### Empty-directory detection
@@ -146,7 +148,7 @@ Remember the user's choice and approved findings. Steps 2–6 will reference the
 
 **Default for ambiguous content:** When unsure whether content is outdated or user-intentional, preserve it. Only update or remove user-added content when source code provides clear contradicting evidence **and** the user has confirmed via the audit report or `AskUserQuestion`. Information that cannot be re-derived from the codebase must not be discarded to meet formatting or size targets.
 
-**Before creating any file**, check if it already exists. If so, read it first. Inform the user what was preserved vs changed.
+**Before creating any file**, check if it already exists. If it does not exist, write it directly — no confirmation needed (see "Write generated files directly" in Before You Start). If it does exist, read it first. For generated content (agents, hooks, `coding-guidelines.md`), overwrite silently. For files that may contain user-customized content (CLAUDE.md, styling.md, architecture.md, testing.md), inform the user what was preserved vs changed.
 
 **Relocate when scope changes:** If docs need to move (e.g., root `.claude/docs/testing.md` → subproject-scoped in a monorepo), move content to the new location and remove the old file. Keep only `coding-guidelines.md` at root.
 
@@ -159,6 +161,8 @@ mkdir -p .claude/docs .claude/hooks .claude/agents
 # Monorepo: also mkdir -p <subproject>/docs for each subproject from Step 1
 # Multi-repo workspace: run this inside each repo (each gets its own .claude/)
 ```
+
+After creating directories, proceed directly to writing files in subsequent steps — do not pause for confirmation between file writes.
 
 ## Step 4: Create CLAUDE.md
 
@@ -327,12 +331,41 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 
 **Write plugin version:** After all checks pass, write the current plugin version (from `$CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json`) to `.claude/.optimus-version`. This file contains only the version string (e.g., `1.12.0`) with no other content. For multi-repo workspaces, write `.claude/.optimus-version` inside each repo.
 
-**Summary:** Report to the user: files created, detected tech stack, and decisions made (monorepo detection rationale, which optional docs were created and why, which were skipped and why, test infrastructure setup outcome). If the user declined test infrastructure in Step 5c, include the Step 5c skip message as the final item in the summary. For multi-repo workspaces, report per-repo results and remind the user to commit each repo's `.claude/` directory separately.
+**Summary:** Present the final report using this exact format:
 
-If test infrastructure was installed from scratch in Step 5c (no pre-existing test framework — the user chose "Yes" to install one), include a strong warning in the summary:
+```
+---
+
+### ✅ Optimus Init Complete
+
+| Category | Details |
+|----------|---------|
+| **Project** | [project name] — [tech stack summary] |
+| **Structure** | [Single project / Monorepo with N packages / Multi-repo workspace with N repos] |
+| **Files created** | [count] files ([list: CLAUDE.md, settings.json, docs created, hooks, agents]) |
+| **Formatters** | [which formatter hooks were installed, or "None"] |
+| **Test infra** | [Pre-existing: framework name / Installed: framework name / Not installed] |
+| **Doc sync** | [N corrections applied / No contradictions found / Skipped] |
+
+[If monorepo: add subproject breakdown rows. If multi-repo: per-repo results and reminder to commit each repo's `.claude/` separately.]
+```
+
+After the table, include conditional warnings:
+
+If test infrastructure was installed from scratch in Step 5c (no pre-existing test framework — the user chose "Yes" to install one), include a strong warning:
 
 > ⚠ **Important:** Test framework was installed but the project has no test files yet. The test command will pass with 0 tests — this is a false safety net. Other optimus skills (`/optimus:code-review` deep mode, `/optimus:simplify` deep mode, `/optimus:verify`) rely on tests to validate changes. **Run `/optimus:unit-test` next** to write initial tests and establish real coverage.
 
-If the project's root `README.md` lacks a development setup section (no heading matching the patterns defined in `$CLAUDE_PLUGIN_ROOT/skills/init/references/readme-section-detection.md`), recommend running `/optimus:dev-setup` first to ensure the project has comprehensive human-readable setup instructions, then `/optimus:unit-test` to write tests. Otherwise, recommend `/optimus:unit-test` directly.
+If the user declined test infrastructure in Step 5c, include:
+
+> ⚠ **Note:** Test infrastructure was not installed — `/optimus:tdd` will not work, and `/optimus:code-review`, `/optimus:simplify`, and `/optimus:verify` will have reduced functionality. Re-run `/optimus:init` to install test infrastructure later.
+
+**Next step:** If the project's root `README.md` lacks a development setup section (no heading matching the patterns defined in `$CLAUDE_PLUGIN_ROOT/skills/init/references/readme-section-detection.md`), recommend running `/optimus:dev-setup` first to ensure the project has comprehensive human-readable setup instructions, then `/optimus:unit-test` to write tests. Otherwise, recommend `/optimus:unit-test` directly.
 
 Tell the user: **Tip:** for best results, start a fresh conversation for the next skill — each skill gathers its own context from scratch.
+
+End the report with:
+
+> **Setup complete** — your project now has the foundation for effective AI-assisted development. To reach optimal performance, build on this foundation: strengthen test coverage with `/optimus:unit-test` and refine code quality with `/optimus:simplify`.
+
+---
