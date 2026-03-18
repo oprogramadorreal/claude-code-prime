@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 Analyze local git changes (or a PR/MR) against the project's coding guidelines, using up to 6 parallel review agents for comprehensive coverage. High-signal findings only: bugs, logic errors, security issues, guideline violations. Excludes style concerns, subjective suggestions, and linter-catchable issues.
 
+**Progress visibility** — When starting each step, show a brief one-line progress indicator (e.g., "**[Step 2/8]** Loading project context..."). Keep it short — the indicator orients the user, not narrate internals.
+
 ## Step 1: Determine Review Scope
 
 Parse arguments and detect what to review.
