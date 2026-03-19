@@ -64,7 +64,7 @@ If the iteration cap exceeds 10, clamp it to 10 and warn: "Iteration cap clamped
 
 Default to **full project** if the user just says "refactor" without specifying.
 
-For **changed since**: use `git diff --name-only <ref>...HEAD` for commit SHAs, branch names, and tags. For relative dates, use `git log --since="2 weeks ago" --format= --name-only` instead (`--since` is a `git log` flag, not `git diff`). Filter to source files only (apply the exclusion rules from Step 3).
+For **changed since**: use `git diff --name-only <ref>...HEAD` for commit SHAs, branch names, and tags. For relative dates, use `git log --no-merges --since="2 weeks ago" --format= --name-only` instead (`--since` is a `git log` flag, not `git diff`). Filter to source files only (apply the exclusion rules from Step 3).
 
 For monorepos with **full project** scope: ask which subprojects to include (default: all). For **directory** scope: auto-detect which subproject the path belongs to.
 
@@ -72,7 +72,7 @@ For monorepos with **full project** scope: ask which subprojects to include (def
 
 If the `deep` flag was detected in Step 1, activate deep mode. Deep mode loops analysis-apply cycles (Steps 4–8) until zero findings remain or the iteration cap is reached.
 
-Before proceeding, check whether a test command is available (from `.claude/CLAUDE.md`). If no test command exists, deep mode's auto-apply loop has no safety net — fall back to normal mode and warn: "Deep mode requires a test command for safe auto-apply. Falling back to normal mode — re-run `/optimus:init` to set up test infrastructure first." Then continue with the standard single-pass flow.
+Before proceeding, check whether a test command is available (from `.claude/CLAUDE.md`). If no test command exists, deep mode's auto-apply loop has no safety net — fall back to normal mode and warn: "Deep mode requires a test command for safe auto-apply. Falling back to normal mode — re-run `/optimus:init` to set up test infrastructure first." Set `deep-mode` to false. Then continue with the standard single-pass flow.
 
 If a test command is available, warn the user:
 
@@ -119,7 +119,7 @@ Also skip **generated source files** that should never be manually edited: `*.g.
 Rank directories by recent change frequency:
 
 ```bash
-git log --since="3 months" --format= --name-only -- <scope-path> | sort | uniq -c | sort -rn
+git log --no-merges --since="3 months" --format= --name-only -- <scope-path> | sort | uniq -c | sort -rn
 ```
 
 Analyze highest-churn directories first. For full-project scope on large codebases, start with the top 10 most active areas.
@@ -202,11 +202,11 @@ After deduplication, check for **cross-agent contradictions** — findings that 
 
 ### Finding caps
 
-Maximum **8 findings** per run and **4 per area**, prioritized by severity then confidence. If more issues exist, note the count (e.g., "8 of ~18 findings shown") and suggest re-running with a narrower scope — e.g., `/optimus:refactor "focus on src/auth"` or `/optimus:refactor deep` for exhaustive refactoring.
+Maximum **8 findings** per run, prioritized by severity then confidence. If more issues exist, note the count (e.g., "8 of ~18 findings shown") and suggest re-running with a narrower scope — e.g., `/optimus:refactor "focus on src/auth"` or `/optimus:refactor deep` for exhaustive refactoring.
 
 ### Deep mode accumulation
 
-**Deep mode:** Instead of presenting the output format below, append this iteration's validated findings to `accumulated-findings`. Deduplicate against previous iterations: if a finding matches an existing entry by file + line range + category, skip it if the existing entry is marked "(fixed)". If the existing entry is marked "(reverted — test failure)" or "(persistent — fix failed)", annotate the new entry as "(persistent — fix failed)". Then proceed directly to Step 8.
+**Deep mode:** Instead of presenting the output format below, append this iteration's validated findings to `accumulated-findings`. Deduplicate against previous iterations: if a finding matches an existing entry by file + line range + category, skip it if the existing entry is marked "(fixed)". If the existing entry is marked "(persistent — fix failed)", annotate the new entry as "(persistent — fix failed)". If the existing entry is marked "(reverted — test failure)", keep the new entry as "(reverted — attempt 2)" so Step 8 retries the fix once more; only promote to "(persistent — fix failed)" if it is reverted again. Then proceed directly to Step 8.
 
 **Normal mode:** Present findings using the output format below, then proceed to Step 7.
 
@@ -317,7 +317,7 @@ After applying changes and running tests, add this iteration's applied and rever
 
 1. **All changes in this iteration were reverted due to test failures** → stop to prevent a loop of failed attempts. Report: "Deep mode stopped — all findings in iteration [N] caused test failures."
 2. **No changes were applied** (all findings lacked actionable code edits) → stop. Report: "Deep mode stopped — remaining findings require manual review."
-3. **`iteration-count` >= the cap** → cap reached. Report: "Deep mode reached the iteration cap ([cap]). Remaining findings may exist — re-run `/optimus:refactor deep` in a fresh conversation to continue."
+3. **`iteration-count` >= the cap** → cap reached. Report: "Deep mode reached the iteration cap ([cap]). Remaining findings may exist — re-run `/optimus:refactor deep [higher-cap]` with a larger iteration cap, or narrow scope with `/optimus:refactor deep \"focus on <area>\"`."
 4. **Otherwise** → present an iteration progress summary: "Iteration [N] of up to [cap] — [total-applied] findings applied so far, [total-reverted] reverted. Starting next pass..." Increment `iteration-count` and **return to Step 4** for the next analysis pass. Keep the same scope from Step 1.
 
 After the loop ends, present a cumulative summary across all iterations:

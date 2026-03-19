@@ -116,7 +116,7 @@ Deep mode runs the same multi-agent analysis-apply cycle repeatedly (default 5, 
 **Iteration memory:** On iterations 2+, all agents receive a table of prior findings with their status (fixed/reverted/persistent). This prevents circular fixes — agents focus on NEW issues only and do not undo work from previous iterations.
 
 Each iteration:
-1. Launches up to 4 parallel agents with iteration context (same caps: 8 findings, 4 per area)
+1. Launches up to 4 parallel agents with iteration context (same cap: 8 findings per run)
 2. Auto-applies all findings (test suite validates; failures trigger per-change bisect)
 3. Runs the test suite — reverts any change that causes failures
 4. Loops back for the next pass, or stops when clean
