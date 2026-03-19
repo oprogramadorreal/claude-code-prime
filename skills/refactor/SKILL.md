@@ -289,7 +289,7 @@ For each approved finding (skipping any annotated "(persistent — fix failed)" 
 
 After applying all approved changes, run the project's test command (from `.claude/CLAUDE.md`) if available. Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md` — run tests fresh, read complete output, report actual results with evidence:
 - If tests pass → annotate each applied finding as "(fixed)" in `accumulated-findings`. Add the count of applied fixes to `total-applied`. Report success.
-- If tests fail → revert all changes, then re-apply one at a time with a test run after each. Keep changes that pass (annotate as "(fixed)" in `accumulated-findings`, add to `total-applied`), skip those that fail (annotate as "(reverted — test failure)" in `accumulated-findings`, add to `total-reverted`).
+- If tests fail → revert all changes, then re-apply one at a time with a test run after each. Keep changes that pass (annotate as "(fixed)" in `accumulated-findings`, add to `total-applied`), skip those that fail: if the finding was already annotated "(reverted — attempt 2)", promote it to "(persistent — fix failed)"; otherwise annotate as "(reverted — test failure)". In both cases, add to `total-reverted`.
 
 If no test command is available, warn the user that changes were applied without automated verification and carry higher risk.
 
