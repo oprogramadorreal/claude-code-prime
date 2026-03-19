@@ -25,7 +25,7 @@ bash scripts/validate.sh && bash scripts/test-hooks.sh   # Run tests
 
 ## Skill-writing guidelines
 
-See `.claude/docs/skill-writing-guidelines.md` for skill structure, design principles, and quality standards.
+See `.claude/docs/skill-writing-guidelines.md` for skill structure, design principles, and quality standards. A `.claude/docs/coding-guidelines.md` bridge file also exists so that code-review agents can discover these guidelines through the standard doc-loading path.
 
 ## Testing changes
 

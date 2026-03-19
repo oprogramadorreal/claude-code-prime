@@ -2,6 +2,13 @@
 
 Procedure for scaffolding a new project from scratch in an empty directory. Referenced from Step 1 of the init skill when an empty or near-empty directory is detected.
 
+## Contents
+
+- [Scope Guard](#scope-guard)
+- [Section 1: Gather Project Intent](#section-1-gather-project-intent)
+- [Section 2: Scaffold Commands Table](#section-2-scaffold-commands-table) (Web app, Backend/API, CLI tool, Other stacks)
+- [Section 3: Post-Scaffold](#section-3-post-scaffold) (.gitignore, README, Verify, Git init)
+
 ## Scope Guard
 
 This procedure creates a **minimal hello-world project** — the absolute baseline for the chosen stack. The project description provided by the user is used ONLY for naming and the README description line. Do NOT implement features, business logic, or architecture based on the project description. The result must be a buildable, runnable, minimal project with zero custom code beyond what the official scaffolding tool generates.

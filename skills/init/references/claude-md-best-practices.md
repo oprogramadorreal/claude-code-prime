@@ -2,6 +2,20 @@
 
 This document contains best practices for writing effective CLAUDE.md files, extracted from industry knowledge and the HumanLayer engineering blog.
 
+## Contents
+
+- [Core Principles](#core-principles)
+- [Content Structure: WHAT/WHY/HOW Framework](#content-structure-whatwhyhow-framework)
+- [Instruction Management](#instruction-management)
+- [Progressive Disclosure Pattern](#progressive-disclosure-pattern)
+- [What NOT to Include](#what-not-to-include)
+- [Alternative Approaches for Style & Formatting](#alternative-approaches-for-style--formatting)
+- [Claude's Attention Behavior](#claudes-attention-behavior)
+- [Monorepo Pattern](#monorepo-pattern)
+- [Multi-Repo Workspace Pattern](#multi-repo-workspace-pattern)
+- [Quality Checklist](#quality-checklist)
+- [Summary](#summary)
+
 ## Core Principles
 
 ### The Stateless Foundation
