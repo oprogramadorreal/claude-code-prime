@@ -8,7 +8,7 @@ Detailed prompt templates for each of the 6 review agents. These are used in Ste
 - [Quality Bar](#quality-bar-all-agents)
 - [All Agents Exclude](#all-agents-exclude)
 - [False Positives to Avoid](#false-positives-to-avoid)
-- [PR/MR Context Block](#prmr-context-block-pr-mr-mode-only)
+- [PR/MR Context Block](#prmr-context-block-prmr-mode-only)
 - [Iteration Context Block](#iteration-context-block-deep-mode-iterations-2)
 - [Agent 1 — Bug Detector](#agent-1--bug-detector-always-runs)
 - [Agent 2 — Security & Logic Reviewer](#agent-2--security--logic-reviewer-always-runs)
