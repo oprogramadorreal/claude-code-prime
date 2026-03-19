@@ -2,6 +2,14 @@
 
 Section templates and signal-to-content mapping for generating development setup instructions. Referenced by dev-setup (Steps 1 and 4).
 
+## Contents
+
+- [Signal → Section Mapping](#signal--section-mapping)
+- [Section Skeletons](#section-skeletons) (Prerequisites, Installation, External Services, Environment Setup, Running in Development, Building, Running Tests, Common Issues)
+- [Package Manager Command Forms](#package-manager-command-forms)
+- [External Services Detection](#external-services-detection)
+- [Multi-Repo Workspace README Template](#multi-repo-workspace-readme-template)
+
 ## Signal → Section Mapping
 
 | Signal | Section(s) to Generate |

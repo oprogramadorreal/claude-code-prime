@@ -2,6 +2,20 @@
 
 Detailed prompt templates for each of the 6 review agents. These are used in Step 4 of the code review workflow.
 
+## Contents
+
+- [Agent Constraints](#agent-constraints-all-agents)
+- [Quality Bar](#quality-bar-all-agents)
+- [All Agents Exclude](#all-agents-exclude)
+- [False Positives to Avoid](#false-positives-to-avoid)
+- [PR/MR Context Block](#prmr-context-block-pr-mr-mode-only)
+- [Iteration Context Block](#iteration-context-block-deep-mode-iterations-2)
+- [Agent 1 — Bug Detector](#agent-1--bug-detector-always-runs)
+- [Agent 2 — Security & Logic Reviewer](#agent-2--security--logic-reviewer-always-runs)
+- [Agents 3–4 — Guideline Compliance Reviewers](#agent-3--guideline-compliance-reviewer-a-always-runs)
+- [Agent 5 — Code Simplifier](#agent-5--code-simplifier-only-if-claudeagentscode-simplifiermd-exists)
+- [Agent 6 — Test Guardian](#agent-6--test-guardian-only-if-claudeagentstest-guardianmd-exists)
+
 ## Agent Constraints (All Agents)
 
 - **Read-only analysis.** Do NOT modify any files, create any files, or run any commands that change state. You are analyzing code, not fixing it.

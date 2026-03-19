@@ -2,6 +2,18 @@
 
 Detailed prompt templates for each of the 4 refactoring agents. These are used in Step 4 of the refactoring workflow.
 
+## Contents
+
+- [Agent Constraints](#agent-constraints-all-agents)
+- [Quality Bar](#quality-bar-all-agents)
+- [All Agents Exclude](#all-agents-exclude)
+- [False Positives to Avoid](#false-positives-to-avoid)
+- [Iteration Context Block](#iteration-context-block-deep-mode-iterations-2)
+- [Agent 1 — Guideline Compliance](#agent-1--guideline-compliance-always-runs)
+- [Agent 2 — Testability Analyzer](#agent-2--testability-analyzer-always-runs)
+- [Agent 3 — Duplication & Consistency](#agent-3--duplication--consistency-always-runs)
+- [Agent 4 — Code Simplifier](#agent-4--code-simplifier-only-if-claudeagentscode-simplifiermd-exists)
+
 ## Agent Constraints (All Agents)
 
 - **Read-only analysis.** Do NOT modify any files, create any files, or run any commands that change state. You are analyzing code, not fixing it.

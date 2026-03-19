@@ -2,6 +2,13 @@
 
 Minimal consumer project templates used by the Mock Project Agent (Step 5) to verify libraries, plugins, APIs, and reusable components from the outside-in. Mock projects exercise the public API surface to confirm it works as documented.
 
+## Contents
+
+- [When to Create a Mock Project](#when-to-create-a-mock-project)
+- [Scaffold Directory](#scaffold-directory)
+- [Per-Stack Scaffolds](#per-stack-scaffolds) (Node.js, Python, Rust, Go, C#/.NET, Java, C/C++, Dart/Flutter, Other)
+- [Mock Project Principles](#mock-project-principles)
+
 ## When to Create a Mock Project
 
 Create a mock project when the feature being verified is **consumed by external code**. Detection heuristics:

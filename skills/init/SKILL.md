@@ -1,5 +1,5 @@
 ---
-description: Prepares a project for Claude Code — generates CLAUDE.md with progressive disclosure docs, auto-format hooks, code-quality agents (code-simplifier, test-guardian), and test infrastructure (framework, coverage tooling, testing docs). Detects empty directories and offers new-project scaffolding via official stack tooling before setup. Also audits and syncs existing documentation against source code. Replaces /init. Supports single projects, monorepos, and multi-repo workspaces (separate git repos under a shared parent directory).
+description: Prepares a project for Claude Code — generates CLAUDE.md with progressive disclosure docs, auto-format hooks, code-quality agents (code-simplifier, test-guardian), and test infrastructure (framework, coverage tooling, testing docs). Detects empty directories and offers new-project scaffolding via official stack tooling before setup. Also audits and syncs existing documentation against source code. Replaces /init. Supports single projects, monorepos, and multi-repo workspaces (separate git repos under a shared parent directory). Use to bootstrap a new or existing project for Claude Code, or re-run to update an outdated setup.
 disable-model-invocation: true
 ---
 

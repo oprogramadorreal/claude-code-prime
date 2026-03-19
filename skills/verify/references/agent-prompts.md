@@ -2,6 +2,15 @@
 
 Prompt templates for the 4 verification agents launched in Step 5 of the verify workflow. All agents operate inside the sandbox worktree — never in the main workspace.
 
+## Contents
+
+- [Agent Constraints](#agent-constraints-all-agents)
+- [Quality Bar](#quality-bar-all-agents)
+- [Agent 1 — Test Writer](#agent-1--test-writer)
+- [Agent 2 — Integration Verifier](#agent-2--integration-verifier)
+- [Agent 3 — Mock Project Verifier](#agent-3--mock-project-verifier)
+- [Agent 4 — Behavior Tracer](#agent-4--behavior-tracer)
+
 ## Agent Constraints (All Agents)
 
 - **Sandbox only.** All file creation, modification, and command execution happens inside the sandbox worktree directory. Never touch the main workspace.
