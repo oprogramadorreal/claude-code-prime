@@ -1,5 +1,5 @@
 ---
-description: Refactors existing code for guideline compliance and testability using up to 4 parallel analysis agents (guideline compliance, testability barriers, duplication/consistency, optional code-simplifier). Two goals — align code with project guidelines AND make untestable code testable so /optimus:unit-test can safely increase coverage. Supports flexible scoping and a "deep" mode for iterative refactoring (default 5, up to 10 iterations).
+description: Refactors existing code for guideline compliance and testability using up to 4 parallel analysis agents (guideline compliance, testability barriers, duplication/consistency, optional code-simplifier). Two goals — align code with project guidelines AND make untestable code testable so /optimus:unit-test can safely increase coverage. Use after /optimus:init to align existing code, before /optimus:unit-test to remove testability barriers, or periodically to prevent tech debt. Supports flexible scoping and a "deep" mode for iterative refactoring (default 5, up to 10 iterations).
 disable-model-invocation: true
 ---
 
@@ -53,6 +53,7 @@ Examples:
 - `/optimus:refactor deep 10 backend` → scope to backend, deep (10 iterations)
 
 If the iteration cap exceeds 10, clamp it to 10 and warn: "Iteration cap clamped to 10 (maximum)."
+If the iteration cap is less than 1, clamp it to 1 and warn: "Iteration cap clamped to 1 (minimum)."
 
 ### Scope resolution
 
@@ -288,8 +289,8 @@ For each approved finding (skipping any annotated "(persistent — fix failed)" 
 2. Verify the change matches the suggestion from Step 6
 
 After applying all approved changes, run the project's test command (from `.claude/CLAUDE.md`) if available. Follow the verification protocol from `$CLAUDE_PLUGIN_ROOT/skills/init/references/verification-protocol.md` — run tests fresh, read complete output, report actual results with evidence:
-- If tests pass → annotate each applied finding as "(fixed)" in `accumulated-findings`. Add the count of applied fixes to `total-applied`. Report success.
-- If tests fail → revert all changes, then re-apply one at a time with a test run after each. Keep changes that pass (annotate as "(fixed)" in `accumulated-findings`, add to `total-applied`), skip those that fail: if the finding was already annotated "(reverted — attempt 2)", promote it to "(persistent — fix failed)"; otherwise annotate as "(reverted — test failure)". In both cases, add to `total-reverted`.
+- If tests pass → report success. If `deep-mode` is true, annotate each applied finding as "(fixed)" in `accumulated-findings` and add the count of applied fixes to `total-applied`.
+- If tests fail → revert all changes, then re-apply one at a time with a test run after each. Keep changes that pass, skip those that fail. If `deep-mode` is true: annotate kept changes as "(fixed)" in `accumulated-findings` (add to `total-applied`); for failed changes, if already annotated "(reverted — attempt 2)" promote to "(persistent — fix failed)", otherwise annotate as "(reverted — test failure)" (add to `total-reverted`).
 
 If no test command is available, warn the user that changes were applied without automated verification and carry higher risk.
 
@@ -313,7 +314,7 @@ If no test command is available, warn the user that changes were applied without
 
 **Deep mode:** If arriving here from convergence (zero findings in Step 6), skip the termination checks below and go directly to the cumulative summary.
 
-After applying changes and running tests, add this iteration's applied and reverted counts to the `total-applied` and `total-reverted` running totals, then check termination conditions:
+After applying changes and running tests, check termination conditions (the iteration's counts were already added to `total-applied` and `total-reverted` in the apply phase above):
 
 1. **All changes in this iteration were reverted due to test failures** → stop to prevent a loop of failed attempts. Report: "Deep mode stopped — all findings in iteration [N] caused test failures."
 2. **No changes were applied** (all findings lacked actionable code edits) → stop. Report: "Deep mode stopped — remaining findings require manual review."
