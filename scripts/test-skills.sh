@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
     --help|-h)
       echo "Usage: bash scripts/test-skills.sh [options]"
       echo "Options:"
-      echo "  --skill <name>     Test specific skill (init, permissions, commit-message, dev-setup)"
+      echo "  --skill <name>     Test specific skill (init, permissions, commit-message, dev-setup, prompt, branch)"
       echo "  --fixture <name>   Test against specific fixture (node, python, go, rust, csharp, monorepo, empty, multi-repo)"
       echo "  --all              Test all skill/fixture combinations"
       echo "  --fresh            Remove and regenerate all fixtures before testing"
@@ -122,6 +122,8 @@ if $ALL_MODE; then
     "commit-message:node-project"
     "dev-setup:node-project"
     "dev-setup:python-project"
+    "prompt:node-project"
+    "branch:node-project"
   )
 elif [ -n "$SKILL_FILTER" ] && [ -n "$FIXTURE_FILTER" ]; then
   # Map fixture shorthand to directory name
@@ -142,7 +144,9 @@ elif [ -n "$SKILL_FILTER" ]; then
     permissions)    TEST_MATRIX=("permissions:node-project") ;;
     commit-message) TEST_MATRIX=("commit-message:node-project") ;;
     dev-setup)      TEST_MATRIX=("dev-setup:node-project" "dev-setup:python-project") ;;
-    *) echo "Unknown skill: $SKILL_FILTER. Supported: init, permissions, commit-message, dev-setup"; exit 1 ;;
+    prompt)         TEST_MATRIX=("prompt:node-project") ;;
+    branch)         TEST_MATRIX=("branch:node-project") ;;
+    *) echo "Unknown skill: $SKILL_FILTER. Supported: init, permissions, commit-message, dev-setup, prompt, branch"; exit 1 ;;
   esac
 else
   # Default: quick smoke test
@@ -204,6 +208,20 @@ run_skill_test() {
       ;;
     dev-setup)
       prompt="Run /optimus:dev-setup to ensure this project has comprehensive development setup instructions in the README."
+      ;;
+    prompt)
+      prompt="Run /optimus:prompt to craft an optimized prompt for the following idea: Write a Python function that parses CSV files and returns summary statistics."
+      ;;
+    branch)
+      # Need uncommitted changes for branch to have context
+      if [ -f index.js ]; then
+        echo "// add auth middleware" >> index.js
+      elif [ -f README.md ]; then
+        echo "# add auth middleware" >> README.md
+      else
+        echo "# add auth middleware" > README.md
+      fi
+      prompt="Run /optimus:branch to create a properly named branch for the current changes."
       ;;
     *)
       echo "  ERROR  No prompt defined for skill: $skill"

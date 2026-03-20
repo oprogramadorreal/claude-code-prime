@@ -56,11 +56,11 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 ## Design Principles
 
-**Explicit invocation** — Skills never auto-trigger. Claude Code's default behavior is never altered unless you explicitly call a skill.
+**Explicit invocation** — Skills never auto-trigger. Claude Code's default behavior is never altered unless you explicitly call a `/optimus` skill.
 
 **Project-scoped output** — Everything is written into the project's `.claude/` directory and travels with the repo via git — any teammate gets identical behavior, even without the plugin installed. Keep the plugin installed for daily skills like TDD, commit, and code-review.
 
-**Session-start awareness** — A lightweight hook runs on every session start, resume, clear, and compact to check project state (init status, test infrastructure, quality agents, git state). Fully configured projects produce zero output — no context waste.
+**Conservative by default** — Skills default to the least destructive option. `/optimus:code-review` reports are read-only, `/optimus:verify` sandboxes isolate risky work, `/optimus:unit-test` never modifies source code, and `/optimus:commit` confirms before acting. Deep and iterative modes exist but must be explicitly requested.
 
 ## Skills
 
