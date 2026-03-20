@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.49.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.50.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Claude_Code-1.0.33+-blueviolet" alt="Claude Code">
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
@@ -90,6 +90,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 | [`/optimus:permissions`](skills/permissions/README.md) | Branch protection (feature branches work freely; protected branches require PRs), precious unversioned file safety (`.env`, certificates, databases), and auto-approved routine tool calls. Allow/deny rules + PreToolUse hook. Especially useful on native Windows where OS-level sandboxing is unavailable. |
 | [`/optimus:commit`](skills/commit/README.md) | Stages, commits, and optionally pushes with a [conventional commit](https://www.conventionalcommits.org/) message. Confirms before committing. On protected branches, offers to create a feature branch automatically. Multi-repo aware. |
 | [`/optimus:commit-message`](skills/commit-message/README.md) | [Conventional commit](https://www.conventionalcommits.org/) suggestions from local git changes. Splits multi-concern diffs. Multi-repo aware. Read-only — preview only. |
+| [`/optimus:prompt`](skills/prompt/README.md) | Crafts optimized, copy-ready prompts for any AI tool — 9-dimension intent extraction, 30+ tool profiles, 12 auto-selected templates, 35 diagnostic patterns, token efficiency audit. Accepts input in any language; English output by default for better AI performance. Works with LLMs, coding agents, image generators, workflow tools, and more. |
 | [`/optimus:reset`](skills/reset/README.md) | Removes files installed by `/optimus:init` and `/optimus:permissions`. Compares each file against plugin templates and classifies as unmodified, likely generated, or user-modified. Always asks before deleting. Git-tracked files are noted as recoverable. Tests are never touched. Monorepo and multi-repo aware. Use for clean reinstall or to stop using optimus. |
 
 ## Recommended Workflow
@@ -99,7 +100,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 3. **Test coverage** — `/optimus:unit-test` to write tests and improve coverage
 4. **Code quality** — `/optimus:refactor` for full codebase refactoring against your coding guidelines and testability
 
-**During development** — `/optimus:branch` to move work to a properly named branch, `/optimus:tdd` to build features test-first, `/optimus:worktree` for parallel isolated workspaces, `/optimus:commit` for conventional commits (or `/optimus:commit-message` to preview the message without committing).
+**During development** — `/optimus:branch` to move work to a properly named branch, `/optimus:tdd` to build features test-first, `/optimus:worktree` for parallel isolated workspaces, `/optimus:prompt` to craft optimized prompts for any AI tool in your workflow, `/optimus:commit` for conventional commits (or `/optimus:commit-message` to preview the message without committing).
 
 **Before merging** — `/optimus:pr` to create or update pull requests, `/optimus:verify` to prove the feature branch works in an isolated sandbox, `/optimus:code-review` for pre-merge code quality review.
 
@@ -128,6 +129,10 @@ Then retry the install command.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for project structure, skill anatomy, feature branch testing, and local development setup.
+
+## Acknowledgements
+
+The `/optimus:prompt` skill's prompt engineering techniques (intent extraction, tool routing, diagnostic patterns, templates, safe/excluded technique classification) are adapted from [prompt-master](https://github.com/nidhinjs/prompt-master) by [@nidhinjs](https://github.com/nidhinjs).
 
 ## Research & References
 
