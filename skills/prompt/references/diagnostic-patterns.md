@@ -1,6 +1,6 @@
 # Diagnostic Patterns Reference
 
-35 patterns that waste tokens and cause re-prompts. Scan every user-provided prompt or rough idea against these patterns. Fix silently — flag only if the fix changes the user's intent.
+36 patterns that waste tokens and cause re-prompts. Scan every user-provided prompt or rough idea against these patterns. Fix silently — flag only if the fix changes the user's intent.
 
 ## Table of Contents
 
@@ -11,7 +11,7 @@
 | [Format Patterns](#format-patterns) | Missing format, implicit length, vague aesthetics | 6 |
 | [Scope Patterns](#scope-patterns) | No boundaries, no stop conditions, wrong template | 6 |
 | [Reasoning Patterns](#reasoning-patterns) | Missing/wrong CoT, no grounding, contradictions | 5 |
-| [Agentic Patterns](#agentic-patterns) | No starting state, silent agent, unlocked filesystem | 5 |
+| [Agentic Patterns](#agentic-patterns) | No starting state, silent agent, unlocked filesystem | 6 |
 
 ---
 
@@ -89,3 +89,4 @@
 | 33 | **Silent agent** — no progress output | Add: "After each step output what was completed" |
 | 34 | **Unlocked filesystem** — no file restrictions | Add: "Only edit files inside src/. Do not touch config or .env" |
 | 35 | **No human review trigger** — agent decides everything | Add: "Stop and ask before deleting files, adding dependencies, or changing schema" |
+| 36 | **Execution instructions in plan mode prompt** — allowed/forbidden actions, stop conditions in a prompt meant for read-only plan mode | Remove execution guardrails. Replace with: exploration goals, questions the plan must answer, plan document structure, scope boundaries |

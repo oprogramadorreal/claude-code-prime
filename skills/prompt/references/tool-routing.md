@@ -115,6 +115,17 @@ These models reason internally across thousands of tokens. Adding CoT or "think 
 - Human review triggers required: "Stop and ask before deleting any file, adding any dependency, or affecting the database schema"
 - For complex tasks: split into sequential prompts. Output Prompt 1 and add "Run this first, then ask for Prompt 2" below it
 
+### Claude Code (plan mode)
+
+- Read-only mode — CANNOT edit files, write files, or run destructive commands
+- Goal is codebase exploration and plan creation, not execution
+- Provide clear starting points — directories, entry points, known patterns to trace
+- Specify what questions the plan must answer — single most important element
+- Define the plan document structure explicitly — what sections, what level of detail
+- Success criteria must be about the plan quality: "A developer could implement from this plan without asking clarifying questions"
+- Scope exploration boundaries — plan mode wastes time exploring irrelevant code without them
+- Do NOT include execution guardrails (allowed/forbidden actions, stop conditions) — those belong in regular Claude Code prompts
+
 ### Cursor / Windsurf
 
 - File path + function name + current behavior + desired change + do-not-touch list + language and version

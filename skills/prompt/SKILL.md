@@ -104,16 +104,19 @@ Based on the task type and target tool, select the appropriate prompt architectu
 | Format-critical output, pattern replication | F — Few-Shot |
 | Code editing in Cursor / Windsurf / Copilot | G — File-Scope |
 | Autonomous agent (Claude Code, Devin, SWE-agent) | H — ReAct + Stop Conditions |
+| Codebase exploration and planning (Claude Code plan mode) | M — Exploration + Plan Architecture |
 | Image / video generation | I — Visual Descriptor |
 | Editing an existing image | J — Reference Image Editing |
 | ComfyUI node-based workflow | K — ComfyUI |
 | Breaking down / adapting existing prompt | L — Prompt Decompiler |
 
+If the target is Claude Code and the task involves exploration or planning rather than execution, use Template M. If ambiguous, ask: "Should Claude Code explore and create a plan, or execute changes directly?"
+
 If the task doesn't clearly match one template, default to RTF (A) for simple tasks or RISEN (C) for complex ones.
 
 ### Step 5 — Run Diagnostic Checklist
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/prompt/references/diagnostic-patterns.md`. Scan the draft prompt against all 35 patterns.
+Read `$CLAUDE_PLUGIN_ROOT/skills/prompt/references/diagnostic-patterns.md`. Scan the draft prompt against all 36 patterns.
 
 - Fix silently — do not list every pattern checked
 - Flag only if a fix would change the user's stated intent
