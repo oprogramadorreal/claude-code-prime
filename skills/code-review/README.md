@@ -55,8 +55,10 @@ Deep mode addresses a fundamental limitation of single-pass LLM review: attentio
 2. Runs the full multi-agent review (same 6 agents as normal mode)
 3. Auto-applies all validated fixes (no per-change approval)
 4. Runs tests — if failures occur, reverts all fixes and re-applies one at a time, keeping those that pass
-5. Checks termination: converged (zero findings), all reverted, cap reached (5), or continues
-6. Repeats from step 2 with awareness of prior findings
+5. Presents an **iteration report** — a table showing each finding attempted, what changed, why, and its status (fixed/reverted/persistent)
+6. Checks termination: converged (zero findings), all reverted, cap reached (5), or continues
+7. Repeats from step 2 with awareness of prior findings
+8. After all iterations, presents a **cumulative report** summarizing every change across all iterations in a single table, followed by the full detailed findings with code snippets
 
 ### Key differences from normal mode
 
@@ -66,7 +68,7 @@ Deep mode addresses a fundamental limitation of single-pass LLM review: attentio
 | Fix approval | User chooses (Fix / Post / Skip) | Automatic (confirmed upfront) |
 | Test verification | After user-approved fixes | After every iteration |
 | Failed fixes | N/A | Reverted individually via bisect |
-| Output | Immediate report | Consolidated report after all iterations |
+| Output | Immediate report | Per-iteration report tables + cumulative summary table + detailed consolidated report |
 | Requirement | None | Test command in CLAUDE.md |
 
 ### Iteration context
@@ -138,14 +140,39 @@ The skill presents a structured review report:
 
 You then choose: **Fix issues**, **Post comment** (PR mode), or **Skip**.
 
-In deep mode, the consolidated report includes iteration stats:
+In deep mode, each iteration presents a structured report table:
 
 ```
-### Summary
-- Iterations: 3
-- Total fixed: 8
-- Total reverted (test failures): 1
+#### Iteration 1 — Report
+
+| # | File | What Changed | Reason | Guideline / Category | Status |
+|---|------|-------------|--------|---------------------|--------|
+| 1 | src/api/users.ts:47 | Added null check | getUser() can return undefined | General: bug / Bug | fixed |
+| 2 | src/api/orders.ts:23 | Added input validation | Request body used without validation | coding-guidelines.md > "Validate at boundaries" / Guideline Violation | reverted — test failure |
 ```
+
+After all iterations, a cumulative summary table covers every change:
+
+```
+## Code Review — Deep Mode Cumulative Report
+
+**Summary:**
+- Total iterations: 3
+- Total findings fixed: 8
+- Total findings reverted (test failures): 1
+- Total findings persistent (fix failed): 0
+- Final test status: pass
+
+**All Changes:**
+
+| # | Iter | File | What Changed | Reason | Guideline / Category | Status |
+|---|------|------|-------------|--------|---------------------|--------|
+| 1 | 1 | src/api/users.ts:47 | Added null check | getUser() can return undefined | General: bug / Bug | fixed |
+| 2 | 1 | src/api/orders.ts:23 | Added input validation | Request body used without validation | coding-guidelines.md > "Validate at boundaries" / Guideline Violation | reverted — test failure |
+| ... | ... | ... | ... | ... | ... | ... |
+```
+
+This is followed by the full detailed findings with code snippets (same format as normal mode output, covering all iterations).
 
 ## How It Works
 
@@ -156,7 +183,7 @@ In deep mode, the consolidated report includes iteration stats:
 5. Validates each finding using the verification protocol (context check, intent check, change-intent awareness, PR/MR context, pre-existing check, cross-agent consensus, runtime assumption check)
 6. Consolidates, deduplicates, and presents structured report (capped at 15 findings)
 7. Offers actions: fix issues, post PR comment, or skip (normal mode)
-8. In deep mode: auto-applies fixes, runs tests, reverts failures via bisect, repeats up to 5 iterations, then presents a consolidated report
+8. In deep mode: auto-applies fixes, runs tests, reverts failures via bisect, presents per-iteration report tables, repeats up to 5 iterations, then presents a cumulative summary table and detailed consolidated report
 
 ## Relationship to Official /code-review
 
