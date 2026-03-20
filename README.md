@@ -11,11 +11,17 @@
 
 **A Claude Code plugin that sets up your project for effective AI-assisted engineering.**
 
+---
+
 **The problem:** AI amplifies whatever it finds. Messy code leads to messier AI-generated code, which becomes the new context for even worse output — a vicious cycle that compounds faster than any human could create technical debt. Without maintained context, any AI coding tool's quality degrades with every file it reads.
+
+---
 
 **The solution:** Optimus Claude generates tailored and optimized CLAUDE.md files, coding guidelines, formatter hooks, quality agents, TDD and test coverage, all based on your actual codebase.
 
 *Use it regularly and your project stays clean, consistent, tested, and well-documented. Exactly the conditions where Claude Code performs at its prime.*
+
+---
 
 **The philosophy:** This is all about perfecting context. The codebase, unit tests, docs, commit messages, PR descriptions, branch names — it's all context and it all adds up to shape how well Claude Code performs. Optimus Claude provides developers ways to create and maintain optimal context for AI-assisted engineering across the entire development workflow.
 
