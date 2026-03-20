@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.49.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.50.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Claude_Code-1.0.33+-blueviolet" alt="Claude Code">
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
@@ -11,11 +11,17 @@
 
 **A Claude Code plugin that sets up your project for effective AI-assisted engineering.**
 
+---
+
 **The problem:** AI amplifies whatever it finds. Messy code leads to messier AI-generated code, which becomes the new context for even worse output — a vicious cycle that compounds faster than any human could create technical debt. Without maintained context, any AI coding tool's quality degrades with every file it reads.
+
+---
 
 **The solution:** Optimus Claude generates tailored and optimized CLAUDE.md files, coding guidelines, formatter hooks, quality agents, TDD and test coverage, all based on your actual codebase.
 
 *Use it regularly and your project stays clean, consistent, tested, and well-documented. Exactly the conditions where Claude Code performs at its prime.*
+
+---
 
 **The philosophy:** This is all about perfecting context. The codebase, unit tests, docs, commit messages, PR descriptions, branch names — it's all context and it all adds up to shape how well Claude Code performs. Optimus Claude provides developers ways to create and maintain optimal context for AI-assisted engineering across the entire development workflow.
 
@@ -36,16 +42,6 @@ Run these commands inside Claude Code:
 
 Start a new Claude Code session and type `/optimus:init` in any project directory. See [Skills](#skills) for the full list.
 
-## Why It Works
-
-What makes a good developer productive also makes Claude Code productive: **clean code, good tests, and clear docs.**
-
-Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, and LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows. Clean, DRY code with meaningful names keeps context lean and gives the LLM better semantic signals. The [2025 DORA report](https://cloud.google.com/discover/how-test-driven-development-amplifies-ai-success) puts it simply: AI amplifies existing practices, good or bad.
-
-Another key point: [providing LLMs with tests alongside tasks consistently improves code generation](https://arxiv.org/abs/2402.13521). Tests enable self-correction. Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code reflects this: "make the AI self-verifying". Unit tests and TDD are the purest way to achieve it.
-
-AI assistants also tend toward [sycophancy](https://blog.scielo.org/en/2026/03/13/sycophancy-in-ai-the-risk-of-complacency/) — validating ideas without critical pushback. A [2025 METR trial](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) found developers using AI were [19% slower yet believed they were faster](https://arxiv.org/abs/2507.09089). This plugin counters that: every skill enforces project-defined standards as the source of truth, a shared [verification protocol](skills/init/references/verification-protocol.md) requires evidence before any completion claim and challenges assumptions before committing to an approach, code review runs independent duplicate guideline agents and verifies each finding against the actual code, and TDD ensures tests define what is correct instead of relying on the AI's confidence.
-
 ## How It Works
 
 Every skill operates on the same shared foundation: **your project's coding guidelines** and a **verification protocol** that demands evidence over confidence.
@@ -60,11 +56,11 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 ## Design Principles
 
-**Explicit invocation** — Skills never auto-trigger. Claude Code's default behavior is never altered unless you explicitly call a skill.
+**Explicit invocation** — Skills never auto-trigger. Claude Code's default behavior is never altered unless you explicitly call a `/optimus` skill.
 
 **Project-scoped output** — Everything is written into the project's `.claude/` directory and travels with the repo via git — any teammate gets identical behavior, even without the plugin installed. Keep the plugin installed for daily skills like TDD, commit, and code-review.
 
-**Session-start awareness** — A lightweight hook runs on every session start, resume, clear, and compact to check project state (init status, test infrastructure, quality agents, git state). Fully configured projects produce zero output — no context waste.
+**Conservative by default** — Skills default to the least destructive option. `/optimus:code-review` reports are read-only, `/optimus:verify` sandboxes isolate risky work, `/optimus:unit-test` never modifies source code, and `/optimus:commit` confirms before acting. Deep and iterative modes exist but must be explicitly requested.
 
 ## Skills
 
@@ -90,6 +86,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 | [`/optimus:permissions`](skills/permissions/README.md) | Branch protection (feature branches work freely; protected branches require PRs), precious unversioned file safety (`.env`, certificates, databases), and auto-approved routine tool calls. Allow/deny rules + PreToolUse hook. Especially useful on native Windows where OS-level sandboxing is unavailable. |
 | [`/optimus:commit`](skills/commit/README.md) | Stages, commits, and optionally pushes with a [conventional commit](https://www.conventionalcommits.org/) message. Confirms before committing. On protected branches, offers to create a feature branch automatically. Multi-repo aware. |
 | [`/optimus:commit-message`](skills/commit-message/README.md) | [Conventional commit](https://www.conventionalcommits.org/) suggestions from local git changes. Splits multi-concern diffs. Multi-repo aware. Read-only — preview only. |
+| [`/optimus:prompt`](skills/prompt/README.md) | Crafts optimized, copy-ready prompts for any AI tool — 9-dimension intent extraction, 30+ tool profiles, 13 auto-selected templates, 36 diagnostic patterns, token efficiency audit. Accepts input in any language; English output by default for better AI performance. Works with LLMs, coding agents, image generators, workflow tools, and more. |
 | [`/optimus:reset`](skills/reset/README.md) | Removes files installed by `/optimus:init` and `/optimus:permissions`. Compares each file against plugin templates and classifies as unmodified, likely generated, or user-modified. Always asks before deleting. Git-tracked files are noted as recoverable. Tests are never touched. Monorepo and multi-repo aware. Use for clean reinstall or to stop using optimus. |
 
 ## Recommended Workflow
@@ -99,7 +96,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 3. **Test coverage** — `/optimus:unit-test` to write tests and improve coverage
 4. **Code quality** — `/optimus:refactor` for full codebase refactoring against your coding guidelines and testability
 
-**During development** — `/optimus:branch` to move work to a properly named branch, `/optimus:tdd` to build features test-first, `/optimus:worktree` for parallel isolated workspaces, `/optimus:commit` for conventional commits (or `/optimus:commit-message` to preview the message without committing).
+**During development** — `/optimus:branch` to move work to a properly named branch, `/optimus:tdd` to build features test-first, `/optimus:worktree` for parallel isolated workspaces, `/optimus:prompt` to craft optimized prompts for any AI tool in your workflow, `/optimus:commit` for conventional commits (or `/optimus:commit-message` to preview the message without committing).
 
 **Before merging** — `/optimus:pr` to create or update pull requests, `/optimus:verify` to prove the feature branch works in an isolated sandbox, `/optimus:code-review` for pre-merge code quality review.
 
@@ -108,6 +105,16 @@ The result: consistent patterns, meaningful names, and lean context across every
 **New to a codebase?** — `/optimus:dev-setup` ensures the README has accurate development setup instructions for onboarding.
 
 **Removing optimus** — `/optimus:reset` to remove optimus-generated files from the project (for clean reinstall or to stop using optimus).
+
+## Why It Works
+
+What makes a good developer productive also makes Claude Code productive: **clean code, good tests, and clear docs.**
+
+Research backs this up: AI tools introduce [30%+ more defects](https://arxiv.org/abs/2601.02200) on poorly maintained code, and LLM performance [degrades up to 85%](https://arxiv.org/abs/2510.05381) as context length grows. Clean, DRY code with meaningful names keeps context lean and gives the LLM better semantic signals. The [2025 DORA report](https://cloud.google.com/discover/how-test-driven-development-amplifies-ai-success) puts it simply: AI amplifies existing practices, good or bad.
+
+Another key point: [providing LLMs with tests alongside tasks consistently improves code generation](https://arxiv.org/abs/2402.13521). Tests enable self-correction. Anthropic's [#1 best practice](https://code.claude.com/docs/en/best-practices) for Claude Code reflects this: "make the AI self-verifying". Unit tests and TDD are the purest way to achieve it.
+
+AI assistants also tend toward [sycophancy](https://blog.scielo.org/en/2026/03/13/sycophancy-in-ai-the-risk-of-complacency/) — validating ideas without critical pushback. A [2025 METR trial](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/) found developers using AI were [19% slower yet believed they were faster](https://arxiv.org/abs/2507.09089). This plugin counters that: every skill enforces project-defined standards as the source of truth, a shared [verification protocol](skills/init/references/verification-protocol.md) requires evidence before any completion claim and challenges assumptions before committing to an approach, code review runs independent duplicate guideline agents and verifies each finding against the actual code, and TDD ensures tests define what is correct instead of relying on the AI's confidence.
 
 ## Complementary Tools
 
@@ -128,6 +135,10 @@ Then retry the install command.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for project structure, skill anatomy, feature branch testing, and local development setup.
+
+## Acknowledgements
+
+The `/optimus:prompt` skill's prompt engineering techniques (intent extraction, tool routing, diagnostic patterns, templates, safe/excluded technique classification) are adapted from [prompt-master](https://github.com/nidhinjs/prompt-master) by [@nidhinjs](https://github.com/nidhinjs).
 
 ## Research & References
 
