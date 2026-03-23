@@ -80,7 +80,9 @@ On iterations 2+, each agent receives a table of prior findings with their statu
 - **Convergence** — zero new findings (code is clean)
 - **All reverted** — every fix in an iteration caused test failures
 - **No actionable fixes** — findings exist but lack concrete code edits
-- **Cap reached** — 5 iterations completed (re-run in fresh conversation to continue)
+- **Cap reached** — 5 iterations completed (continue in a fresh conversation)
+
+On iterations 3+, a context-accumulation warning notes that output quality may degrade and suggests finishing remaining findings in a fresh conversation.
 
 ### Research context
 
