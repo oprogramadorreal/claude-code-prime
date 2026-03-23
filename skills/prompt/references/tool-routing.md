@@ -117,16 +117,11 @@ These models reason internally across thousands of tokens. Adding CoT or "think 
 
 ### Claude Code (plan mode)
 
-- Read-only mode — CANNOT edit files, write files, or run destructive commands
-- Goal is codebase exploration and plan creation, not execution
-- Provide clear starting points — directories, entry points, known patterns to trace
-- Specify what questions the plan must answer — single most important element
-- Define the plan document structure explicitly — what sections, what level of detail
-- Success criteria must be about the plan quality: "A developer could implement from this plan without asking clarifying questions"
-- Scope exploration boundaries — plan mode wastes time exploring irrelevant code without them
-- Do NOT include execution guardrails (allowed/forbidden actions, stop conditions) — those belong in regular Claude Code prompts
-- The prompt must be self-contained — it will be pasted as the first message in a fresh conversation with no prior context. Embed all relevant stack, architecture, and constraint information directly
-- Your output is a prompt to copy-paste, not a plan document — never produce the plan itself
+- Plan-mode Claude reads the project's CLAUDE.md for codebase orientation — do NOT replicate that information in the prompt
+- "What to Figure Out" is the highest-value section — frame as questions, not pre-explored findings
+- Scope boundaries help avoid wasted exploration — include when the user specified relevant areas
+- The prompt must be self-contained — it will be pasted as the first message in a fresh conversation with no prior context
+- See Template M in templates.md for full behavioral rules (input verification, codebase access policy, redundant-instruction exclusions)
 
 ### Cursor / Windsurf
 

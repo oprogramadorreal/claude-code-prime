@@ -110,7 +110,7 @@ Based on the task type and target tool, select the appropriate prompt architectu
 | ComfyUI node-based workflow | K — ComfyUI |
 | Breaking down / adapting existing prompt | L — Prompt Decompiler |
 
-If the target is Claude Code and the task involves exploration or planning rather than execution, use Template M. If ambiguous, ask: "Should Claude Code explore and create a plan, or execute changes directly?" When using Template M: your output is a PROMPT the user will copy-paste — NEVER produce the plan itself. The prompt MUST be fully self-contained because it will be the first message in a new Claude Code conversation with no prior context.
+If the target is Claude Code and the task involves exploration or planning rather than execution, use Template M. If ambiguous, ask: "Should Claude Code explore and create a plan, or execute changes directly?" When using Template M: your output is a PROMPT — NEVER produce the plan itself. The prompt must be self-contained because it starts a new conversation with no prior context.
 
 If the task doesn't clearly match one template, default to RTF (A) for simple tasks or RISEN (C) for complex ones.
 
