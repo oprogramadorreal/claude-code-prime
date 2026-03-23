@@ -77,7 +77,7 @@ Before proceeding, check whether a test command is available (from `.claude/CLAU
 
 If a test command is available, warn the user:
 
-> **Deep mode** runs up to [cap] iterative refactoring passes. Each iteration is a full multi-agent analysis cycle — credit and time consumption multiplies with iteration count. Fixes are applied automatically at each iteration without per-change approval. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net. Each iteration also accumulates context — on large codebases, later iterations may produce lower-quality output.
+> **Deep mode** runs up to [cap] iterative refactoring passes. Each iteration is a full multi-agent analysis cycle — credit and time consumption multiplies with iteration count. Fixes are applied automatically at each iteration without per-change approval. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net. Each iteration also accumulates context — on large codebases, output quality may degrade in later iterations.
 >
 > Test command: `[test command from CLAUDE.md]`
 

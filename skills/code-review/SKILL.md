@@ -149,7 +149,7 @@ Before proceeding, check whether a test command is available (from `.claude/CLAU
 
 If a test command is available, warn the user:
 
-> **Deep mode** runs up to 5 iterative review-fix passes. Each iteration is a full multi-agent review cycle — credit and time consumption multiplies with iteration count. Fixes are applied automatically at each iteration without per-change approval. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net. Each iteration also accumulates context — on large codebases, later iterations may produce lower-quality output.
+> **Deep mode** runs up to 5 iterative review-fix passes. Each iteration is a full multi-agent review cycle — credit and time consumption multiplies with iteration count. Fixes are applied automatically at each iteration without per-change approval. Low test coverage increases the chance of undetected breakage; consider running `/optimus:unit-test` first to strengthen the safety net. Each iteration also accumulates context — on large codebases, output quality may degrade in later iterations.
 >
 > Test command: `[test command from CLAUDE.md]`
 
@@ -364,7 +364,7 @@ After applying fixes and running tests, check termination conditions in order:
 
 1. **All fixes this iteration were reverted** due to test failures → stop to prevent a loop of failed attempts. Report: "Deep mode stopped — all fixes in iteration [N] caused test failures."
 2. **No fixes were applied** (all findings lacked actionable code edits) → stop. Report: "Deep mode stopped — remaining findings require manual review."
-3. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — re-run `/optimus:code-review deep` in a fresh conversation to continue."
+3. **`iteration-count` equals 5** → cap reached. Report: "Deep mode reached the iteration cap (5). Remaining findings may exist — continue in a fresh conversation: re-run `/optimus:code-review deep`, or narrow scope with `/optimus:code-review deep \"focus on <area>\"`."
 4. **Otherwise** → continue to the next pass (iteration report and loop-back below).
 
 **For all four conditions above**, present the iteration report immediately after the termination/continuation message. This report is informational and non-blocking — no user prompt follows:
