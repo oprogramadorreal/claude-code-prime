@@ -41,7 +41,7 @@ Locate the test runner command from `testing.md`, `CLAUDE.md`, or project manife
 
 ### Check quality agents (optional)
 
-Read the **Pre-flight** section of `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/quality-gate.md`. Record which agents are available — they will be used in Step 8.
+Read the **Pre-flight** section of `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/quality-gate.md`.
 
 ## Step 2: Suitability Analysis
 
@@ -114,7 +114,7 @@ All TDD work will be committed to this branch.
 
 ### Worktree isolation (optional)
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/tdd-worktree-orchestration.md` and follow the **Setup** section, using `<branch-name>` and `<original-branch>` from above. If a worktree is created, all subsequent steps (4–9) must run commands inside the worktree directory. Use `cd .worktrees/<worktree-dir>` before running tests, linting, or git commands. File paths in reports should be relative to the project root for clarity.
+Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/tdd-worktree-orchestration.md` and follow the **Setup** section, using `<branch-name>` and `<original-branch>` from above.
 
 ### Decompose into behaviors
 
