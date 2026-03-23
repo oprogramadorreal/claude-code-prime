@@ -125,6 +125,8 @@ These models reason internally across thousands of tokens. Adding CoT or "think 
 - Success criteria must be about the plan quality: "A developer could implement from this plan without asking clarifying questions"
 - Scope exploration boundaries — plan mode wastes time exploring irrelevant code without them
 - Do NOT include execution guardrails (allowed/forbidden actions, stop conditions) — those belong in regular Claude Code prompts
+- The prompt must be self-contained — it will be pasted as the first message in a fresh conversation with no prior context. Embed all relevant stack, architecture, and constraint information directly
+- Your output is a prompt to copy-paste, not a plan document — never produce the plan itself
 
 ### Cursor / Windsurf
 

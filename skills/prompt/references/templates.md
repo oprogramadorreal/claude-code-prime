@@ -372,6 +372,8 @@ Run these in order. Each output feeds the next.
 
 *For Claude Code plan mode — read-only codebase exploration that produces an implementation plan. NOT for execution. Plan mode cannot edit files, write files, or run destructive commands.*
 
+*This prompt will be the FIRST message in a NEW Claude Code conversation. It must be fully self-contained — include all relevant context (stack, architecture decisions, constraints, prior findings) directly in the prompt. Do not assume any prior conversation history.*
+
 ```
 Problem Statement:
 [What needs to be built, changed, or investigated — one clear paragraph]
