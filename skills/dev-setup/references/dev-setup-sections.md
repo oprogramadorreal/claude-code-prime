@@ -1,6 +1,6 @@
 # Dev Setup Section Templates
 
-Section templates and signal-to-content mapping for generating development setup instructions. Referenced by dev-setup (Steps 1 and 4).
+Section templates and signal-to-content mapping for generating development setup instructions. Referenced by dev-setup (Agent 1 for signal detection and Step 4 for content generation).
 
 ## Contents
 
