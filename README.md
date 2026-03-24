@@ -17,7 +17,7 @@
 
 ---
 
-**The solution:** Optimus Claude generates tailored and optimized CLAUDE.md files, coding guidelines, formatter hooks, quality agents, TDD and test coverage, all based on your actual codebase.
+**The solution:** Optimus Claude generates tailored and optimized CLAUDE.md files, coding guidelines, formatter hooks, TDD and test coverage, all based on your actual codebase.
 
 *Use it regularly and your project stays clean, consistent, tested, and well-documented. Exactly the conditions where Claude Code performs at its prime.*
 

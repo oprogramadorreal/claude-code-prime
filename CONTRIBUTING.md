@@ -12,10 +12,10 @@ optimus-claude/
 ├── .claude-plugin/
 │   ├── plugin.json           # Plugin metadata (name, version, author)
 │   └── marketplace.json      # Marketplace catalog (how Claude Code discovers the plugin)
+├── agents/                    # Plugin-level agent definitions (code-simplifier, test-guardian)
 ├── hooks/
 │   ├── hooks.json            # Plugin-level hooks (SessionStart for skill awareness)
 │   └── session-start         # Outputs dynamic project state on session start/resume/clear/compact
-├── agents/                    # Plugin-level agent definitions (code-simplifier, test-guardian)
 ├── scripts/
 │   ├── validate.sh           # Structural validation (CI)
 │   ├── test-hooks.sh         # Hook execution tests (CI)

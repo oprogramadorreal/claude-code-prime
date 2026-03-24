@@ -6,7 +6,7 @@ Two primary goals:
 1. **Guideline compliance** — align code with your project's coding-guidelines.md, architecture.md, styling.md, and testing.md
 2. **Testability** — restructure code so `/optimus:unit-test` can safely increase coverage without risky changes
 
-Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/optimus:init` sets up quality infrastructure with agents that guard new code automatically, but existing code can still accumulate technical debt. `/optimus:refactor` is the on-demand complement: a deliberate, project-wide restructuring you run when you want to actively improve existing code.
+Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/optimus:init` sets up quality infrastructure (docs, hooks, test tooling), and the plugin's agents guard new code automatically. But existing code can still accumulate technical debt. `/optimus:refactor` is the on-demand complement: a deliberate, project-wide restructuring you run when you want to actively improve existing code.
 
 ## Features
 

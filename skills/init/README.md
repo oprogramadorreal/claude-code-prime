@@ -131,10 +131,10 @@ Note: re-running `/optimus:init` always overwrites `coding-guidelines.md` and ho
 
 | Skill | Uses from init | What it adds |
 |---|---|---|
-| `/optimus:unit-test` | test-guardian agent, testing.md, CLAUDE.md, test framework, coverage tooling | Writes test files to increase coverage |
-| `/optimus:refactor` | coding-guidelines.md, code-simplifier agent | Full-project refactoring for guideline compliance and testability |
-| `/optimus:code-review` | All docs + both agents | Pre-commit review with 6 parallel agents |
-| `/optimus:tdd` | CLAUDE.md, coding-guidelines.md, testing.md, both agents | Red-Green-Refactor TDD with feature branch workflow |
+| `/optimus:unit-test` | testing.md, CLAUDE.md, test framework, coverage tooling | Writes test files to increase coverage |
+| `/optimus:refactor` | coding-guidelines.md | Full-project refactoring for guideline compliance and testability |
+| `/optimus:code-review` | All docs | Pre-commit review with 6 parallel agents |
+| `/optimus:tdd` | CLAUDE.md, coding-guidelines.md, testing.md | Red-Green-Refactor TDD with feature branch workflow |
 | `/optimus:permissions` | Shares `.claude/settings.json` | Permission rules + path-restriction hook |
 | `/optimus:commit` | Independent | Stage, commit, and optionally push with conventional message |
 | `/optimus:commit-message` | Independent | Conventional commit message suggestion (read-only) |
