@@ -2,14 +2,6 @@
 
 Runs project-level quality agents after all TDD cycles complete. Running agents here — not per-cycle — catches cross-cycle issues (duplication between behaviors, naming drift, accumulated pattern violations, edge-case coverage gaps) that are invisible within a single cycle.
 
-## Pre-flight
-
-Check whether these project-level agent files exist:
-- `.claude/agents/code-simplifier.md`
-- `.claude/agents/test-guardian.md`
-
-Record which are available — they will be used in the Quality Gate step after cycling completes. If neither exists, the quality gate will be skipped. This is not a blocker; recommend `/optimus:init` if missing and the user wants agent-backed quality checks.
-
 ## Execution
 
 ### Gather changed files
@@ -18,9 +10,11 @@ Collect all files changed during the TDD session: `git diff --name-only <origina
 
 ### Launch parallel agents
 
-Launch up to 2 `general-purpose` Agent tool calls simultaneously — one per available agent. Only launch agents whose definition files exist (checked in Pre-flight above).
+Launch up to 2 `general-purpose` Agent tool calls simultaneously. The code-simplifier agent always runs. The test-guardian agent runs when test infrastructure is detected (`.claude/docs/testing.md` or subproject `docs/testing.md` exists).
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/agent-prompts.md` for the full prompt templates for both agents.
+Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/shared-constraints.md` for the shared constraints applying to both agents.
+Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/code-simplifier.md` for the code-simplifier prompt.
+Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/test-guardian.md` for the test-guardian prompt.
 
 ### Present findings
 
@@ -33,7 +27,8 @@ After both agents complete, present a consolidated quality report:
 [Findings from code-simplifier, or "No issues found — code follows project guidelines."]
 
 ### Test Guardian
-[Findings from test-guardian, or "All code has test coverage. No structural barriers detected."]
+[If test-guardian was launched: findings, or "All code has test coverage. No structural barriers detected."]
+[If test-guardian was not launched (no test infrastructure detected): omit this section]
 ```
 
 If no agents produced findings, report "Quality gate passed — no issues found" and proceed silently to Step 9.

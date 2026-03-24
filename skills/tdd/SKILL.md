@@ -39,10 +39,6 @@ Locate the test runner command from `testing.md`, `CLAUDE.md`, or project manife
 - **Tests fail** — stop and report. Existing failures must be resolved before TDD can begin (a failing suite makes Red/Green indistinguishable)
 - **No test runner found** — stop and recommend running `/optimus:init` first to set up test infrastructure (framework, runner, coverage tooling, `testing.md`)
 
-### Check quality agents (optional)
-
-Read the **Pre-flight** section of `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/quality-gate.md`.
-
 ## Step 2: Suitability Analysis
 
 Before starting TDD cycles, analyze whether the user's task is a good fit for test-driven development.
@@ -304,8 +300,6 @@ If behaviors remain and the user chooses to continue, return to Step 4 (Red) for
 If no behaviors remain, or the user chooses "Stop here", proceed to Step 8 (Quality Gate).
 
 ## Step 8: Quality Gate (parallel agents)
-
-If no quality agents were found in Step 1, skip to Step 9.
 
 Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/quality-gate.md` and follow the **Execution** section. Use `<original-branch>` from Step 3 to scope the changed files. When complete, proceed to Step 9.
 

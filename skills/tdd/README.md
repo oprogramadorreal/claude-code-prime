@@ -279,7 +279,7 @@ The user's original branch is never modified. All code review happens through th
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 9-step TDD workflow (includes quality gate) |
-| `references/agent-prompts.md` | Prompt templates for quality gate agents (code-simplifier, test-guardian) |
+| `agents/` | Individual agent prompt files for quality gate agents (code-simplifier, test-guardian) |
 | `references/quality-gate.md` | Quality gate procedure — pre-flight agent check and post-cycle parallel agent execution |
 | `references/tdd-worktree-orchestration.md` | TDD-specific worktree setup and cleanup, delegates to shared worktree-setup reference |
 | `references/testing-anti-patterns.md` | Mocking anti-patterns and gate questions — loaded during Red step to prevent bad test patterns |

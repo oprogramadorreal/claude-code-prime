@@ -12,6 +12,8 @@ optimus-claude/
 ├── .claude-plugin/
 │   ├── plugin.json           # Plugin metadata (name, version, author)
 │   └── marketplace.json      # Marketplace catalog (how Claude Code discovers the plugin)
+├── agents/                    # Plugin-level agent definitions (code-simplifier, test-guardian)
+├── references/                # Shared reference docs (shared-agent-constraints, context-injection-blocks)
 ├── hooks/
 │   ├── hooks.json            # Plugin-level hooks (SessionStart for skill awareness)
 │   └── session-start         # Outputs dynamic project state on session start/resume/clear/compact
@@ -53,10 +55,9 @@ skills/<skill-name>/
 ├── README.md                 # User-facing documentation
 ├── templates/                # YAML, markdown, and shell templates (optional)
 │   ├── hooks/                # PostToolUse hook scripts
-│   ├── agents/               # Agent definition files
 │   └── docs/                 # Documentation templates
+├── agents/                   # Individual agent prompt files (one per agent, plus shared-constraints.md)
 └── references/               # Technical reference docs consumed by the skill (optional)
-                              #   e.g., agent prompt templates — externalize here instead of inlining in SKILL.md
 ```
 
 **`SKILL.md`** is the key file. It starts with YAML frontmatter and contains the instructions Claude Code follows when the skill is invoked:
