@@ -9,6 +9,7 @@ optimus-claude/
 │   ├── settings.json
 │   └── hooks/
 │       └── restrict-paths.sh
+├── agents/                    # Plugin-level agent definitions (code-simplifier, test-guardian)
 ├── .claude-plugin/
 │   ├── plugin.json           # Plugin metadata (name, version, author)
 │   └── marketplace.json      # Marketplace catalog (how Claude Code discovers the plugin)
@@ -53,7 +54,6 @@ skills/<skill-name>/
 ├── README.md                 # User-facing documentation
 ├── templates/                # YAML, markdown, and shell templates (optional)
 │   ├── hooks/                # PostToolUse hook scripts
-│   ├── agents/               # Agent definition files
 │   └── docs/                 # Documentation templates
 └── references/               # Technical reference docs consumed by the skill (optional)
                               #   e.g., agent prompt templates — externalize here instead of inlining in SKILL.md

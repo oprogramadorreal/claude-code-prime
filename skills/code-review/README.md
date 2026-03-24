@@ -7,7 +7,7 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 ## Features
 
 - **Local-first** — reviews uncommitted changes by default (staged + unstaged + untracked); PR/MR and branch-diff modes available on request
-- **Up to 6 parallel agents** — bug detection, security/logic, guideline compliance (x2 for cross-validation), plus code-simplifier and test-guardian when project agents are available
+- **Up to 6 parallel agents** — bug detection, security/logic, guideline compliance (x2 for cross-validation), code-simplifier (always), and test-guardian (when test infrastructure is detected)
 - **Project-aware** — evaluates against your coding-guidelines.md, testing.md, architecture.md, and styling.md
 - **High signal only** — bugs, security issues, logic errors, explicit guideline violations; excludes style concerns and subjective suggestions
 - **Change-intent awareness** — checks recent git history and PR/MR descriptions to avoid flagging code that was deliberately introduced (e.g., a null check added for a bug fix), reducing false positives
@@ -226,7 +226,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 8-step review workflow |
-| `references/agent-prompts.md` | Prompt templates for parallel review agents (including PR/MR context block and iteration context block for deep mode) |
+| `references/agents/` | Per-agent prompt templates for parallel review agents (including PR/MR context block and iteration context block for deep mode) |
 | *(shared)* `init/references/multi-repo-detection.md` | Multi-repo workspace detection algorithm |
 | *(shared)* `init/references/prerequisite-check.md` | Shared prerequisite check with fallbacks |
 | *(shared)* `init/references/constraint-doc-loading.md` | Constraint doc loading (single project, monorepo) |
@@ -237,7 +237,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 1.0.33+ (plugin support)
 - Git
-- Project initialized with `/optimus:init` (recommended, not required — enables all 6 agents and project-specific guidelines)
+- Project initialized with `/optimus:init` (recommended, not required — enables project-specific guidelines; all 6 agents run without init)
 - GitHub CLI (`gh`) or GitLab CLI (`glab`) for PR/MR review mode (optional)
 - Test command in `.claude/CLAUDE.md` for deep mode (required)
 

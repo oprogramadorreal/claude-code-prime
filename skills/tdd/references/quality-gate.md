@@ -4,11 +4,9 @@ Runs project-level quality agents after all TDD cycles complete. Running agents 
 
 ## Pre-flight
 
-Check whether these project-level agent files exist:
-- `.claude/agents/code-simplifier.md`
-- `.claude/agents/test-guardian.md`
+The code-simplifier agent is always available. The test-guardian agent is available when test infrastructure is detected (`.claude/docs/testing.md` exists, or any `docs/testing.md` in monorepo subprojects).
 
-Record which are available — they will be used in the Quality Gate step after cycling completes. If neither exists, the quality gate will be skipped. This is not a blocker; recommend `/optimus:init` if missing and the user wants agent-backed quality checks.
+Record which agents are available — they will be used in the Quality Gate step after cycling completes. If test infrastructure is missing, only the code-simplifier agent runs. This is not a blocker.
 
 ## Execution
 
@@ -18,9 +16,11 @@ Collect all files changed during the TDD session: `git diff --name-only <origina
 
 ### Launch parallel agents
 
-Launch up to 2 `general-purpose` Agent tool calls simultaneously — one per available agent. Only launch agents whose definition files exist (checked in Pre-flight above).
+Launch up to 2 `general-purpose` Agent tool calls simultaneously — one per available agent. Only launch agents that are available (checked in Pre-flight above).
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/agent-prompts.md` for the full prompt templates for both agents.
+For each agent, read its prompt template from `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/agents/`:
+- Agent A: `agent-a-code-simplifier.md`
+- Agent B: `agent-b-test-guardian.md`
 
 ### Present findings
 

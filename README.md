@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.52.4-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.53.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Claude_Code-1.0.33+-blueviolet" alt="Claude Code">
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
@@ -46,7 +46,7 @@ Start a new Claude Code session and type `/optimus:init` in any project director
 
 Every skill operates on the same shared foundation: **your project's coding guidelines** and a **verification protocol** that demands evidence over confidence.
 
-`/optimus:init` analyzes your codebase and generates constraint docs — coding guidelines, CLAUDE.md, quality agents, formatter hooks, and test infrastructure (framework, coverage tooling, testing docs) — into your `.claude/` directory. From that point on, every optimus skill loads those guidelines, and skills that make completion claims apply the verification protocol as a gate before reporting.
+`/optimus:init` analyzes your codebase and generates constraint docs — coding guidelines, CLAUDE.md, formatter hooks, and test infrastructure (framework, coverage tooling, testing docs) — into your `.claude/` directory. Quality agents (code-simplifier, test-guardian) are provided at the plugin level and always use the latest definitions. From that point on, every optimus skill loads those guidelines, and skills that make completion claims apply the verification protocol as a gate before reporting.
 
 `/optimus:code-review` doesn't run a generic review — its agents check *your* naming conventions, *your* architectural patterns, and *your* DRY principles alongside bugs and security. `/optimus:tdd` applies them during the Refactor step. `/optimus:refactor` uses them as its quality lens. `/optimus:unit-test` follows them for test naming and structure.
 
@@ -58,7 +58,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 **Explicit invocation** — Skills never auto-trigger. Claude Code's default behavior is never altered unless you explicitly call a `/optimus` skill.
 
-**Project-scoped output** — Formatter hooks, quality agents, and coding guidelines are installed into `.claude/` and travel with the repo via git — self-contained and working for every teammate without the plugin. The plugin layers development skills on top: TDD, code-review, commit, refactor, and more.
+**Project-scoped output** — Formatter hooks and coding guidelines are installed into `.claude/` and travel with the repo via git — self-contained and working for every teammate without the plugin. Quality agents (code-simplifier, test-guardian) are provided at the plugin level and always run with the latest definitions. The plugin layers development skills on top: TDD, code-review, commit, refactor, and more.
 
 ## Skills
 
@@ -66,7 +66,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 
 | Skill | Description |
 |-------|-------------|
-| [`/optimus:init`](skills/init/README.md) | Initializes effective project documentation, formatter hooks, code-quality agents, and unit test infrastructure. Detects empty directories and offers new-project scaffolding. Intelligent audit on re-run. |
+| [`/optimus:init`](skills/init/README.md) | Initializes effective project documentation, formatter hooks, and unit test infrastructure. Detects empty directories and offers new-project scaffolding. Intelligent audit on re-run. |
 | [`/optimus:unit-test`](skills/unit-test/README.md) | Discovers test coverage gaps and writes convention-following tests. Never refactors source code. *Requires init.* |
 | [`/optimus:tdd`](skills/tdd/README.md) | Guides test-driven development through Red-Green-Refactor cycles with per-behavior commits, parallel quality gate, and PR/MR creation. *Requires init.* |
 | [`/optimus:refactor`](skills/refactor/README.md) | Refactors code for guideline compliance and testability using 4 parallel agents. `deep` mode for iterative refactoring. *Run init first (recommended).* |

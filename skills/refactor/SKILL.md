@@ -29,12 +29,9 @@ Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/multi-repo-detection.md` for wo
 
 Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/prerequisite-check.md` and apply the prerequisite check (CLAUDE.md + coding-guidelines.md existence, fallback logic).
 
-### Agent prerequisites
+### Agent availability
 
-Check that this file exists:
-- `.claude/agents/code-simplifier.md`
-
-**If missing**, warn the user and recommend running `/optimus:init` to install it. Agent 4 (Code Simplifier) will be skipped in Step 4; the analysis still covers guidelines, testability, and duplication via Agents 1–3.
+Agents 1–4 always run — no project-level agent files are required.
 
 ### Parse invocation arguments
 
@@ -131,17 +128,23 @@ Before proceeding to analysis, present a brief summary: docs loaded (with paths)
 
 ## Step 4: Parallel Multi-Agent Analysis (up to 4 agents)
 
-3 core analysis agents + 1 project-level agent, all launched in parallel for maximum coverage.
+4 analysis agents, all launched in parallel for maximum coverage.
 
-Launch up to 4 `general-purpose` Agent tool calls simultaneously. Agents 1–3 always run; Agent 4 only runs if `.claude/agents/code-simplifier.md` exists (checked in Step 1).
+Launch up to 4 `general-purpose` Agent tool calls simultaneously. Agents 1–4 always run.
 
 Each agent receives the list of source files/directories from Step 3.
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/refactor/references/agent-prompts.md` for the full prompt templates, quality bar, exclusion rules, and false positive guidance for all 4 agents.
+Read `$CLAUDE_PLUGIN_ROOT/skills/refactor/references/agents/shared-constraints.md` for quality bar, exclusion rules, and false positive guidance that apply to all agents.
+
+For each agent, read its prompt template from `$CLAUDE_PLUGIN_ROOT/skills/refactor/references/agents/`:
+- Agent 1: `agent-1-guideline-compliance.md`
+- Agent 2: `agent-2-testability-analyzer.md`
+- Agent 3: `agent-3-duplication-consistency.md`
+- Agent 4: `agent-4-code-simplifier.md`
 
 ### Iteration context injection (deep mode, iterations 2+)
 
-If deep mode is active and `iteration-count` > 1, prepend the iteration context block to every agent prompt before the file list. Read the **Iteration Context Block** section in `$CLAUDE_PLUGIN_ROOT/skills/refactor/references/agent-prompts.md` for the template and format.
+If deep mode is active and `iteration-count` > 1, prepend the iteration context block to every agent prompt before the file list. Read the **Iteration Context Block** section in `$CLAUDE_PLUGIN_ROOT/skills/refactor/references/agents/shared-constraints.md` for the template and format.
 
 ### Agent overview
 
@@ -150,7 +153,7 @@ If deep mode is active and `iteration-count` > 1, prepend the iteration context 
 | 1 — Guideline Compliance | Explicit violations of project docs with exact rule citations | Always |
 | 2 — Testability Analyzer | Structural barriers to unit testing — hardcoded deps, tight coupling, global state | Always |
 | 3 — Duplication & Consistency | Cross-file duplication, pattern inconsistency, missing abstractions, architectural drift | Always |
-| 4 — Code Simplifier | Unnecessary complexity, naming, dead code, pattern violations | `.claude/agents/code-simplifier.md` exists |
+| 4 — Code Simplifier | Unnecessary complexity, naming, dead code, pattern violations | Always |
 
 Each agent: max 8 findings, structured list format. The Guideline Compliance agent (Agent 1) is constructed dynamically based on Step 3's doc loading results (single project vs monorepo paths).
 
@@ -158,7 +161,7 @@ Each agent: max 8 findings, structured list format. The Guideline Compliance age
 
 Launch all available agents simultaneously (parallel, not sequential). Wait for all launched agents to complete before proceeding to Step 5.
 
-**Agent availability summary**: Agents 1–3 always run (no project dependencies). Agent 4 depends on the installed code-simplifier agent. If it is missing, note in the summary and recommend `/optimus:init` for full 4-agent analysis.
+**Agent availability summary**: Agents 1–4 always run (no project dependencies).
 
 ## Step 5: Validate Findings
 
