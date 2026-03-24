@@ -1,5 +1,10 @@
 # Agent 1 — Project Context Detection (always runs)
 
+## Contents
+
+- [Agent Constraints](#agent-constraints)
+- [Prompt](#prompt)
+
 ## Agent Constraints
 
 - **Read-only analysis.** Do NOT modify any files, create any files, or run any commands that change state. You are analyzing the project, not changing it.

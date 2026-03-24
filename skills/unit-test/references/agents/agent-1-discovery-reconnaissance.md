@@ -1,5 +1,10 @@
 # Agent 1 — Discovery & Coverage Reconnaissance (always runs)
 
+## Contents
+
+- [Agent Constraints](#agent-constraints)
+- [Prompt](#prompt)
+
 ## Agent Constraints
 
 - **Read-only analysis with one exception:** you MAY run the existing test suite and coverage measurement commands. Do NOT modify any source files, test files, or configuration. You are analyzing the project's test infrastructure, not changing it.

@@ -18,7 +18,8 @@ Collect all files changed during the TDD session: `git diff --name-only <origina
 
 Launch up to 2 `general-purpose` Agent tool calls simultaneously — one per available agent. Only launch agents that are available (checked in Pre-flight above).
 
-For each agent, read its prompt template from `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/agents/`:
+For each agent, read the shared constraints and its prompt template from `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/agents/`:
+- Shared: `shared-constraints.md`
 - Agent A: `agent-a-code-simplifier.md`
 - Agent B: `agent-b-test-guardian.md`
 
