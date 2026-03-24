@@ -4,6 +4,9 @@
 
 - [Agent Constraints](#agent-constraints)
 - [Prompt](#prompt)
+- [Discovery Results](#discovery-results)
+- [Test Suite Execution](#test-suite-execution)
+- [Coverage Analysis](#coverage-analysis)
 
 ## Agent Constraints
 

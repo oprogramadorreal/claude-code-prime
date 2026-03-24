@@ -69,7 +69,7 @@ Before proceeding, confirm you have all of the following. If any are missing, re
 - If multi-repo workspace: **repo list** with each repo's path, tech stack, and internal structure (single project or monorepo)
 - If nested app root detected: **app root path** (e.g., `ngapp/`)
 - **Existing files inventory** (existence check only — content of docs is read in Step 1b; hooks and `coding-guidelines.md` are never audited, always overwritten): which of `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/docs/*`, root `CLAUDE.md`, subproject `CLAUDE.md` files already exist
-- **Test infrastructure detected** (yes/no): test framework in dependencies, test command in scripts, or test directory present. This determines the flow of Step 5c (test infrastructure setup).
+- **Test infrastructure detected** (yes/no): test framework in dependencies, test command in scripts, or test directory present. This determines the flow of Step 5b (test infrastructure setup).
 - **Doc-sourced insights** (if any documentation found): verified conventions, architecture rationale, workflow rules — all cross-checked against source code
 
 Print this as a **Detection Summary** to the user. Then use `AskUserQuestion` — header "Detection", question "Does the detection summary look correct?":
@@ -81,7 +81,7 @@ If the user selects **Correct**, ask what needs to be changed, update the detect
 
 If no test infrastructure was detected, include this note in the Detection Summary output:
 
-> **Tests:** No test framework, test script, or test directory detected — you will be asked whether to install a test framework in Step 5c. Strongly recommended: multiple optimus skills depend on test infrastructure.
+> **Tests:** No test framework, test script, or test directory detected — you will be asked whether to install a test framework in Step 5b. Strongly recommended: multiple optimus skills depend on test infrastructure.
 
 ### Step 1b: Documentation Audit (agent-assisted, only when existing docs found)
 
@@ -195,7 +195,7 @@ Key rules:
 - If no hooks installed → do not create settings.json (unless it already exists with other content)
 - Preserve existing settings.json sections (permissions, custom config) — merge, never overwrite
 
-## Step 5c: Test Infrastructure Setup
+## Step 5b: Test Infrastructure Setup
 
 Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/test-infra-provisioning.md` for the complete provisioning procedure.
 
@@ -218,7 +218,7 @@ If the user chooses **No**: skip all test infrastructure provisioning. In Step 7
 **Always create in `.claude/docs/`:**
 - `coding-guidelines.md` - Use template from `$CLAUDE_PLUGIN_ROOT/skills/init/templates/docs/coding-guidelines.md` (replace [PROJECT NAME]). Shared across the entire repo. Always overwrite — this is a verbatim template, not project-customized content.
 
-**Create based on these detection rules** (`testing.md` is handled by Step 5c, not here):
+**Create based on these detection rules** (`testing.md` is handled by Step 5b, not here):
 
 | File | Template | Create when ANY of these are true |
 |------|----------|-----------------------------------|
@@ -229,7 +229,7 @@ Use each template as a skeleton — fill in all placeholders with actual project
 
 **Placement rules:**
 - **Single project:** All files go in `.claude/docs/`.
-- **Monorepo:** `styling.md` and `architecture.md` go in each subproject's `docs/` folder, scoped to that subproject's stack. Apply the detection rules above **per subproject** (e.g., skip `styling.md` for a subproject with no UI deps). `testing.md` placement is handled by Step 5c's provisioning reference. For root-as-project, its scoped docs go in `.claude/docs/` alongside the shared `coding-guidelines.md`. Each subproject can also get its own `coding-guidelines.md` only if its conventions differ significantly from root.
+- **Monorepo:** `styling.md` and `architecture.md` go in each subproject's `docs/` folder, scoped to that subproject's stack. Apply the detection rules above **per subproject** (e.g., skip `styling.md` for a subproject with no UI deps). `testing.md` placement is handled by Step 5b's provisioning reference. For root-as-project, its scoped docs go in `.claude/docs/` alongside the shared `coding-guidelines.md`. Each subproject can also get its own `coding-guidelines.md` only if its conventions differ significantly from root.
 
 ## Step 6b: Sync Existing Documentation
 
@@ -310,11 +310,11 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 
 After the table, include conditional warnings:
 
-If test infrastructure was installed from scratch in Step 5c (no pre-existing test framework — the user chose "Yes" to install one), include a strong warning:
+If test infrastructure was installed from scratch in Step 5b (no pre-existing test framework — the user chose "Yes" to install one), include a strong warning:
 
 > ⚠ **Important:** Test framework was installed but the project has no test files yet. The test command will pass with 0 tests — this is a false safety net. Other optimus skills (`/optimus:code-review` deep mode, `/optimus:refactor` deep mode, `/optimus:verify`) rely on tests to validate changes. **Run `/optimus:unit-test` next** to write initial tests and establish real coverage.
 
-If the user declined test infrastructure in Step 5c, include:
+If the user declined test infrastructure in Step 5b, include:
 
 > ⚠ **Note:** Test infrastructure was not installed — `/optimus:tdd` will not work, and `/optimus:code-review`, `/optimus:refactor`, and `/optimus:verify` will have reduced functionality. Re-run `/optimus:init` to install test infrastructure later.
 

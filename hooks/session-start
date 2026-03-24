@@ -23,7 +23,7 @@ else
 
 fi
 
-# 4. Git state (uncommitted changes or unpushed commits)
+# 3. Git state (uncommitted changes or unpushed commits)
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   changed=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
   unpushed=$(git log --oneline '@{u}..HEAD' 2>/dev/null | wc -l | tr -d ' ') || unpushed=0
