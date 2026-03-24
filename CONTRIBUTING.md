@@ -15,6 +15,7 @@ optimus-claude/
 ├── hooks/
 │   ├── hooks.json            # Plugin-level hooks (SessionStart for skill awareness)
 │   └── session-start         # Outputs dynamic project state on session start/resume/clear/compact
+├── agents/                    # Plugin-level agent definitions (code-simplifier, test-guardian)
 ├── scripts/
 │   ├── validate.sh           # Structural validation (CI)
 │   ├── test-hooks.sh         # Hook execution tests (CI)
@@ -53,10 +54,9 @@ skills/<skill-name>/
 ├── README.md                 # User-facing documentation
 ├── templates/                # YAML, markdown, and shell templates (optional)
 │   ├── hooks/                # PostToolUse hook scripts
-│   ├── agents/               # Agent definition files
 │   └── docs/                 # Documentation templates
 └── references/               # Technical reference docs consumed by the skill (optional)
-                              #   e.g., agent prompt templates — externalize here instead of inlining in SKILL.md
+    └── agents/               # Agent prompt templates (one file per agent)
 ```
 
 **`SKILL.md`** is the key file. It starts with YAML frontmatter and contains the instructions Claude Code follows when the skill is invoked:

@@ -67,10 +67,10 @@ For stacks requiring external formatters (Python, Node.js, C#, Java, C/C++), `/o
 
 ## Agents
 
-| Agent | Purpose | Installed when |
+| Agent | Purpose | Available |
 |-------|---------|----------------|
-| [code-simplifier](../../agents/code-simplifier.md) | Enforces coding guidelines on every change — direct simplifications automatic, structural changes as suggestions | Always |
-| [test-guardian](../../agents/test-guardian.md) | Flags untested code, verifies test suite passes | Always |
+| [code-simplifier](../../agents/code-simplifier.md) | Enforces coding guidelines on every change — direct simplifications automatic, structural changes as suggestions | Plugin installed |
+| [test-guardian](../../agents/test-guardian.md) | Flags untested code, verifies test suite passes | Plugin installed |
 
 Both agents live at the plugin level (in the `agents/` directory) and reference your project's `.claude/CLAUDE.md` and `.claude/docs/` files, so they follow your established conventions rather than imposing external rules. The code-simplifier activates proactively after code changes — applying direct simplifications (renaming, dead code removal, flattening) automatically and presenting structural changes (extracting functions, changing abstractions) as suggestions for approval. The test-guardian operates at the end of logical tasks to verify test coverage.
 
@@ -108,7 +108,7 @@ Both agents live at the plugin level (in the `agents/` directory) and reference 
 | `references/test-infra-provisioning.md` | Test infrastructure provisioning procedure (framework, coverage, health check, docs) |
 | `references/test-framework-recommendations.md` | Stack-specific test framework, coverage tooling, and report tool recommendations |
 | `references/agents/` | Agent prompt templates for Codebase Detection and Documentation Audit subagents |
-| `templates/` | CLAUDE.md templates, doc templates, hook scripts, agent definitions |
+| `templates/` | CLAUDE.md templates, doc templates, hook scripts |
 
 ## Customization
 
