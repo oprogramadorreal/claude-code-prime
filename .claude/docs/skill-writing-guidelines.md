@@ -56,9 +56,9 @@ Default to high freedom unless the task is fragile. Provide a sensible default w
 ## Directory Layout
 
 - `SKILL.md` (required) + `README.md` (required).
-- Templates in `templates/` (`hooks/`, `agents/`, `docs/` subdirs).
+- Templates in `templates/` (`hooks/`, `docs/` subdirs).
 - Reference docs in `references/`.
-- When agents use prompt templates, externalize to `references/agent-prompts.md` — don't inline them in SKILL.md (see `skills/code-review/` for the pattern).
+- When agents use prompt templates, externalize each agent to its own file under `references/agents/<agent-name>.md` — don't inline them in SKILL.md or bundle multiple agents into one file (see `skills/code-review/` for the pattern). Context injection templates (PR/MR context, iteration context) go in `references/context-blocks.md`.
 
 ## Shared References
 

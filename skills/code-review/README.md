@@ -1,13 +1,13 @@
 # optimus:code-review
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that reviews local changes (or PRs/MRs) against your project's coding guidelines — using up to 6 parallel review agents for comprehensive coverage. High-signal findings only: bugs, logic errors, security issues, guideline violations. Supports a **deep mode** for iterative auto-fix until zero findings remain.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that reviews local changes (or PRs/MRs) against your project's coding guidelines — using 6 parallel review agents for comprehensive coverage. High-signal findings only: bugs, logic errors, security issues, guideline violations. Supports a **deep mode** for iterative auto-fix until zero findings remain.
 
 Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/abs/2601.02200). `/optimus:init` sets up quality infrastructure with agents that guard new code automatically, and `/optimus:refactor` restructures existing code across the project. `/optimus:code-review` is the inner-loop complement: a focused review of your changes before they enter the repo.
 
 ## Features
 
 - **Local-first** — reviews uncommitted changes by default (staged + unstaged + untracked); PR/MR and branch-diff modes available on request
-- **Up to 6 parallel agents** — bug detection, security/logic, guideline compliance (x2 for cross-validation), plus code-simplifier and test-guardian when project agents are available
+- **6 parallel agents** — bug detection, security/logic, guideline compliance (x2 for cross-validation), code-simplifier, and test-guardian
 - **Project-aware** — evaluates against your coding-guidelines.md, testing.md, architecture.md, and styling.md
 - **High signal only** — bugs, security issues, logic errors, explicit guideline violations; excludes style concerns and subjective suggestions
 - **Change-intent awareness** — checks recent git history and PR/MR descriptions to avoid flagging code that was deliberately introduced (e.g., a null check added for a bug fix), reducing false positives
@@ -181,7 +181,7 @@ This is followed by the full detailed findings with code snippets (same format a
 1. Gathers local changes (or PR diff) via git commands; in PR/MR mode, captures the author's description for intent context
 2. Loads project docs (CLAUDE.md, coding-guidelines.md, testing.md, etc.) with fallbacks for missing docs
 3. Activates deep mode if requested (requires test command, confirms with user)
-4. Launches up to 6 parallel review agents (bug detection, security/logic, guideline compliance x2, code-simplifier, test-guardian)
+4. Launches 6 parallel review agents (bug detection, security/logic, guideline compliance x2, code-simplifier, test-guardian)
 5. Validates each finding using the verification protocol (context check, intent check, change-intent awareness, PR/MR context, pre-existing check, cross-agent consensus, runtime assumption check)
 6. Consolidates, deduplicates, and presents structured report (capped at 15 findings)
 7. Offers actions: fix issues, post PR comment, or skip (normal mode)
@@ -195,7 +195,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 |---|---|---|
 | Default target | Pull requests | Local uncommitted changes |
 | Guidelines | CLAUDE.md only | coding-guidelines.md, testing.md, styling.md, architecture.md |
-| Agents | 4 (parallel review agents) | Up to 6 (parallel review agents) |
+| Agents | 4 (parallel review agents) | 6 (parallel review agents) |
 | Agent types | 2 CLAUDE.md compliance + 1 bug + 1 security | 2 guideline compliance + 1 bug + 1 security + code-simplifier + test-guardian |
 | Validation | Sub-agent validation + confidence scoring | Inline validation (context, intent, change-intent, PR/MR context, pre-existing, consensus, runtime assumption check) |
 | Deep mode | No | Yes — iterative auto-fix (max 5 iterations) |
@@ -213,7 +213,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | Trigger | Before commit/PR | Periodic or before /optimus:unit-test |
 | Action | Report + optional fix | Plan + apply on approval |
 | Deep mode | Yes — iterative review-fix loop | Yes — iterative cleanup loop |
-| Agents | Up to 6 parallel (bug, security, guidelines x2, simplifier, test-guardian) | Up to 4 parallel (guideline compliance, testability, duplication/consistency, code simplifier) |
+| Agents | 6 parallel (bug, security, guidelines x2, simplifier, test-guardian) | 4 parallel (guideline compliance, testability, duplication/consistency, code simplifier) |
 
 | | `/optimus:code-review` | `/optimus:commit-message` |
 |---|---|---|
@@ -226,7 +226,8 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 8-step review workflow |
-| `references/agent-prompts.md` | Prompt templates for parallel review agents (including PR/MR context block and iteration context block for deep mode) |
+| `references/agents/` | Prompt templates for parallel review agents |
+| `references/context-blocks.md` | PR/MR context block and iteration context block for deep mode |
 | *(shared)* `init/references/multi-repo-detection.md` | Multi-repo workspace detection algorithm |
 | *(shared)* `init/references/prerequisite-check.md` | Shared prerequisite check with fallbacks |
 | *(shared)* `init/references/constraint-doc-loading.md` | Constraint doc loading (single project, monorepo) |
@@ -237,7 +238,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 1.0.33+ (plugin support)
 - Git
-- Project initialized with `/optimus:init` (recommended, not required — enables all 6 agents and project-specific guidelines)
+- Project initialized with `/optimus:init` (recommended, not required — enables project-specific guidelines)
 - GitHub CLI (`gh`) or GitLab CLI (`glab`) for PR/MR review mode (optional)
 - Test command in `.claude/CLAUDE.md` for deep mode (required)
 

@@ -1,6 +1,6 @@
 # optimus:refactor
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that refactors your codebase using up to 4 parallel analysis agents — focusing on guideline compliance and testability. Presents a prioritized refactoring plan, then applies only what you approve. All changes stay local for your review.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that refactors your codebase using 4 parallel analysis agents — focusing on guideline compliance and testability. Presents a prioritized refactoring plan, then applies only what you approve. All changes stay local for your review.
 
 Two primary goals:
 1. **Guideline compliance** — align code with your project's coding-guidelines.md, architecture.md, styling.md, and testing.md
@@ -10,7 +10,7 @@ Well-maintained code has [30%+ fewer AI-introduced defects](https://arxiv.org/ab
 
 ## Features
 
-- **Parallel multi-agent analysis** — up to 4 specialized agents (guideline compliance, testability, duplication/consistency, code simplification) run simultaneously for comprehensive coverage
+- **Parallel multi-agent analysis** — 4 specialized agents (guideline compliance, testability, duplication/consistency, code simplification) run simultaneously for comprehensive coverage
 - **Testability focus** — explicitly identifies structural barriers that prevent `/optimus:unit-test` from increasing coverage, with "testability impact" lines showing what becomes testable after each refactoring
 - **Cross-cutting focus** — prioritizes issues that span multiple files: duplication across modules, pattern inconsistency, architectural drift, missing shared abstractions
 - **Flexible invocation** — natural language scoping with no rigid syntax: `/optimus:refactor backend only`, `/optimus:refactor "focus on auth module"`, or just `/optimus:refactor` for full project
@@ -94,7 +94,7 @@ You then choose: **Apply all**, **Selective** (pick by number), or **Skip**.
 2. Parses arguments for scope, deep mode flag, and iteration cap
 3. Activates deep mode if requested (iterative refactoring with user consent)
 4. Loads all constraint docs and maps source directories, prioritized by git activity
-5. **Launches up to 4 parallel agents** — guideline compliance, testability, duplication/consistency, and code simplification (conditional)
+5. **Launches 4 parallel agents** — guideline compliance, testability, duplication/consistency, and code simplification
 6. Validates findings independently with evidence-based verification
 7. Presents findings as a prioritized plan (capped at 8 per run)
 8. Applies only user-approved changes, runs tests, reverts any that cause failures
@@ -116,7 +116,7 @@ Deep mode runs the same multi-agent analysis-apply cycle repeatedly (default 5, 
 **Iteration memory:** On iterations 2+, all agents receive a table of prior findings with their status (fixed/reverted/persistent). This prevents circular fixes — agents focus on NEW issues only and do not undo work from previous iterations.
 
 Each iteration:
-1. Launches up to 4 parallel agents with iteration context (same cap: 8 findings per run)
+1. Launches 4 parallel agents with iteration context (same cap: 8 findings per run)
 2. Auto-applies all findings (test suite validates; failures trigger per-change bisect)
 3. Runs the test suite — reverts any change that causes failures
 4. Presents an **iteration report** — a table showing each finding attempted, what changed, why, and its status (fixed/reverted/persistent)
@@ -135,7 +135,7 @@ Iterative LLM feedback loops with automated verification consistently improve ou
 | 1 — Guideline Compliance | Explicit violations of project docs with exact rule citations | Always |
 | 2 — Testability Analyzer | Structural barriers to unit testing — hardcoded deps, tight coupling, global state | Always |
 | 3 — Duplication & Consistency | Cross-file duplication, pattern inconsistency, missing abstractions, architectural drift | Always |
-| 4 — Code Simplifier | Unnecessary complexity, naming, dead code, pattern violations | `.claude/agents/code-simplifier.md` exists |
+| 4 — Code Simplifier | Unnecessary complexity, naming, dead code, pattern violations | Always |
 
 ## Relationship to Code-Simplifier Agent
 
@@ -167,7 +167,8 @@ Claude Code includes a builtin `/simplify` command. `/optimus:refactor` is the e
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 8-step parallel agent workflow |
-| `references/agent-prompts.md` | Prompt templates for all 4 analysis agents |
+| `references/agents/` | Prompt templates for all 4 analysis agents |
+| `references/context-blocks.md` | Iteration context block for deep mode |
 | *(shared)* `init/references/multi-repo-detection.md` | Multi-repo workspace detection algorithm |
 | *(shared)* `init/references/prerequisite-check.md` | Shared prerequisite check with fallbacks |
 | *(shared)* `init/references/constraint-doc-loading.md` | Constraint doc loading (single project, monorepo) |

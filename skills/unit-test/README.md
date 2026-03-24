@@ -109,7 +109,7 @@ The test-guardian agent and this skill are complementary — both use `testing.m
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 5-step workflow |
-| `references/agent-prompts.md` | Agent prompt templates for Discovery & Coverage Reconnaissance subagent |
+| `references/agents/` | Agent prompt templates for Discovery & Coverage Reconnaissance subagent |
 | *(shared)* `init/references/multi-repo-detection.md` | Multi-repo workspace detection algorithm |
 | *(shared)* `init/references/constraint-doc-loading.md` | Constraint doc loading — Monorepo Scoping Rule |
 

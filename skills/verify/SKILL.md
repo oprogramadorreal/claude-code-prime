@@ -256,7 +256,11 @@ Distribute items across agents to maximize parallelism. If only 1-2 Functional i
 
 ### Launch parallel agents
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/verify/references/agent-prompts.md` for the full prompt templates.
+Read the agent prompt files for each agent type being launched:
+- Test Writer: `$CLAUDE_PLUGIN_ROOT/skills/verify/references/agents/test-writer.md`
+- Integration Verifier: `$CLAUDE_PLUGIN_ROOT/skills/verify/references/agents/integration-verifier.md`
+- Mock Project Verifier: `$CLAUDE_PLUGIN_ROOT/skills/verify/references/agents/mock-project-verifier.md`
+- Behavior Tracer: `$CLAUDE_PLUGIN_ROOT/skills/verify/references/agents/behavior-tracer.md`
 
 Launch up to 4 `general-purpose` Agent tool calls simultaneously — one per agent type that has assigned items. Each agent receives:
 - The sandbox worktree path

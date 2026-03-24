@@ -23,7 +23,7 @@ The [2025 DORA report](https://cloud.google.com/discover/how-test-driven-develop
 - **Convention-aware tests** — follows your `testing.md` for framework, file location, naming, and mocking patterns
 - **Test verification at every step** — runs the full test suite after Red, Green, and Refactor to catch regressions instantly
 - **Lint/type-check verification** — runs lint or type-check commands (if configured) during the Green and Refactor steps to catch type errors that passing tests might miss
-- **Quality gate** — after cycling completes, launches code-simplifier and test-guardian agents in parallel to catch cross-cycle issues (duplication between behaviors, naming drift, edge-case coverage gaps) before pushing
+- **Quality gate** — after cycling completes, launches the plugin's code-simplifier and test-guardian agents in parallel to catch cross-cycle issues (duplication between behaviors, naming drift, edge-case coverage gaps) before pushing
 - **Git worktree isolation** — optionally creates a git worktree for the feature branch, keeping the main workspace clean and enabling parallel work. Automatically detects if already inside a worktree (e.g., created by `/optimus:worktree`) and skips to prevent recursive worktrees
 - **Bug-fix regression gate** — for bug fixes, verifies the red-green cycle is genuine: reverts the fix to confirm the test fails, then restores to confirm it passes
 - **Feature branch workflow** — creates a dedicated `<type>/<slug>` branch (e.g., `feat/add-auth`, `fix/login-email`), commits after each cycle, pushes and creates a PR/MR at the end
@@ -224,7 +224,7 @@ The skill produces a structured summary after completing:
 5. For each behavior: Red (write failing test) → Green (minimal implementation) → Refactor (clean up against coding guidelines)
 6. Runs the full test suite at every transition (Red, Green, Refactor) and lint/type-check during Green and Refactor
 7. Automatically commits on the feature branch after each cycle
-8. Runs code-simplifier and test-guardian agents in parallel as a quality gate (if installed)
+8. Runs code-simplifier and test-guardian agents in parallel as a quality gate
 9. Reports summary, pushes the branch, and creates a PR/MR with task description and coverage delta
 
 ## Git Workflow
@@ -279,7 +279,7 @@ The user's original branch is never modified. All code review happens through th
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Skill definition with 9-step TDD workflow (includes quality gate) |
-| `references/agent-prompts.md` | Prompt templates for quality gate agents (code-simplifier, test-guardian) |
+| `references/agents/` | Prompt templates for quality gate agents (code-simplifier, test-guardian) |
 | `references/quality-gate.md` | Quality gate procedure — pre-flight agent check and post-cycle parallel agent execution |
 | `references/tdd-worktree-orchestration.md` | TDD-specific worktree setup and cleanup, delegates to shared worktree-setup reference |
 | `references/testing-anti-patterns.md` | Mocking anti-patterns and gate questions — loaded during Red step to prevent bad test patterns |
