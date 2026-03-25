@@ -1,7 +1,7 @@
 ---
 name: code-simplifier
 description: Reviews changed code for unnecessary complexity, naming issues, dead code, and pattern violations against project guidelines.
-model: opus
+model: sonnet
 tools: Read, Glob, Grep
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: test-guardian
 description: Reviews TDD test suite for coverage gaps that the one-behavior-at-a-time approach may have missed, including edge cases and error propagation.
-model: opus
+model: sonnet
 tools: Read, Bash, Glob, Grep
 ---
 

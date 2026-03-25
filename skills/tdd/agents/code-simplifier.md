@@ -1,7 +1,7 @@
 ---
 name: code-simplifier
 description: Reviews TDD implementation for cross-cycle quality issues including duplication, naming drift, and dead code from incremental development.
-model: opus
+model: sonnet
 tools: Read, Glob, Grep
 ---
 

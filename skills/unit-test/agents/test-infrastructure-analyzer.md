@@ -1,7 +1,7 @@
 ---
 name: test-infrastructure-analyzer
 description: Discovers test infrastructure, runs existing test suites, measures coverage, and classifies code testability to guide unit test generation.
-model: opus
+model: sonnet
 tools: Read, Bash, Glob, Grep
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: mock-project-verifier
 description: Creates consumer mock projects to verify library, API, or plugin features are consumable from external contexts.
-model: opus
+model: sonnet
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 

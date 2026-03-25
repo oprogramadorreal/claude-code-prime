@@ -1,7 +1,7 @@
 ---
 name: test-writer
 description: Writes verification tests inside a sandbox environment to exercise claimed behaviors and reports pass/fail results with evidence.
-model: opus
+model: sonnet
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 

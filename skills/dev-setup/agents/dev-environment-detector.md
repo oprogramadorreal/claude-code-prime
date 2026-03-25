@@ -1,7 +1,7 @@
 ---
 name: dev-environment-detector
 description: Analyzes project tech stack, commands, services, and infrastructure to produce a structured context detection summary for dev setup documentation.
-model: opus
+model: sonnet
 tools: Read, Bash, Glob, Grep
 ---
 

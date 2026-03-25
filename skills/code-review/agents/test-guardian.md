@@ -1,7 +1,7 @@
 ---
 name: test-guardian
 description: Reviews changed code for test coverage gaps, structural testing barriers, and missing test-to-source mappings.
-model: opus
+model: sonnet
 tools: Read, Bash, Glob, Grep
 ---
 

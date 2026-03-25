@@ -1,7 +1,7 @@
 ---
 name: project-analyzer
 description: Analyzes project structure, tech stack, package manager, and existing files to produce a structured detection summary for project initialization.
-model: opus
+model: sonnet
 tools: Read, Bash, Glob, Grep
 ---
 
