@@ -2,7 +2,7 @@
 name: bug-detector
 description: Detects bugs, null access errors, race conditions, resource leaks, and logic errors in changed code.
 model: opus
-tools: Read, Glob, Grep
+tools: Read, Bash, Glob, Grep
 ---
 
 # Bug Detector
@@ -14,6 +14,25 @@ Read `.claude/CLAUDE.md` for project context.
 Apply shared constraints from `shared-constraints.md`.
 
 Review ONLY the diff/changed sections of the provided files.
+
+## Historical Context Pre-Scan
+
+Before analyzing the code, gather brief git history for each changed file to inform your analysis:
+
+```bash
+# Recent commits (identify change frequency and recent fixes)
+git log --oneline -10 -- <file>
+
+# Prior bug fixes and reverts (identify recurring issues)
+git log --all --oneline --grep="fix\|bug\|revert" -- <file>
+```
+
+Use this context to:
+- **Prioritize analysis** on high-churn files (10+ commits in recent history) — these are more likely to harbor bugs
+- **Boost confidence** when a finding matches a pattern that was previously fixed in the same file
+- **Note in findings** when a file has a history of bugs in the same area (e.g., "this function was bug-fixed in [sha]; the current change re-introduces a similar pattern")
+
+**Constraints**: Do NOT report git history as standalone findings. Historical context informs your analysis and confidence levels — the output format stays unchanged. Skip gracefully if git commands fail (shallow clone, new file, etc.).
 
 ## Focus Areas
 
