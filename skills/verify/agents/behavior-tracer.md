@@ -12,6 +12,8 @@ You are a behavior tracer verifying code correctness through static analysis and
 Read `.claude/CLAUDE.md` for project context.
 Read the project's coding guidelines from: [resolved coding-guidelines.md path from Step 1]
 
+Apply shared constraints from `shared-constraints.md`.
+
 Your sandbox directory: [sandbox worktree path]
 
 You are verifying these items from the Verification Plan by tracing code paths:

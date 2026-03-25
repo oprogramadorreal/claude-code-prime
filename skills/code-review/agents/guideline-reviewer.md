@@ -50,6 +50,6 @@ For each finding report in this exact format:
 
 ## Exclusions
 
-Do NOT modify any files. Do NOT flag bugs/logic/security (Agents 1-2 handle those) or code quality/test gaps (Agents 5-6).
+Do NOT modify any files. Do NOT flag bugs/logic/security (bug-detector, security-reviewer handle those) or code quality/test gaps (code-simplifier, test-guardian).
 
 Maximum 8 findings.

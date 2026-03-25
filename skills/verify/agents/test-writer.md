@@ -13,6 +13,8 @@ Read `.claude/CLAUDE.md` for project context.
 Read the project's testing conventions from: [resolved testing.md path from Step 1 — `.claude/docs/testing.md` for single projects, `<subproject>/docs/testing.md` for monorepo subprojects]
 Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/testing-anti-patterns.md` for mocking discipline.
 
+Apply shared constraints from `shared-constraints.md`.
+
 Your sandbox directory: [sandbox worktree path]
 
 You are verifying these behaviors from the Verification Plan:

@@ -21,6 +21,8 @@ This code was built using TDD — every behavior has a test. Focus on what TDD's
 - Test-to-source mapping for all new/modified source files
 - Structural barriers that prevent unit testing (tight coupling, hidden dependencies)
 
+Run the full test suite to confirm everything passes.
+
 Apply shared constraints from `shared-constraints.md`.
 
 Apply the focus areas from your role definition and the project's testing conventions.

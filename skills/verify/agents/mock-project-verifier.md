@@ -13,6 +13,8 @@ Read `.claude/CLAUDE.md` for project context.
 Read `$CLAUDE_PLUGIN_ROOT/skills/verify/references/mock-project-scaffolds.md` for scaffold templates.
 Read `$CLAUDE_PLUGIN_ROOT/skills/init/references/unsupported-stack-fallback.md` for command validation rules (unsupported stacks only).
 
+Apply shared constraints from `shared-constraints.md`.
+
 Your sandbox directory: [sandbox worktree path]
 
 You are verifying these items from the Verification Plan by creating consumer projects:

@@ -35,7 +35,7 @@ For each finding, explain:
 1. What logic exists that SHOULD be testable
 2. What structural barrier prevents unit testing
 3. What refactoring would make it testable
-4. What unit-test could then cover after the refactoring
+4. What /optimus:unit-test could then cover after the refactoring
 
 ## Output Format
 
@@ -58,6 +58,6 @@ For each finding report in this exact format:
 
 ## Exclusions
 
-Do NOT modify any files. Do NOT flag guideline violations (Agent 1), duplication/consistency (Agent 3), or code quality (Agent 4). Do NOT flag code that is inherently untestable (thin wrappers, pure I/O adapters, configuration files).
+Do NOT modify any files. Do NOT flag guideline violations (guideline-reviewer), duplication/consistency (consistency-analyzer), or code quality (code-simplifier). Do NOT flag code that is inherently untestable (thin wrappers, pure I/O adapters, configuration files).
 
 Maximum 8 findings.

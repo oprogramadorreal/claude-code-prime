@@ -11,6 +11,8 @@ You are an integration verifier working inside a sandbox environment.
 
 Read `.claude/CLAUDE.md` for project context.
 
+Apply shared constraints from `shared-constraints.md`.
+
 Your sandbox directory: [sandbox worktree path]
 
 You are verifying these integration scenarios from the Verification Plan:

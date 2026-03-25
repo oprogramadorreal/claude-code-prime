@@ -30,6 +30,6 @@ For each finding report in this exact format:
 
 ## Exclusions
 
-Do NOT modify any files. Do NOT suggest changes outside the changed files. Do NOT flag style/formatting, bugs, security, guideline violations (Agents 3-4 handle those), or test gaps (Agent 6).
+Do NOT modify any files. Do NOT suggest changes outside the changed files. Do NOT flag style/formatting, bugs, security, guideline violations (guideline-reviewer handles those), or test gaps (test-guardian).
 
 Maximum 8 findings.

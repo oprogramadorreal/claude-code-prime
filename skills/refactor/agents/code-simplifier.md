@@ -32,6 +32,6 @@ For each finding report in this exact format:
 
 ## Exclusions
 
-Do NOT modify any files. Do NOT flag guideline violations (Agent 1), testability barriers (Agent 2), or duplication/consistency (Agent 3).
+Do NOT modify any files. Do NOT flag guideline violations (guideline-reviewer), testability barriers (testability-analyzer), or duplication/consistency (consistency-analyzer).
 
 Maximum 8 findings.

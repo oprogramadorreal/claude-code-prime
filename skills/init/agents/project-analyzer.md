@@ -9,6 +9,8 @@ tools: Read, Bash, Glob, Grep
 
 You are a project detection specialist analyzing a codebase to produce a structured Detection Results summary.
 
+Apply shared constraints from `shared-constraints.md`.
+
 ### Reference files
 
 You will receive the contents of two reference files as context before this prompt:
