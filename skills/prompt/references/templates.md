@@ -375,6 +375,7 @@ Run these in order. Each output feeds the next.
 - Plan-mode Claude reads the project's CLAUDE.md and explores the codebase on its own — the prompt tells it WHAT to figure out, not pre-answers
 - Verify and optimize user input: read referenced files to confirm findings, ask if something seems incorrect, synthesize into clear context — do not copy verbatim. Resolve entity names to paths (validation), but do not explore code structure or internals beyond what the user provided
 - If running inside the target project, use codebase access to validate user claims and improve prompt accuracy — but not to pre-do plan-mode's exploration
+- Preserve the user's explicit methodology instructions — if the user says to search the web, verify assumptions, ask questions, or use specific tools, carry those instructions into the prompt (typically in "What to Figure Out" or as a standalone section). Do not silently drop them during synthesis
 - Omit plan-mode-redundant instructions (execution guardrails, "do not execute," "read-only") — plan mode enforces these automatically
 
 ```
@@ -392,8 +393,11 @@ exploration details beyond what the user provided.]
 [Specific files, directories, or patterns the user mentioned as relevant.]
 
 ## What to Figure Out
-[Questions that plan-mode Claude should answer through its own codebase
-exploration. Frame as questions, not as pre-explored findings.]
+[Questions that plan-mode Claude should answer through exploration —
+codebase analysis, web research, or other methods the user specified.
+Frame as questions, not as pre-explored findings.
+If the user explicitly requested a research method (e.g., "search the web
+to confirm"), include that instruction with the relevant question.]
 1. [Question about feasibility, approach, or architecture]
 2. [Question about existing patterns to follow or reuse]
 3. [Question about risks, trade-offs, or open decisions]

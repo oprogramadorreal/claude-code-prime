@@ -121,7 +121,7 @@ These models reason internally across thousands of tokens. Adding CoT or "think 
 - "What to Figure Out" is the highest-value section — frame as questions, not pre-explored findings
 - Scope boundaries help avoid wasted exploration — include when the user specified relevant areas
 - The prompt must be self-contained — it will be pasted as the first message in a fresh conversation with no prior context
-- See Template M in templates.md for full behavioral rules (input verification, codebase access policy, redundant-instruction exclusions)
+- See Template M in templates.md for full behavioral rules (input verification, codebase access policy, methodology preservation, redundant-instruction exclusions)
 
 ### Cursor / Windsurf
 
