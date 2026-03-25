@@ -12,10 +12,6 @@ Collect all files changed during the TDD session: `git diff --name-only <origina
 
 Launch up to 2 `general-purpose` Agent tool calls simultaneously. The code-simplifier agent always runs. The test-guardian agent runs when test infrastructure is detected (`.claude/docs/testing.md` or subproject `docs/testing.md` exists).
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/shared-constraints.md` for the shared constraints applying to both agents.
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/code-simplifier.md` for the code-simplifier prompt.
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/test-guardian.md` for the test-guardian prompt.
-
 ### Present findings
 
 After both agents complete, present a consolidated quality report:

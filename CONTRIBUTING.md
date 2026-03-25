@@ -145,12 +145,13 @@ Checks include:
 - CRLF and shebang consistency in scripts
 - SKILL.md frontmatter validity (`description`, `disable-model-invocation: true`, no `name:`)
 - Every `$CLAUDE_PLUGIN_ROOT/...` path resolves to an existing file
-- No orphaned files in `references/` or `templates/`
+- No orphaned files in `references/`, `templates/`, or `agents/`
 - Template scripts parse without syntax errors (bash, node, python)
 - JSON templates are valid
 - Every skill directory has both `SKILL.md` and `README.md`
 - README lists all skills
 - `hooks.json` references existing scripts
+- Plugin-level agent files have required frontmatter fields
 - Reference depth does not exceed 2 levels (SKILL → A → B max)
 
 ### Hook execution tests (CI)

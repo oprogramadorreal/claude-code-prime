@@ -31,7 +31,7 @@ In Claude Code, use any of these:
 ## When to Run
 
 - **New project** — initial setup of all five pillars (context, consistency, quality, tests, docs)
-- **After major changes** — re-run to audit and refresh docs (agents, hooks, and coding-guidelines are always refreshed from templates; other docs use intelligent diff)
+- **After major changes** — re-run to audit and refresh docs (hooks and coding-guidelines are always refreshed from templates; other docs use intelligent diff)
 - **After adding new stack components** — picks up new dependencies, adds formatter hooks for newly detected stacks
 - **Periodic maintenance** — keeps docs in sync with evolving codebase; stale docs actively degrade LLM performance
 - **Onboarding new teammates** — ensures consistent Claude Code behavior via git-tracked config in `.claude/`
@@ -125,7 +125,7 @@ To understand or modify how the skill works, start with `SKILL.md`. Key customiz
 
 The coding guidelines file (`.claude/docs/coding-guidelines.md` in your project) is the primary control surface for how the code-simplifier agent, `/optimus:refactor`, and `/optimus:code-review` evaluate your code. Every principle you add, remove, or edit directly changes what these tools flag.
 
-Note: re-running `/optimus:init` always overwrites `coding-guidelines.md`, agents, and hooks from the latest plugin templates — use `git diff` to review changes. When the plugin version has increased since the last run, the audit also compares generated docs against current templates to detect improvements. To add project-specific rules that survive re-runs, put them in `.claude/CLAUDE.md` instead.
+Note: re-running `/optimus:init` always overwrites `coding-guidelines.md` and hooks from the latest plugin templates — use `git diff` to review changes. When the plugin version has increased since the last run, the audit also compares generated docs against current templates to detect improvements. To add project-specific rules that survive re-runs, put them in `.claude/CLAUDE.md` instead.
 
 ## Relationship to Other Skills
 
@@ -133,10 +133,10 @@ Note: re-running `/optimus:init` always overwrites `coding-guidelines.md`, agent
 
 | Skill | Uses from init | What it adds |
 |---|---|---|
-| `/optimus:unit-test` | test-guardian agent, testing.md, CLAUDE.md, test framework, coverage tooling | Writes test files to increase coverage |
-| `/optimus:refactor` | coding-guidelines.md, code-simplifier agent | Full-project refactoring for guideline compliance and testability |
-| `/optimus:code-review` | All docs + both agents | Pre-commit review with up to 6 parallel agents |
-| `/optimus:tdd` | CLAUDE.md, coding-guidelines.md, testing.md, both agents | Red-Green-Refactor TDD with feature branch workflow |
+| `/optimus:unit-test` | testing.md, CLAUDE.md, test framework, coverage tooling | Writes test files to increase coverage |
+| `/optimus:refactor` | coding-guidelines.md | Full-project refactoring for guideline compliance and testability |
+| `/optimus:code-review` | All docs | Pre-commit review with up to 6 parallel agents |
+| `/optimus:tdd` | CLAUDE.md, coding-guidelines.md, testing.md | Red-Green-Refactor TDD with feature branch workflow |
 | `/optimus:permissions` | Shares `.claude/settings.json` | Permission rules + path-restriction hook |
 | `/optimus:commit` | Independent | Stage, commit, and optionally push with conventional message |
 | `/optimus:commit-message` | Independent | Conventional commit message suggestion (read-only) |

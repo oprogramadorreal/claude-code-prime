@@ -298,7 +298,7 @@ Run through this checklist. **Fix any failures before reporting to the user.**
 |----------|---------|
 | **Project** | [project name] — [tech stack summary] |
 | **Structure** | [Single project / Monorepo with N packages / Multi-repo workspace with N repos] |
-| **Files created** | [count] files ([list: CLAUDE.md, settings.json, docs created, hooks, agents]) |
+| **Files created** | [count] files ([list: CLAUDE.md, settings.json, docs created, hooks]) |
 | **Formatters** | [which formatter hooks were installed, or "None"] |
 | **Test infra** | [Pre-existing: framework name / Installed: framework name / Not installed] |
 | **Doc sync** | [N corrections applied / No contradictions found / Skipped] |

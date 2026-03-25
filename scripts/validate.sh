@@ -124,7 +124,7 @@ if [ -n "$broken_refs" ]; then
 fi
 
 # --- 8. Orphan detection ---
-# Every file in references/ and templates/ should be referenced by at least one skill file.
+# Every file in references/, templates/, and agents/ should be referenced by at least one skill file.
 echo "[Orphan detection]"
 orphan_files=""
 # Build the set of all reference and template files
@@ -146,8 +146,8 @@ while IFS= read -r f; do
      ! grep -rq "$parent_dir/" skills/ 2>/dev/null; then
     orphan_files+="  $rel_path\n"
   fi
-done < <(find ./skills -path '*/references/*' -o -path '*/templates/*' | grep -v '/__' | sort)
-check "No orphaned reference/template files" test -z "$orphan_files"
+done < <(( find ./skills -path '*/references/*' -o -path '*/templates/*' -o -path '*/agents/*'; find ./references ./agents -type f 2>/dev/null ) | grep -v '/__' | sort)
+check "No orphaned reference/template/agent files" test -z "$orphan_files"
 if [ -n "$orphan_files" ]; then
   printf "       Unreferenced files:\n%b" "$orphan_files"
 fi

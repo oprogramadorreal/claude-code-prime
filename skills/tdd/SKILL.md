@@ -301,7 +301,13 @@ If no behaviors remain, or the user chooses "Stop here", proceed to Step 8 (Qual
 
 ## Step 8: Quality Gate (parallel agents)
 
-Read `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/quality-gate.md` and follow the **Execution** section. Use `<original-branch>` from Step 3 to scope the changed files. When complete, proceed to Step 9.
+Read these files for the quality gate:
+- `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/shared-constraints.md` — shared constraints for both agents
+- `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/code-simplifier.md` — code-simplifier prompt
+- `$CLAUDE_PLUGIN_ROOT/skills/tdd/agents/test-guardian.md` — test-guardian prompt
+- `$CLAUDE_PLUGIN_ROOT/skills/tdd/references/quality-gate.md` — execution procedure
+
+Follow the **Execution** section in `quality-gate.md`. Use `<original-branch>` from Step 3 to scope the changed files. When complete, proceed to Step 9.
 
 ## Step 9: Summary, Push, and PR/MR
 
@@ -330,7 +336,7 @@ If there are uncommitted changes (e.g., the user stopped mid-cycle before the au
 - Tests passing: all ✓
 - Files created: [list new files]
 - Files modified: [list modified files]
-- Quality gate: code-simplifier ([N] findings), test-guardian ([N] findings) [or "skipped — agents not installed"]
+- Quality gate: code-simplifier ([N] findings), test-guardian ([N] findings)
 
 ### Coverage
 [Detect coverage command from: testing.md coverage section, test runner built-in flag
