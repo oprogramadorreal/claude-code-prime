@@ -24,7 +24,7 @@ Before analyzing the code, gather brief git history for each changed file to inf
 git log --oneline -10 -- <file>
 
 # Prior bug fixes and reverts (identify recurring issues)
-git log --all --oneline --grep="fix\|bug\|revert" -- <file>
+git log --oneline --extended-regexp --grep="fix|bug|revert" -10 -- <file>
 ```
 
 Use this context to:

@@ -101,7 +101,7 @@ The skill presents a structured review report:
 - Lines changed: +142 / -28
 - Findings: 3 (Critical: 1, Warning: 1, Suggestion: 1)
 - Docs used: CLAUDE.md, coding-guidelines.md, testing.md
-- Agents: bug-detector, security-reviewer, guideline-A, guideline-B, code-simplifier, test-guardian
+- Agents: bug-detector, security-reviewer, guideline-A, guideline-B, code-simplifier, test-guardian, contracts-reviewer
 - Verdict: ISSUES FOUND
 
 ### Findings

@@ -33,15 +33,7 @@ If either file is missing, use these fallbacks so the agent can still operate:
 
 ## Code Quality Lens
 
-Beyond simplification, apply these additional quality checks — but only where the project's coding guidelines are silent on the topic. If the guidelines already cover any of these areas, defer to the project's rules.
-
-- **Single Responsibility violations**: functions or classes doing multiple unrelated things — flag when responsibilities can be cleanly separated without over-abstraction
-- **Dependency Inversion violations**: high-level modules directly instantiating or importing low-level implementations where an interface/abstraction boundary would be expected by the project's architecture
-- **Error handling gaps**: swallowed exceptions (empty catch blocks), missing error propagation, catch-all handlers that silently discard context
-- **DRY violations** (within file scope only): duplicated logic blocks in the same file that could be consolidated — cross-file duplication is out of scope (handled by other agents in refactor workflows)
-- **YAGNI violations**: unused function parameters, dead feature flags, abstractions wrapping a single implementation with no indication of planned extension
-
-These are supplementary lenses — they do not replace the core simplification focus. Apply them with the same quality bar: only flag findings with real impact that are specific and actionable.
+Beyond simplification, check the project's `coding-guidelines.md` for additional quality principles (SRP, DRY, error handling, dependency inversion, YAGNI, etc.) and apply them as supplementary lenses — but only where the project's coding guidelines explicitly cover the topic. When the project's guidelines are silent, use general best practices as a fallback, focusing on findings with real impact that are specific and actionable. These supplementary lenses do not replace the core simplification focus.
 
 ## How You Operate
 

@@ -151,7 +151,7 @@ If the user selects **Normal mode**, continue with the standard single-pass flow
 
 ## Step 4: Parallel Multi-Agent Review (up to 7 agents)
 
-7 review agents, all launched in parallel for maximum coverage.
+Up to 7 review agents, launched in parallel for maximum coverage.
 
 Launch up to 7 `general-purpose` Agent tool calls simultaneously. Agents 1–5 always run; Agents 6 and 7 run conditionally (see agent overview below).
 
@@ -187,7 +187,7 @@ Agent 7 only launches when at least one changed file from Step 1 matches any of 
 
 - Path segments: `api/`, `routes/`, `controllers/`, `endpoints/`, `handlers/`, `graphql/`, `proto/`, `grpc/`
 - File patterns: `*.dto.*`, `*.schema.*`, `*.contract.*`, `openapi.*`, `swagger.*`, `*.proto`, `*.graphql`, `*.gql`
-- Type definition directories: `types/`, `models/`, `interfaces/`, `schemas/`
+- Type definition directories: `interfaces/`, `schemas/`
 
 If no changed files match, skip Agent 7 entirely (saves tokens). This follows the same conditional pattern as Agent 6.
 
