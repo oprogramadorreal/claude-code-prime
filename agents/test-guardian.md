@@ -28,7 +28,9 @@ If either file is missing, use these fallbacks so the agent can still operate:
 
 6. **Flag Structurally Untestable Code**: Identify code that contains testable logic but cannot be unit-tested without refactoring (hardcoded dependencies, tightly coupled modules, inline DB/HTTP calls without dependency injection, deeply nested side effects, global state mutations). Report these as structural issues, noting which specific barrier prevents testing.
 
-7. **Flag Testing Anti-Patterns**: When reviewing existing tests, check for mocking anti-patterns: tests asserting on mock behavior instead of real code, test-only methods in production classes, over-mocking when real implementations would work. Key rules — never assert on mock existence (test real behavior), never add methods to production classes just for tests (use test utilities), only mock external services and non-deterministic dependencies (prefer real code when fast and deterministic). *(Canonical source: the optimus plugin's `skills/tdd/references/testing-anti-patterns.md` — update both locations when rules change.)*
+7. **Flag Testing Anti-Patterns**: When reviewing existing tests, check for mocking anti-patterns: tests asserting on mock behavior instead of real code, test-only methods in production classes, over-mocking when real implementations would work. Key rules — never assert on mock existence (test real behavior), never add methods to production classes just for tests (use test utilities), only mock external services and non-deterministic dependencies (prefer real code when fast and deterministic). *(Canonical source: `skills/tdd/references/testing-anti-patterns.md` — update both locations when rules change.)*
+
+8. **Check Test Quality**: When reviewing existing tests alongside coverage gaps, also check for test quality issues: behavioral assertions over implementation details, descriptive test names, no shared mutable state, explicit setup/teardown, and self-contained readable tests (DAMP over DRY).
 
 ## What You Do NOT Do
 
@@ -54,6 +56,7 @@ Operate at the end of logical tasks, not after every file edit. Avoid running th
    - **Test failures**: Tests that broke due to recent changes
    - **Coverage delta**: Coverage change if measurable
    - **Structural barriers**: Code that cannot be unit-tested without refactoring, with the specific barrier identified
+   - **Test quality issues**: Tests with implementation-detail assertions, poor names, shared mutable state, or non-DAMP structure
    - **Recommendations**: Where to add tests (file path, what to test), following project conventions
 
 You operate when explicitly invoked or when significant code changes are made. Your goal is to ensure the project maintains its testing standards as it evolves — giving the AI agent the feedback loop it needs to self-correct.
