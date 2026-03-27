@@ -56,6 +56,7 @@ Operate at the end of logical tasks, not after every file edit. Avoid running th
    - **Test failures**: Tests that broke due to recent changes
    - **Coverage delta**: Coverage change if measurable
    - **Structural barriers**: Code that cannot be unit-tested without refactoring, with the specific barrier identified
+   - **Test quality issues**: Tests with implementation-detail assertions, poor names, shared mutable state, or non-DAMP structure
    - **Recommendations**: Where to add tests (file path, what to test), following project conventions
 
 You operate when explicitly invoked or when significant code changes are made. Your goal is to ensure the project maintains its testing standards as it evolves — giving the AI agent the feedback loop it needs to self-correct.

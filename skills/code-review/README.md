@@ -213,7 +213,7 @@ Anthropic's official [code-review](https://github.com/anthropics/claude-code/tre
 | Trigger | Before commit/PR | Periodic or before /optimus:unit-test |
 | Action | Report + optional fix | Plan + apply on approval |
 | Deep mode | Yes — iterative review-fix loop | Yes — iterative cleanup loop |
-| Agents | Up to 7 parallel (bug, security, guidelines x2, simplifier, test-guardian, contracts) | Up to 4 parallel (guideline compliance, testability, duplication/consistency, code simplifier) |
+| Agents | Up to 7 parallel (bug, security, guidelines x2, simplifier, test-guardian, contracts-reviewer) | Up to 4 parallel (guideline compliance, testability, duplication/consistency, code simplifier) |
 
 | | `/optimus:code-review` | `/optimus:commit-message` |
 |---|---|---|

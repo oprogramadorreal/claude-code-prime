@@ -22,7 +22,7 @@ Analyze ONLY the provided changed files. Apply the focus areas from your role de
 For each finding report in this exact format:
 
 - **File:** source file and function name
-- **Category:** Test Gap | Structural Barrier
+- **Category:** Test Gap | Structural Barrier | Code Quality
 - **Confidence:** High | Medium
 - **Issue:** [what should be tested or what barrier prevents testing]
 - **Test file:** [recommended test file path, if applicable]

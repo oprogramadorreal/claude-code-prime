@@ -185,7 +185,7 @@ Agents 1–5 always run. Agent 6 (Test Guardian) runs when test infrastructure i
 
 Agent 7 activates when **any** changed file from Step 1 matches at least one of these patterns:
 
-**Directory patterns** — file path contains any of: `api/`, `routes/`, `controllers/`, `endpoints/`, `handlers/`, `graphql/`, `proto/`, `grpc/`, `types/`, `schemas/`
+**Directory patterns** — file path contains any of: `api/`, `routes/`, `controllers/`, `endpoints/`, `handlers/`, `graphql/`, `proto/`, `grpc/`
 
 **File patterns** — file name matches any of: `*.dto.*`, `*.schema.*`, `*.contract.*`, `openapi.*`, `swagger.*`, `*.proto`, `*.graphql`, `*.gql`
 
