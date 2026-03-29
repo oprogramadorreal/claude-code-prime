@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.54.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.55.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Claude_Code-1.0.33+-blueviolet" alt="Claude Code">
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="Platform">
@@ -80,6 +80,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 | [`/optimus:branch`](skills/branch/README.md) | Switches local changes to a new conventionally named branch derived from conversation context and git diffs. Never commits or pushes. |
 | [`/optimus:worktree`](skills/worktree/README.md) | Creates an isolated git worktree for parallel development on a separate branch. Runs project setup and test baseline automatically. |
 | [`/optimus:dev-setup`](skills/dev-setup/README.md) | Ensures the project README has accurate, step-by-step development setup instructions by auditing against actual project state. |
+| [`/optimus:jira`](skills/jira/README.md) | Fetches and optimizes context from a JIRA issue — distills title, description, acceptance criteria, sprint context, and comments into a structured task. Optionally improves the JIRA issue itself. |
 | [`/optimus:pr`](skills/pr/README.md) | Creates or updates a PR/MR with structured summary, changes, rationale, and test plan. Supports GitHub and GitLab. |
 | [`/optimus:permissions`](skills/permissions/README.md) | Configures branch protection, precious file safety, and auto-approved routine tool calls via allow/deny rules and a PreToolUse hook. |
 | [`/optimus:commit`](skills/commit/README.md) | Stages, commits, and optionally pushes with a conventional commit message. Offers feature branch creation on protected branches. |
@@ -94,7 +95,7 @@ The result: consistent patterns, meaningful names, and lean context across every
 3. **Test coverage** — `/optimus:unit-test` to write tests and improve coverage
 4. **Code quality** — `/optimus:refactor` for full codebase refactoring against your coding guidelines and testability
 
-**During development** — `/optimus:branch` to move work to a properly named branch, `/optimus:tdd` to build features test-first, `/optimus:worktree` for parallel isolated workspaces, `/optimus:prompt` to craft optimized prompts for any AI tool in your workflow, `/optimus:commit` for conventional commits (or `/optimus:commit-message` to preview the message without committing).
+**During development** — `/optimus:jira` to fetch and structure context from a JIRA issue, `/optimus:branch` to move work to a properly named branch, `/optimus:tdd` to build features test-first, `/optimus:worktree` for parallel isolated workspaces, `/optimus:prompt` to craft optimized prompts for any AI tool in your workflow, `/optimus:commit` for conventional commits (or `/optimus:commit-message` to preview the message without committing).
 
 **Before merging** — `/optimus:pr` to create or update pull requests, `/optimus:verify` to prove the feature branch works in an isolated sandbox, `/optimus:code-review` for pre-merge code quality review.
 
